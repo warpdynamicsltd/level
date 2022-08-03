@@ -7,14 +7,16 @@ This is an early access repository.
 
 **Important information about Level**
 
-- At the current stage of development, **Level** a is statically-typed language with minimalistic support for 
+- At the current stage of development, **Level** is a statically-typed language with minimalistic support for 
 object-oriented programing and with functions, methods and operators overloading.
-- Level compiler source code is written entirely in Python 3.x using only standard library modules.
+- **Level** compiler source code is written entirely in Python 3.x using only standard library modules.
 - There are no 3rd party dependencies.
 - <i>Python 3.x</i> with installed <i>pip</i> is the only requirement to install and run Level compiler 
 on your Linux OS with x86-64 architecture.
 - There is no **Level** documentation yet, so the best reference so far is the source code, 
 especially files with Level code in [level\examples](examples)
+- **Level** compiler source code in early access phase is published under Attribution-NonCommercial-NoDerivatives 4.0 International
+licence. After the project will become more mature the final licence will be worked out.
  
 ### Short Usage Guide
 
