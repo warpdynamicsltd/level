@@ -39,7 +39,7 @@ cd level
 
 If you want any change in the source code (e.g. after next `git clone`) to be immediately available 
 and want to have [level\test_include](test_include) imported 
-(some files in [level\examples](examples) will not compile with it),
+(some files in [level\examples](examples) will not compile without it),
 you should choose `./dev_install.sh`
 instead.
 
