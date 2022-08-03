@@ -48,7 +48,6 @@ Level Compiler v0.1.4a
 Copyright (c) 2022 Warp Dynamics Limited. All rights reserved.
 ............................................................................
 All tests OK
-
 ```
 #### Compile Level code
 
