@@ -22,7 +22,7 @@ especially files with Level code in [level\examples](examples)
 * x86-64 Linux based OS
 * installed Python 3.x with pip
 
-##### Installation guide
+#### Installation guide
 
 To install **Level compiler** execute the following commands from your command line:
 ```
@@ -48,7 +48,6 @@ Copyright (c) 2022 Warp Dynamics Limited. All rights reserved.
 All tests OK
 
 ```
-
 #### Compile Level code
 
 To compile a file `hello.lvl` with **Level** code, execute 
