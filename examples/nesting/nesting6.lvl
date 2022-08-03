@@ -1,0 +1,8 @@
+import test:B;
+
+entry{
+  var k as test:B:b_type;
+  k = test:B:test:D:e:h() + test:B:test:D:e:h();
+  echo test:B:test:D:f(k);
+  echo test:B:g(k);
+}

@@ -1,0 +1,74 @@
+sub rand as int
+{
+    var seed as ref(int);
+    [seed] = 6364136223846793005 * [seed] + 1442695040888963407;
+    return [seed];
+}
+
+sub quick_sort{
+    var r as ref(array(int, 100));
+    var start as int;
+    var len as int;
+
+    if (len < 2) {return 1;}
+
+    a $= [r];
+
+    var pivot as int;
+    pivot = a[start + len/2];
+
+    var i as int;
+    var j as int;
+    var temp as int;
+
+    i = start;
+    j = start + len - 1;
+
+    while(true)
+    {
+        while(a[i] < pivot) {inc i}
+        while(a[j] > pivot) {dec j}
+
+        if (i >= j) {break}
+
+        temp = a[i];
+        a[i] = a[j];
+        a[j] = temp;
+
+        inc i;
+        dec j;
+    }
+
+    exec quick_sort({a}, start, i - start);
+    exec quick_sort({a}, i, start + len - i);
+
+    return 0;
+}
+
+entry{
+    var a as array(int, 100);
+    var n as int;
+    var i as int;
+
+    var seed as int;
+    seed = 13;
+
+    n = 20;
+
+    for (i = 0; i < n; inc i)
+    {
+        a[i] = rand({seed});
+        echo a[i];
+    }
+
+    var zero as int;
+    zero = 0;
+    echo zero;
+
+    exec quick_sort({a}, zero, n);
+
+    for (i = 0; i < n; inc i)
+    {
+        echo a[i];
+    }
+}

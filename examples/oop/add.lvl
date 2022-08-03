@@ -1,0 +1,20 @@
+import test:obj_test as obj;
+
+entry
+{
+  var a as obj:complex;
+  exec a.init(1, 2);
+  var b as obj:complex;
+  exec b.init(3, 4);
+  c = a.add(b);
+  echo c.sqr_length();
+  c = a + b;
+  echo c.sqr_length();
+  #c = -c;
+  echo (-c).x;
+  echo (-c).y;
+  echo abs(-c).x;
+  echo abs(-c).y;
+  echo a[0];
+  echo a[1];
+}

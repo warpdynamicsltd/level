@@ -1,0 +1,15 @@
+import test:D;
+
+type b_type as u32;
+
+sub u
+{
+  var k as test:D:natural;
+  return k;
+}
+
+sub g
+{
+  var k as test:D:natural;
+  return 2*u(k);
+}

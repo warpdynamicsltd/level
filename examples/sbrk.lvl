@@ -1,0 +1,21 @@
+entry{
+  var r as ref(byte);
+  r = __api__(sbrk, 10);
+  var a as u64;
+  a = r;
+  r[0] = 3;
+  r[9] = 7;
+  echo r[0] == 3;
+  echo r[9] == 7;
+
+  var r_next as ref(byte);
+  r_next = __api__(sbrk, 10);
+  var b as u64;
+  b = r_next;
+  echo b - a;
+}
+
+type complex as rec{
+  var x as float,
+  var y as float
+}

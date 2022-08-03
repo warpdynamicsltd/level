@@ -1,0 +1,23 @@
+type point as rec(
+  var x as int,
+  var y as int
+);
+
+method sum(var this as ref(point), var a as int, var b as int) as int
+{
+  return this.x + this.y + a + b;
+}
+
+sub add(var this as ref(int), var a as ref(int)) as int
+{
+  return val this + val a;
+}
+
+entry{
+  var v as point;
+  v.x = 3;
+  v.y = 4;
+
+  echo v.sum(1, 2);
+  echo 1.add(2);
+}

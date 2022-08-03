@@ -1,0 +1,13 @@
+entry
+{
+  var call_n as ref;
+  var a as ref;
+  var b as ref;
+  var c as ref;
+
+  a = 1;
+  b = 6;
+  call_n = 1;
+
+  exec __api__(syscall, call_n, a, "Hello\n", b);
+}

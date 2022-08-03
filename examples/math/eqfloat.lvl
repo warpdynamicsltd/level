@@ -1,0 +1,67 @@
+sub massive_check(var a as ref(float), var b as ref(float), var N as int) as bool
+{
+  for (i = 0; i < N; inc i)
+  {
+    if (a[i] != b[i]) {
+      echo a[i];
+      echo b[i];
+      return false;
+    }
+  }
+
+  return true;
+}
+
+entry
+{
+  var a as array(float, 100);
+  var b as array(float, 100);
+
+  a[0] = 1.00001;
+  b[0] = 1.000001;
+
+  var ra as ref(float);
+  var rb as ref(float);
+  ra = a;
+  rb = b;
+
+  echo massive_check(ra, rb, 1) == false;
+
+  var one = 1.0 as float;
+  var N = 0 as int;
+  a[N] = one/2;
+  b[N] = 0.5;
+  inc N;
+  a[N] = -one/2;
+  b[N] = -0.5;
+  inc N;
+  a[N] = (12*one)/10;
+  b[N] = 1.2;
+  inc N;
+  a[N] = (1223432344*one)/1000;
+  b[N] = 1223432.344;
+  inc N;
+  a[N] = -(1223432344*one)/1000;
+  b[N] = -1223432.344;
+  inc N;
+  a[N] = (113*one)/1000000;
+  b[N] = 0.000113;
+  inc N;
+  a[N] = -(30000000000013*one)/1000000;
+  b[N] = -30000000.000013;
+  inc N;
+  a[N] = -(30000000000013*one)/1000000;
+  b[N] = -30000000.000013;
+  inc N;
+  a[N] = (30000000000013*one)/1000000;
+  b[N] = abs(-30000000.000013);
+  inc N;
+  a[N] = (314159265359*one)/100000000000;
+  b[N] = 3.14159265359;
+  inc N;
+  a[N] = -(314159265359*one)/100000000000;
+  b[N] = -3.14159265359;
+  inc N;
+  echo N;
+  echo massive_check(ra, rb, N);
+}

@@ -1,0 +1,13 @@
+entry{
+  var a as i64;
+  var b as i64;
+  var zero as i64;
+
+  zero = 0;
+  a = 3;
+  b = 101;
+  b = -b;
+  echo sgn(a);
+  echo sgn(zero);
+  echo sgn(b);
+}

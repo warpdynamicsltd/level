@@ -1,0 +1,9 @@
+import test:A as *;
+import test:E as e;
+
+entry{
+  var k as a_type;
+  k = e:h() + e:h();
+  echo f(k);
+  echo g(k);
+}

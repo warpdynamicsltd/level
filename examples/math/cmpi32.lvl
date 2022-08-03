@@ -1,0 +1,53 @@
+sub check(var a as i32, var b as i32) as u32
+{
+  if (not(true)) {return 1}
+
+  if (not (a < b)) {return 2}
+  if (a > b) {return 3}
+  if (not (a <= b)) {return 4}
+  if (a >= b) {return 5}
+  if (not(a <= a)) {return 6}
+  if (not(b <= b)) {return 7}
+
+  return 0;
+}
+
+sub massive_check
+{
+  var r as ref(i32);
+  var N as u32;
+
+  var sum as u32;
+  sum = 0;
+
+  for (i = 0; i < N; inc i)
+  {
+    for (j = 0; j < i; inc j)
+    {
+      k = check(r[j], r[i]);
+      if (k > 0)
+      {
+        echo r[j];
+        echo r[i];
+        return 1;
+      }
+      sum = sum + check(r[j], r[i]);
+    }
+  }
+
+  return sum;
+}
+
+entry
+{
+  var a as array(i32, 10);
+  a[0] = -922134;
+  a[1] = -922133;
+  a[2] = -921133;
+  a[3] = 0;
+  a[4] = 921133;
+  a[5] = 922133;
+  a[6] = 922134;
+
+  echo massive_check(ref a, 7) == 0;
+}

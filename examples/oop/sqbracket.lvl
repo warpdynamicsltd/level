@@ -1,0 +1,25 @@
+type complex as rec
+(
+  var x as int,
+  var y as int
+);
+
+method [](var this as ref(complex), var i as int, var j = 0 as int) as int
+{
+  if (i == 0)
+  {
+    return this.x + j;
+  }
+  else
+  {
+    return this.y + j;
+  }
+}
+
+entry{
+  var a as complex;
+  a.x = 1;
+  a.y = 2;
+  echo a[1];
+  echo a[0, 5];
+}

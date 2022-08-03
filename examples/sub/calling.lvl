@@ -1,0 +1,37 @@
+import test:test_sub_calls as *;
+
+type natural as u32;
+
+entry{
+  var k as u32;
+  k = 1;
+  echo f(k);
+
+  var u as u64;
+  u = 1;
+  echo f(u);
+
+  var b as bool;
+  b = false;
+  echo f(b);
+
+  var b as bool;
+  b = false;
+  echo f(b, 3);
+
+  var a as u32;
+  var b as u32;
+  a = 3;
+  b = 2;
+  echo f(a, b);
+
+  echo f(b, u);
+  echo f(b, u, 3);
+
+  var j as natural;
+  j = 7;
+  echo f(j);
+
+  var u = 1 as int;
+  echo f(u);
+}

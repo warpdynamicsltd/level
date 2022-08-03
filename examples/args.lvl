@@ -1,0 +1,13 @@
+import stdlib:types as *;
+import stdlib:kernel:args as *;
+
+entry
+{
+	var k as uint;
+	k = args()[0];
+
+	for (i = 2; i < k + 1; inc i)
+	{
+		echo args()[i];
+	}
+}

@@ -1,0 +1,8 @@
+import test:C as *;
+
+entry{
+  var k as c_type;
+  k = d:e:h() + d:e:h();
+  echo d:f(k);
+  echo g(k);
+}

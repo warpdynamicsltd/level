@@ -1,0 +1,8 @@
+import test:G as g;
+
+type n1 as u32;
+
+sub f1
+{
+  return 3;
+}

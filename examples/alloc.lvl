@@ -1,0 +1,17 @@
+entry
+{
+  var m1 as ref(byte);
+  var m2 as ref(byte);
+  m1 = __api__(syscall, 9, 0, 4096, 7, 32 + 2, -1, 0);
+  m2 = __api__(syscall, 9, 0, 10*4096, 7, 32 + 2, -1, 0);
+  var N1 as int;
+  var N2 as int;
+
+  N1 = 4095;
+  N2 = 10*4096 - 1;
+  m1[N1] = 7;
+  m2[N2] = 9;
+
+  echo m1[N1];
+  echo m2[N2];
+}

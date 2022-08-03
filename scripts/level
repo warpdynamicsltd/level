@@ -1,0 +1,5 @@
+#!python
+
+from level.scripts.level import main
+
+main()

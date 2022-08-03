@@ -1,0 +1,6 @@
+import test:hello;
+
+entry
+{
+  exec test:hello:hello();
+}

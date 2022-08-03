@@ -1,0 +1,6 @@
+import test:hello as useful;
+
+entry
+{
+  exec useful:hello();
+}

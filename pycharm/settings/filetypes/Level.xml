@@ -1,0 +1,24 @@
+<filetype binary="false" default_extension="lvl" description="Level Compiler" name="Level">
+  <highlighting>
+    <options>
+      <option name="LINE_COMMENT" value="#" />
+      <option name="COMMENT_START" value="" />
+      <option name="COMMENT_END" value="" />
+      <option name="HEX_PREFIX" value="0x" />
+      <option name="NUM_POSTFIXES" value="" />
+      <option name="HAS_BRACES" value="true" />
+      <option name="HAS_BRACKETS" value="true" />
+      <option name="HAS_PARENS" value="true" />
+      <option name="HAS_STRING_ESCAPES" value="true" />
+    </options>
+    <keywords keywords="as;break;dec;def;echo;entry;exec;for;if;import;inc;method;return;sub;type;var;while" ignore_case="false" />
+    <keywords2 keywords="array;bool;byte;false;float;i32;i64;int;rec;ref;true;u32;u64;val" />
+    <keywords3 />
+    <keywords4 keywords="!;$=;%;&amp;;*;+;-;/;&lt;-;=;^;abs;and;not;or;sgn;~">
+      <keyword name=";" />
+    </keywords4>
+  </highlighting>
+  <extensionMap>
+    <mapping ext="lvl" />
+  </extensionMap>
+</filetype>

@@ -1,0 +1,6 @@
+import test:F as f;
+
+entry
+{
+  echo 1;
+}

@@ -1,0 +1,252 @@
+from level.core.compiler.types import Obj, Type
+from level.core.compiler.x86_64.types.bool import Bool
+from level.core.x86_64 import *
+
+class U32(Obj):
+    size = 4
+    priority = 4
+
+    @classmethod
+    def int2reg(cls, i, reg):
+        if type(i) is int:
+            mov_(reg, i)
+        else:
+            i.MC_get_from_storage(reg)
+
+    def __init__(self,
+                 object_manager,
+                 value=None,
+                 ptr=None,
+                 for_child_manager=False,
+                 T=None,
+                 referenced=False):
+        #self.size = 4
+        if T is None:
+            self.type = Type(U32)
+        else:
+            self.type = T
+        self.ptr = ptr
+        self.value = value
+        self.object_manager = object_manager
+        self.referenced = referenced
+        if ptr is None:
+            self.ptr = object_manager.reserve_variable_ptr(self.size, for_child_manager)
+        else:
+            self.ptr = ptr
+
+        if value is not None:
+            self.set_from_const(value)
+
+    def MC_get_from_storage(self, reg):
+        if self.referenced:
+            mov_(r15, [self.ptr])
+            mov_(reg, [r15])
+        else:
+            mov_(reg, [self.ptr])
+
+        if reg.bits > 32:
+            mov_(r15, 0xffffffff)
+            and_(rax, r15)
+
+    def MC_put_to_storage(self, reg):
+        if reg.bits > 32:
+            reg = Register(reg=reg.reg, bits=32)
+
+        if self.referenced:
+            mov_(r15, [self.ptr])
+            mov_([r15], reg)
+        else:
+            mov_([self.ptr], reg)
+
+    def set_by_acc(self):
+        self.MC_put_to_storage(rax)
+
+    def to_acc(self):
+        self.MC_get_from_storage(rax)
+
+    def __add__(self, other):
+        res = U32(self.object_manager, value=None)
+        U32.int2reg(other, ecx)
+
+        self.MC_get_from_storage(eax)
+        add_(eax, ecx)
+        res.MC_put_to_storage(eax)
+        return res
+
+    def __sub__(self, other):
+        res = U32(self.object_manager, value=None)
+        U32.int2reg(other, ecx)
+        self.MC_get_from_storage(eax)
+        sub_(eax, ecx)
+        res.MC_put_to_storage(eax)
+        return res
+
+    def __mul__(self, other):
+        res = U32(self.object_manager, value=None)
+        U32.int2reg(other, ecx)
+        self.MC_get_from_storage(eax)
+        mul_(ecx)
+        res.MC_put_to_storage(eax)
+        return res
+
+    def  __rsub__(self, other):
+        res = U32(self.object_manager, value=None)
+        U32.int2reg(other, ecx)
+        self.MC_get_from_storage(eax)
+        sub_(ecx, eax)
+        res.MC_put_to_storage(eax)
+        return res
+
+    def __radd__(self, other):
+        return self.__add__(other)
+
+    def __rmul__(self, other):
+        return self.__mul__(other)
+
+    def add(self, other):
+        U32.int2reg(other, ecx)
+        self.MC_get_from_storage(eax)
+        add_(eax, ecx)
+        self.MC_put_to_storage(eax)
+
+    def inc(self):
+        self.MC_get_from_storage(eax)
+        inc_(eax)
+        self.MC_put_to_storage(eax)
+
+    def dec(self):
+        self.MC_get_from_storage(eax)
+        dec_(eax)
+        self.MC_put_to_storage(eax)
+
+    def mul(self, other):
+        U32.int2reg(other, ecx)
+        self.MC_get_from_storage(eax)
+        mul_(ecx)
+        self.MC_put_to_storage(eax)
+
+    def __iadd__(self, other):
+        self.add(other)
+        return self
+
+    def __floordiv__(self, other):
+        res = U32(self.object_manager, value=None)
+        self.MC_get_from_storage(eax)
+        U32.int2reg(other, ecx)
+        xor_(edx, edx)
+        div_(ecx)
+        res.MC_put_to_storage(eax)
+        return res
+
+    def __rfloordiv__(self, other):
+        res = U32(self.object_manager, value=None)
+        self.MC_get_from_storage(ecx)
+        U32.int2reg(other, eax)
+        xor_(edx, edx)
+        div_(ecx)
+        res.MC_put_to_storage(eax)
+        return res
+
+    def __mod__(self, other):
+        res = U32(self.object_manager, value=None)
+        self.MC_get_from_storage(eax)
+        U32.int2reg(other, ecx)
+        xor_(edx, edx)
+        div_(ecx)
+        res.MC_put_to_storage(edx)
+        return res
+
+    def __rmod__(self, other):
+        res = U32(self.object_manager, value=None)
+        self.MC_get_from_storage(ecx)
+        U32.int2reg(other, eax)
+        xor_(edx, edx)
+        div_(ecx)
+        res.MC_put_to_storage(edx)
+        return res
+
+    def __eq__(self, other):
+        res = Bool(self.object_manager, value=None)
+        self.MC_get_from_storage(eax)
+        U32.int2reg(other, ecx)
+        xor_(eax, ecx)
+        setz_(al)
+        res.MC_put_to_storage(al)
+        return res
+
+    def __ne__(self, other):
+        res = Bool(self.object_manager, value=None)
+        self.MC_get_from_storage(eax)
+        U32.int2reg(other, ecx)
+        xor_(eax, ecx)
+        setnz_(al)
+        res.MC_put_to_storage(al)
+        return res
+
+    def __lt__(self, other):
+        res = Bool(self.object_manager, value=None)
+        U32.int2reg(other, edx)
+        self.MC_get_from_storage(ecx)
+        xor_(eax, eax)
+        cmp_(ecx, edx)
+        setb_(al)
+        res.MC_put_to_storage(al)
+        return res
+
+    def __gt__(self, other):
+        res = Bool(self.object_manager, value=None)
+        U32.int2reg(other, edx)
+        self.MC_get_from_storage(ecx)
+        xor_(eax, eax)
+        cmp_(ecx, edx)
+        seta_(al)
+        res.MC_put_to_storage(al)
+        return res
+
+    def __le__(self, other):
+        res = Bool(self.object_manager, value=None)
+        U32.int2reg(other, edx)
+        self.MC_get_from_storage(ecx)
+        xor_(eax, eax)
+        cmp_(ecx, edx)
+        setbe_(al)
+        res.MC_put_to_storage(al)
+        return res
+
+    def __ge__(self, other):
+        res = Bool(self.object_manager, value=None)
+        U32.int2reg(other, edx)
+        self.MC_get_from_storage(ecx)
+        xor_(eax, eax)
+        cmp_(ecx, edx)
+        setae_(al)
+        res.MC_put_to_storage(al)
+        return res
+
+    def __imatmul__(self, other):
+        U32.int2reg(other, eax)
+        self.MC_put_to_storage(eax)
+        return self
+
+    def __neg__(self):
+        res = U32(self.object_manager, value=None)
+        self.MC_get_from_storage(eax)
+        neg_(eax)
+        res.MC_put_to_storage(eax)
+        return res
+
+    def __pos__(self):
+        return self
+
+    def set_from_const(self, value):
+        mov_(eax, value)
+        self.MC_put_to_storage(eax)
+
+    def set(self, v):
+        v.MC_get_from_storage(rax)
+        self.MC_put_to_storage(rax)
+
+    def cast(self, T):
+        res = self.object_manager.reserve_variable(T)
+        res.set(self)
+        return res

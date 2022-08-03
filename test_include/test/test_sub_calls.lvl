@@ -1,0 +1,41 @@
+sub f(var k as u32) as u32
+{
+  return k + 1;
+}
+
+sub f(var k as u64) as u32
+{
+  return k + 2;
+}
+
+sub f(var k as bool, var z = 1 as i64) as u32
+{
+  return not k;
+}
+
+sub f(var i as u32, var j as u32)
+{
+  return i + j;
+}
+
+sub f(var i as u32, var j as u64, var k = 1 as i64)
+{
+  return i + j + k;
+}
+
+sub f
+{
+  var a as u32;
+  echo "no-type";
+  return a + 1;
+}
+
+sub f(var x as int)
+{
+  return g(x) + 1;
+}
+
+sub g(var x as int)
+{
+  return 2*x;
+}

@@ -1,0 +1,6 @@
+import test:hello as *;
+
+entry
+{
+  exec hello();
+}
