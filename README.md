@@ -22,7 +22,7 @@ licence. After the project will become more mature the final licence will be wor
 
 #### System requirements to install and use Level
 * x86-64 architecture with Linux based OS
-* installed Python 3.x with pip
+* installed <i>Python 3.6.0</i> or higher with pip
 
 #### Installation guide
 

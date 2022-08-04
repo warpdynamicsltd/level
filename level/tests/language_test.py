@@ -1,4 +1,4 @@
-from level.core.parser.v2_0 import *
+from level.core.parser.code import *
 from level.core.compiler.x86_64 import *
 from level.tests import test_run
 

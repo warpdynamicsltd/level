@@ -3,7 +3,7 @@ import shutil
 
 import argparse
 
-from level.core.parser.v2_0 import *
+from level.core.parser.code import *
 from level.core.compiler.x86_64 import *
 from level.core.parser.linker import LinkerException
 from level.core.ast import GrammarTreeError

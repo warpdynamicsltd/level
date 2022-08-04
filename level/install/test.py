@@ -3,11 +3,6 @@ import os
 import level.tests.addressing_test
 import level.tests.hello_test
 import level.tests.logic_gates
-import level.tests.exec_test
-import level.tests.calling_test
-import level.tests.recursion_test
-import level.tests.factorial_test
-import level.tests.prime_test
 import level.tests.compiler_test
 import level.tests.language_test
 

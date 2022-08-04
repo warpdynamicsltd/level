@@ -723,43 +723,6 @@ class Parser:
         except ParseException as e:
             return None
 
-    # def parse_function_call(self, stream):
-    #     # print(stream)
-    #     if not(type(stream) is list and stream):
-    #         raise ParseException()
-    #
-    #     if (type(stream[0]) is not TerminalSymb) or (stream[0].visual().isdigit()):
-    #         raise ParseException(f"function name expected in {stream[0].meta}")
-    #
-    #     #fun_name = stream[0].visual()
-    #     direct_fun_name = stream[0].visual()
-    #     fun_name = self.build_calling_name(stream[0]).name
-    #
-    #     if not(type(stream[1]) is BracketSymb and stream[1].opening == '('):
-    #         raise ParseException(f"'(' expected in {stream[1].meta}")
-    #
-    #     args = self.parse_list(stream[1].value, ',')
-    #     expressions = []
-    #     for arg in args:
-    #         exp = self.parse_expression(arg.value)
-    #         exp.meta = arg.meta
-    #         expressions.append(exp)
-    #
-    #     if direct_fun_name in builtin.functions:
-    #         return builtin.functions[direct_fun_name](*expressions)
-    #
-    #     if direct_fun_name == '__api__':
-    #         return ast.ApiCall(*expressions).add_meta(stream[0].meta)
-    #
-    #
-    #     return ast.SubroutineCall(fun_name, *expressions).add_meta(stream[0].meta)
-    #
-    # def try_parse_function_call(self, stream):
-    #     try:
-    #         return self.parse_function_call(stream)
-    #     except ParseException as e:
-    #         return None
-
     def is_var_token(self, t):
         for c in t.value:
             if not (c.c.isalnum() or c == '_' or c == ':'):

@@ -2,7 +2,7 @@ import os
 import re
 import hashlib
 
-import level.core.parser.v2_0
+import level.core.parser.code
 from level.install import modules
 
 class LinkerException(Exception):
@@ -102,7 +102,7 @@ class Linker:
 
     def text_to_alphabet_characters(self, text, lead, line_n=1, char_n=1):
         for c in text:
-            self.chars.append(level.core.parser.v2_0.Char(c, meta=level.core.parser.v2_0.MetaParserInfo(line_n, char_n, lead)))
+            self.chars.append(level.core.parser.code.Char(c, meta=level.core.parser.code.MetaParserInfo(line_n, char_n, lead)))
 
             char_n += 1
 
