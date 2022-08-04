@@ -1,7 +1,7 @@
 # LEVEL Language
 
 **Level** is a novel compiled programming language being developed by Michał Stanisław Wójcik. 
-Note that Level is under constant development and is not ready for use yet.
+Note that **Level** is under very dynamic development and is not ready for use yet.
 This is an early access repository.
 
 **Important information about Level**
@@ -21,7 +21,7 @@ licence. After the project will become more mature the final licence will be wor
 ### Short Usage Guide
 
 #### System requirements to install and use Level
-* x86-64 Linux based OS
+* x86-64 architecture with Linux based OS
 * installed Python 3.x with pip
 
 #### Installation guide
