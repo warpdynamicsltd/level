@@ -1,3 +1,5 @@
+import copy
+
 class GrammarTreeError(Exception):
     pass
 
@@ -73,6 +75,19 @@ class Element:
     def add_term(self, term):
         self.term = term
         return self
+
+    def clone(self):
+        x = copy.copy(self)
+        x.name = self.name
+        x.meta = self.meta
+        x.lead = self.lead
+        x.raw_str = self.raw_str
+        x.term = self.term
+        self.args = []
+        for arg in self.args:
+            self.args.append(arg.clone())
+
+        return x
 
 
 class Null(Element):

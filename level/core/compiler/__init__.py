@@ -3,15 +3,14 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 
 import level.core.ast as ast
-from level.core.compiler.types import Type
+#from level.core.compiler import CallAddress
+from level.core.compiler.subroutines import Subroutine, Subroutines, CallAddress, Template, Templates
+from level.core.compiler.types import Type, TypeVar
 
 
 class CompilerException(Exception):
     pass
 
-class CallAddress():
-    def __init__(self, value):
-        self.value = value
 
 class CompileDriver(ABC):
     @abstractmethod
@@ -106,105 +105,15 @@ class ObjManager(ABC):
     def reserve_variable_by_name(self, T, name, value=None):
         self.objs[name] = self.reserve_variable(T, value)
 
-
-class Subroutine:
-    def __init__(self,
-                 compiler,
-                 name,
-                 var_types : list,
-                 var_inits : list,
-                 var_names : list,
-                 address : CallAddress,
-                 return_type: Type,
-                 statement_list: list):
-        self.compiler = compiler
-        self.name = name
-        self.address = address
-        self.var_types = var_types
-        self.var_inits = var_inits
-        self.return_type = return_type
-        self.statement_list = statement_list
-        self.var_names = var_names
-        self.used = False
-        self.compiled = False
-
-    def use(self):
-        self.used = True
-
-    def compile(self):
-        obj_manager = self.compiler.obj_manager_type(self.compiler.compile_driver)
-
-        self.compiler.compile_driver.set_call_address(self.address)
-
-        for i, name in enumerate(self.var_names):
-            obj_manager.reserve_variable_by_name(self.var_types[i], name)
-
-        for s in self.statement_list.args:
-            self.compiler.compile_statement(s, obj_manager)
-
-        self.compiler.compile_driver.ret()
-        obj_manager.close()
-        self.compiled = True
-
-class Subroutines:
-    def __init__(self):
-        self.subroutines = defaultdict(list)
-        self.subroutines_stack = []
-
-    def add(self, key, sub):
-        self.subroutines[key].append(sub)
-        return sub
-
-    def exists(self, key, var_types):
-        if key in self.subroutines:
-            for sub in self.subroutines[key]:
-                if sub.var_types == var_types:
-                    return True
-
-        return False
-
-    def get(self, key, var_types):
-        if key not in self.subroutines:
-            return None
-
-        matches = []
-        sub_var_no_type = None
-        for sub in self.subroutines[key]:
-            if len(sub.var_types) >= len(var_types):
-                res = []
-                j = 0
-                for i, T in enumerate(var_types):
-                    # print(T)
-                    j += 1
-                    res.append(T == sub.var_types[i])
-
-                for k in sub.var_inits[j:]:
-                    # print(k)
-                    res.append(k.name is not None)
-
-                if res and len(res) == len(sub.var_types) and all(res):
-                    matches.append(sub)
-
-            if not sub.var_types:
-                sub_var_no_type = sub
-
-        if len(matches) > 1:
-            raise CompilerException(f"ambiguous function call '{key}'")
-
-        if len(matches) == 1:
-            return matches[0]
-        # if it hasn't found var type match return no var type if exists
-        return sub_var_no_type
-
-
-
 class Compiler:
     def __init__(self, program : ast.Program, obj_manager_type: type, compile_driver_type: type, memory: int=0x100000):
         self.program = program
         self.compile_driver = compile_driver_type()
         self.obj_manager_type = obj_manager_type
         self.subroutines = Subroutines()
+        self.templates = Templates()
         self.subroutines_route_map = {}
+        self.templates_route_map = {}
         self.main_program = False
         self.memory = memory
 
@@ -252,9 +161,12 @@ class Compiler:
             self.compile_def_header(d)
 
     def compile_subroutines(self):
-        for key in self.subroutines.subroutines:
-            for subroutine in self.subroutines.subroutines[key]:
-                subroutine.compile()
+        while self.subroutines.subroutines_stack:
+            subroutine = self.subroutines.subroutines_stack.pop()
+            subroutine.compile()
+        # for key in self.subroutines.subroutines:
+        #     for subroutine in self.subroutines.subroutines[key]:
+        #         subroutine.compile()
 
     def compile_def_header(self, d):
         """
@@ -275,6 +187,7 @@ class Compiler:
         var_inits = []
         var_names = []
 
+        template = False
         for v in var_list.val.args:
             var = ast.MetaVar()
             type_expression = ast.MetaVar()
@@ -285,34 +198,52 @@ class Compiler:
             if type(type_expression.val) is ast.TypeVoid:
                 T = self.compile_driver.get_type_by_const(const.val)
             else:
-                T = self.compile_type_expression(type_expression.val)
+                T = self.compile_type_expression(type_expression.val, from_subroutine_header=True)
+
+            if type(T) is TypeVar:
+                template = True
 
             var_types.append(T)
             var_inits.append(const.val)
             var_names.append(var.val.name)
 
-        if self.subroutines.exists(fun_name, var_types):
-            return None
+        if not template:
+            if self.subroutines.exists(fun_name, var_types):
+                return None
 
-        subroutine = self.subroutines.add(key=fun_name, sub=Subroutine(
-                                                            compiler=self,
-                                                            name=name.val,
-                                                            var_types=var_types,
-                                                            var_inits=var_inits,
-                                                            var_names=var_names,
-                                                            address=address,
-                                                            return_type=return_type.val,
-                                                            statement_list=statement_list.val))
+            subroutine = self.subroutines.add(key=fun_name, sub=Subroutine(
+                                                                compiler=self,
+                                                                name=name.val,
+                                                                var_types=var_types,
+                                                                var_inits=var_inits,
+                                                                var_names=var_names,
+                                                                address=address,
+                                                                return_type=return_type.val,
+                                                                statement_list=statement_list.val))
 
-        self.subroutines_route_map[alternative_fun_name] = fun_name
+            self.subroutines_route_map[alternative_fun_name] = fun_name
 
-        return subroutine
+            return subroutine
+        else:
+            if self.templates.exists(fun_name, var_types):
+                return None
 
+            template = self.templates.add(key=fun_name, template=Template(
+                                                                    compiler=self,
+                                                                    name=name.val,
+                                                                    var_types=var_types,
+                                                                    var_inits=var_inits,
+                                                                    var_names=var_names,
+                                                                    return_type=return_type.val,
+                                                                    statement_list=statement_list.val))
+
+            self.subroutines_route_map[alternative_fun_name] = fun_name
+
+            return template
 
     def compile_statements(self, statements, obj_manager):
         for s in statements.args:
             self.compile_statement(s, obj_manager)
-
 
     def compile_statement(self, s, obj_manager):
         #print(type(s))
@@ -583,6 +514,8 @@ class Compiler:
         T = self.compile_type_expression(subroutine.return_type)
         obj = obj_manager.reserve_variable(T)
         obj.set_by_acc()
+
+        self.subroutines.subroutines_stack.append(subroutine)
         return obj
 
     def get_defined_call(self, method, fun_key, *objs):
@@ -597,7 +530,11 @@ class Compiler:
 
             var_types.append(T)
 
-        return self.subroutines.get(fun_key, var_types)
+        sub = self.subroutines.get(fun_key, var_types)
+        if sub is None:
+            sub = self.templates.get_subroutine(fun_key, var_types)
+
+        return sub
 
     def compile_call(self, sub, obj_manager, method=False):
         if sub.name not in self.subroutines_route_map:
@@ -616,9 +553,15 @@ class Compiler:
 
         return self.compile_call_execution(method, obj_manager, subroutine, *objs)
 
-    def compile_type_expression(self, s):
+    def compile_type_expression(self, s, from_subroutine_header=False):
         if ast.istype(s, ast.Type):
-            return self.compile_driver.get_type_by_name(s)
+
+            # when subroutine is created from template, unknown types are substituted with internal computed types
+            if type(s.name) is Type:
+                return s.name
+
+            res = self.compile_driver.get_type_by_name(s, from_subroutine_header=from_subroutine_header)
+            return res
 
         if ast.istype(s, ast.ArrayType):
             type_expression = ast.MetaVar()

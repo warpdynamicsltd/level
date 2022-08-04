@@ -1,8 +1,9 @@
 import ast
 
 from level.core.compiler import *
+from level.core.compiler import CallAddress
 
-from level.core.compiler.types import Type
+from level.core.compiler.types import Type, TypeVar
 
 from level.core.compiler.x86_64.types.u32 import U32
 from level.core.compiler.x86_64.types.i32 import I32
@@ -108,15 +109,15 @@ class CompileDriver_x86_64(CompileDriver):
     def set_type_by_name(self, name, T):
         self.types_dict[name] = T
 
-    def get_type_by_name(self, t):
+    def get_type_by_name(self, t, from_subroutine_header=False):
         if t.name in translate_simple_types:
             return Type(eval(translate_simple_types[t.name]))
 
-        # if t.name == 'prototype':
-        #     return Type(main_type=Rec, sub_types=[Type(U32), Type(U32)], meta_data=['x', 'y'])
-
         if t.name in self.types_dict:
             return self.types_dict[t.name]
+
+        if from_subroutine_header:
+            return TypeVar(t.name)
 
         raise CompilerException(f"can't resolve type '{t.name}' in {t.meta}")
 

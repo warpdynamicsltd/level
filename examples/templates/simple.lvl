@@ -1,0 +1,24 @@
+sub f(var x as B)
+{
+  echo x;
+  return 0;
+}
+
+sub f(var x as T, var b as int) as int
+{
+  return x + b;
+}
+
+sub g(var x as A) as int
+{
+  var z as ref(A);
+  z = ref 2;
+  return [z]*f(x, 2);
+}
+
+entry{
+  var a as int;
+  a = 7;
+  echo g(a);
+  echo f(0xd);
+}

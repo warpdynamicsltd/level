@@ -7,7 +7,7 @@ This is an early access repository.
 **Important information about Level**
 
 - At the current phase, **Level** is a statically-typed language with minimalistic support for 
-object-oriented programing and with functions, methods and operators overloading.
+object-oriented programing, operators overloading and simple templates.
 - At the current phase, **Level** supports only x86-64 architecture with Linux based OS. 
 - **Level compiler** source code is written in Python 3 using ONLY Python's standard library. 
 - There are no other 3rd party dependencies.

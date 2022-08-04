@@ -25,6 +25,10 @@ class Type:
     def __eq__(self, other):
         return str(self) == str(other)
 
+class TypeVar:
+    def __init__(self, name):
+        self.name = name
+
 class Obj:
     @abstractmethod
     def set(self, obj):
