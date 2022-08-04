@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='Level',
-    version='0.1.2a',
+    version='0.1.4a',
     packages=find_packages(),
     url='www.golevel.org',
     license='Copyright (c) 2022 Warp Dynamics Limited. All rights reserved.',

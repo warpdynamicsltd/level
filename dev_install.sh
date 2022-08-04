@@ -1,22 +1,17 @@
-#!/bin/bash
-
-PIP=pip
-
-if ! $PIP > /dev/null
+if which python3 > /dev/null
 then
-    echo "package installer pip required"
+    python3 -m pip install -e .
+    level setup .
+    level test
+    level install test_include
     exit
 fi
 
-PIP=pip3
-
-if ! $PIP > /dev/null
+if which python > /dev/null
 then
-    echo "package installer pip required"
+    python -m pip install -e .
+    level setup .
+    level test
+    level install test_include
     exit
 fi
-
-$PIP install -e .
-level setup .
-level test
-level install test_include

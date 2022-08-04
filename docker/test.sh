@@ -8,7 +8,7 @@ cp -r ../include level/include
 cp -r ../test_include level/test_include
 cp -r ../scripts level/scripts
 
-
+docker image rm -f level
 docker build --no-cache -t level .
 docker run -it level
 rm -rf level
