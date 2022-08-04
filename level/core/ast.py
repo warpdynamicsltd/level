@@ -83,9 +83,9 @@ class Element:
         x.lead = self.lead
         x.raw_str = self.raw_str
         x.term = self.term
-        self.args = []
+        x.args = []
         for arg in self.args:
-            self.args.append(arg.clone())
+            x.args.append(arg.clone())
 
         return x
 

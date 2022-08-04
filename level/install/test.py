@@ -54,7 +54,7 @@ test_source([test_path(r"oop/dot.lvl")], b"+00000000:0000000a\n+00000000:0000000
 test_source([test_path(r"oop/add.lvl")], b"+00000000:00000034\n+00000000:00000034\n-00000000:00000004\n-00000000:00000006\n+00000000:00000004\n+00000000:00000006\n+00000000:00000001\n+00000000:00000002\n")
 test_source([test_path(r"oop/sqbracket.lvl")], b"+00000000:00000002\n+00000000:00000006\n")
 
-test_source([test_path(r"templates/simple.lvl")], b"+00000000:00000012\n00000000:0000000d\n+00000000:00000000\n")
+test_source([test_path(r"templates/simple.lvl")], b"+00000000:00000012\n+00000000:00000012\n00000000:0000000d\n+00000000:00000000\n")
 
 if to_be_uninstalled:
     os.system(f"level uninstall {test_include_path()}")

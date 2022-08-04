@@ -18,7 +18,10 @@ sub g(var x as A) as int
 
 entry{
   var a as int;
+  var z as u32;
+  z = 7;
   a = 7;
+  echo g(z);
   echo g(a);
   echo f(0xd);
 }
