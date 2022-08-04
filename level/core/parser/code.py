@@ -510,7 +510,7 @@ class Parser:
 
         exp = self.parse_expression(stream[1:])
         exp.meta = stream[0].meta
-        return self.unary_operators[op](exp).add_raw_str(op)
+        return self.unary_operators[op](exp).add_meta(stream[0].meta).add_raw_str(op)
 
     def try_parse_unary(self, stream, op):
         try:
@@ -566,8 +566,8 @@ class Parser:
             raise ParseException()
 
         op, stream1, stream2 = self.pre_parse_binary(stream, ops)
-        # print(op)
-        return self.binary_operators[op](self.parse_expression(stream1), self.parse_expression(stream2)).add_raw_str(op.visual())
+
+        return self.binary_operators[op](self.parse_expression(stream1), self.parse_expression(stream2)).add_meta(stream[0].meta).add_raw_str(op.visual())
 
     def try_binary_parse(self, exp, ops):
         try:
