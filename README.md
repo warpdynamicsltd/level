@@ -9,7 +9,7 @@ This is an early access repository.
 
 - At the current stage of development, **Level** is a statically-typed language with minimalistic support for 
 object-oriented programing and with functions, methods and operators overloading.
-- **Level compiler** source code is written in Python 3 using ONLY The Python Standard Library. 
+- **Level compiler** source code is written in Python 3 using ONLY Python's standard library. 
 - There are no other 3rd party dependencies.
 - <i>Python 3.6.0</i> or higher with installed <i>pip</i> is the only requirement to install and run **Level compiler** 
 on your Linux OS with x86-64 architecture.
