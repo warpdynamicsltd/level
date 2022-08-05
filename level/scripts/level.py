@@ -12,7 +12,7 @@ from level.install import *
 
 welcome_message = \
 f"""Level Compiler {level.__version__}
-Copyright (c) 2022 Warp Dynamics Limited. All rights reserved."""
+Copyright (c) 2022 Michal Stanislaw Wojcik. All rights reserved."""
 
 home = str(Path.home())
 

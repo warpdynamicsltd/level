@@ -57,8 +57,8 @@ level test
 If installation is successful, you should be able to see something 
 similar to the text below in your terminal. 
 ```
-Level Compiler v0.1.4a
-Copyright (c) 2022 Warp Dynamics Limited. All rights reserved.
+Level Compiler v0.1.5a
+Copyright (c) 2022 Michal Stanislaw Wojcik. All rights reserved.
 ............................................................................
 All tests OK
 ```
