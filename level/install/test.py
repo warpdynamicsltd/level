@@ -45,7 +45,7 @@ test_source([test_path(r"math/sgni32.lvl")], b"+00000001\n+00000000\n-00000001\n
 test_source([test_path(r"math/muli32.lvl")], b"00000001\n")
 test_source([test_path(r"math/divi32.lvl")], b"00000001\n")
 test_source([test_path(r"math/cmpfloat.lvl")], b"00000001\n")
-test_source([test_path(r"math/eqfloat.lvl")], b"3fff:800053e2:d6238da4\n3fff:80000863:7bd05af7\n00000001\n+00000000:0000000b\n00000001\n")
+test_source([test_path(r"math/eqfloat.lvl")], b"3fff:800053e2:d6238da4\n3fff:80000863:7bd05af7\n00000001\n+00000000:00000011\n00000001\n")
 
 test_source([test_path(r"alloc.lvl")], b"07\n09\n")
 test_source([test_path(r"sbrk.lvl")], b"00000001\n00000001\n00000000:0000000a\n")

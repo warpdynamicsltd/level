@@ -29,7 +29,12 @@ functions = {
     'ref': ast.Ref,
     'val': ast.Val,
     'abs': ast.Abs,
-    'sgn': ast.Sgn
+    'sgn': ast.Sgn,
+    'sin': ast.Sin,
+    'cos': ast.Cos,
+    'tan': ast.Tan,
+    'cot': ast.Cot,
+    'sqrt': ast.Sqrt,
 }
 
 
@@ -63,11 +68,16 @@ class BuiltinValue:
     def __init__(self, value):
         self.value = value
 
+class BuiltinFloat(BuiltinValue):
+    pass
+
 
 def translate_reserved_const(const):
     if const == 'true':
         return True
     if const == 'false':
         return False
+    if const == 'float:pi':
+        return BuiltinFloat('pi')
 
     return None

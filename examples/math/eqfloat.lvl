@@ -62,6 +62,26 @@ entry
   a[N] = -(314159265359*one)/100000000000;
   b[N] = -3.14159265359;
   inc N;
+  a[N] = 3.1415926535897932384626434;
+  b[N] = float:pi;
+  inc N;
+  A = float:pi/4;
+  a[N] = sin(A)/cos(A);
+  b[N] = tan(A);
+  inc N;
+  a[N] = cos(A)/sin(A);
+  b[N] = cot(A);
+  inc N;
+  A = float:pi/3;
+  a[N] = sin(A)/cos(A);
+  b[N] = tan(A);
+  inc N;
+  a[N] = cos(A)/sin(A);
+  b[N] = cot(A);
+  inc N;
+  a[N] = sqrt(4.0);
+  b[N] = 2.0;
+  inc N;
   echo N;
   echo massive_check(ra, rb, N);
 }

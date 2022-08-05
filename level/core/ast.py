@@ -130,7 +130,7 @@ class CompoundExpression(Expression):
 
 class UnaryExpression(CompoundExpression):
     def __init__(self, name, expression):
-        if not len(expression) == 1:
+        if not istype(expression, Expression):
             raise GrammarTreeError
         CompoundExpression.__init__(self, name, expression)
 
@@ -429,6 +429,27 @@ class Gt(BinaryExpression):
     def __init__(self, a, b):
         BinaryExpression.__init__(self, 'Gt', a, b)
 
+
+
+class Sin(UnaryExpression):
+    def __init__(self, a):
+        UnaryExpression.__init__(self, 'Sin', a)
+
+class Cos(UnaryExpression):
+    def __init__(self, a):
+        UnaryExpression.__init__(self, 'Cos', a)
+
+class Tan(UnaryExpression):
+    def __init__(self, a):
+        UnaryExpression.__init__(self, 'Tan', a)
+
+class Cot(UnaryExpression):
+    def __init__(self, a):
+        UnaryExpression.__init__(self, 'Cot', a)
+
+class Sqrt(UnaryExpression):
+    def __init__(self, a):
+        UnaryExpression.__init__(self, 'Sqrt', a)
 """
 Type Expressions
 """

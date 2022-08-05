@@ -16,7 +16,7 @@ from level.core.compiler.x86_64.types.ref import Ref
 from level.core.compiler.x86_64.types.rec import Rec
 from level.core.compiler.x86_64.types.byte import Byte
 
-from level.core.parser.builtin import translate_simple_types, BuiltinValue
+from level.core.parser.builtin import translate_simple_types, BuiltinValue, BuiltinFloat
 
 from level.core.x86_64 import *
 
@@ -91,6 +91,9 @@ class CompileDriver_x86_64(CompileDriver):
         if type(c.name) is ast.FloatConstType:
             return Type(Float)
 
+        if type(c.name) is BuiltinFloat:
+            return Type(Float)
+
         raise CompilerException (f"unknown const symbol '{c.name}' in {c.meta}")
 
     def get_array_type_by_const(self, c):
@@ -160,6 +163,21 @@ class CompileDriver_x86_64(CompileDriver):
 
         if op_T is ast.Sgn:
             return obj.sgn()
+
+        if op_T is ast.Sin:
+            return obj.sin()
+
+        if op_T is ast.Cos:
+            return obj.cos()
+
+        if op_T is ast.Tan:
+            return obj.tan()
+
+        if op_T is ast.Cot:
+            return obj.cot()
+
+        if op_T is ast.Sqrt:
+            return obj.sqrt()
 
         raise CompilerException("unexpected operator")
 

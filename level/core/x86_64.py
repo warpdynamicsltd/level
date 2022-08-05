@@ -1161,11 +1161,11 @@ def fildq_(a):
 def fldt_(a):
     op_mr_immr(op=[0xdb], d_reg=5, target=a)
 
+def fldpi_():
+    op_imm(op=[0xd9, 0xeb])
+
 def fistpq_(a):
     op_mr_immr(op=[0xdf], d_reg=7, target=a)
-
-def fdivp_():
-    op_imm(op=[0xde, 0xf9])
 
 def fbstp_(a):
     op_mr_immr(op=[0xdf], d_reg=6, target=a)
@@ -1185,6 +1185,12 @@ def fsubp_():
 def fmulp_():
     op_imm(op=[0xde, 0xc9])
 
+def fdivp_():
+    op_imm(op=[0xde, 0xf9])
+
+def fdivrp_():
+    op_imm(op=[0xde, 0xf1])
+
 def fdiv_():
     op_imm(op=[0xde, 0xf9])
 
@@ -1193,6 +1199,18 @@ def fchs_():
 
 def fabs_():
     op_imm(op=[0xd9, 0xe1])
+
+def fsin_():
+    op_imm(op=[0xd9, 0xfe])
+
+def fcos_():
+    op_imm(op=[0xd9, 0xff])
+
+def fsincos_():
+    op_imm(op=[0xd9, 0xfb])
+
+def fsqrt_():
+    op_imm(op=[0xd9, 0xfa])
 
 def st(i):
     return i

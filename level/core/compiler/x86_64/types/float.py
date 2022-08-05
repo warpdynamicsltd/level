@@ -3,6 +3,8 @@ import level.core.compiler.x86_64.types.i64
 from level.core.compiler.x86_64.types.bool import Bool
 from level.core.x86_64 import *
 from level.core.compiler import CompilerException
+from level.core.parser.builtin import BuiltinFloat
+import level.core.ast as ast
 
 class Float(Obj):
     size = 10
@@ -70,6 +72,43 @@ class Float(Obj):
         res = Float(self.object_manager)
         fldt_([self.get_ptr()])
         fabs_()
+        fstpt_([res.get_ptr()])
+        return res
+
+    def sin(self):
+        res = Float(self.object_manager)
+        fldt_([self.get_ptr()])
+        fsin_()
+        fstpt_([res.get_ptr()])
+        return res
+
+    def cos(self):
+        res = Float(self.object_manager)
+        fldt_([self.get_ptr()])
+        fcos_()
+        fstpt_([res.get_ptr()])
+        return res
+
+    def tan(self):
+        res = Float(self.object_manager)
+        fldt_([self.get_ptr()])
+        fsincos_()
+        fdivp_()
+        fstpt_([res.get_ptr()])
+        return res
+
+    def cot(self):
+        res = Float(self.object_manager)
+        fldt_([self.get_ptr()])
+        fsincos_()
+        fdivrp_()
+        fstpt_([res.get_ptr()])
+        return res
+
+    def sqrt(self):
+        res = Float(self.object_manager)
+        fldt_([self.get_ptr()])
+        fsqrt_()
         fstpt_([res.get_ptr()])
         return res
 
@@ -193,10 +232,16 @@ class Float(Obj):
         return res
 
     def set_from_const(self, value):
-        addr = SymBits(bits=64)
-        mov_(rax, addr)
-        self.MC_put_to_storage(rax)
-        if self.object_manager is not None:
-            self.object_manager.compile_driver.float_table.append(level.core.compiler.x86_64.FloatInfo(bytes(value), addr))
-        return
+        if type(value) is ast.FloatConstType:
+            addr = SymBits(bits=64)
+            mov_(rax, addr)
+            self.MC_put_to_storage(rax)
+            if self.object_manager is not None:
+                self.object_manager.compile_driver.float_table.append(level.core.compiler.x86_64.FloatInfo(bytes(value), addr))
+            return
+
+        if type(value) is BuiltinFloat:
+            if value.value == 'pi':
+                fldpi_()
+                fstpt_([self.get_ptr()])
 
