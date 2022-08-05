@@ -17,4 +17,9 @@ entry
   echo abs(-c).y;
   echo a[0];
   echo a[1];
+  var factor as u32;
+  factor = 3;
+  res = a.mul(factor);
+  echo res.x;
+  echo res.y;
 }

@@ -1,0 +1,61 @@
+sub u(var r as ref(A), var k as A) as A
+{
+  var z as A;
+  z = 1;
+  echo val r + k + z;
+  return k;
+}
+
+sub u(var r as ref(A), var k as A, var z as B) as A
+{
+  var a as A;
+  var b as ref(B);
+  a = 1;
+  b = ref 2;
+  echo a;
+  echo val b;
+  echo val r + k + z + a*[b];
+}
+
+sub t(var k as A)
+{
+  echo val k;
+}
+
+sub e(var x as rec(var a as int, var b as B)) as array(B, 2)
+{
+  var z as array(B, 2);
+  z[0] = x.b;
+  z[1] = x.b;
+  echo x.b;
+  return z;
+}
+
+sub f(var n as int)
+{
+  return n + 1;
+}
+
+entry{
+  var a as int;
+  var z as u32;
+  z = 3;
+  a = 7;
+
+  var r as ref(int);
+  r = ref a;
+  exec u(r, a);
+  exec u(r, a, z);
+  exec t(r);
+
+  var y as rec(var a as int, var b as float);
+  y.b = 1.0;
+  exec e(y);
+
+  var z as rec(var a as int, var b as u32);
+  z.b = 3;
+  res = e(z);
+  echo res[0];
+  echo res[1];
+  echo f(3);
+}

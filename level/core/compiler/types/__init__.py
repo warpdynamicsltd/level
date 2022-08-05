@@ -1,3 +1,4 @@
+from copy import copy
 from abc import ABC, abstractmethod
 
 class Type:
@@ -9,7 +10,9 @@ class Type:
         self.user_name = user_name
         self.override_size = None
 
-    def size(self):
+    def size(self, mark=''):
+        # print(mark)
+        # print("**", str(self))
         if self.main_type.size is None:
             if self.sub_types:
                 return self.length * sum([t.size() for t in self.sub_types])
@@ -25,9 +28,43 @@ class Type:
     def __eq__(self, other):
         return str(self) == str(other)
 
+    def substitute(self, a, T):
+        pass
+
+class TypeVarException(Exception):
+    pass
+
 class TypeVar:
     def __init__(self, name):
         self.name = name
+
+    def __hash__(self):
+        return hash(self.name)
+
+    def __eq__(self, other):
+        return self.name == other.name
+
+    def __ne__(self, other):
+        return self.name != other.name
+
+    def __repr__(self):
+        return f"TypeVar({self.name})"
+
+    def __name__(self):
+        return "TypeVar"
+
+    def substitute(self, T_exp, T_val):
+        if T_exp == self:
+            return T_val
+
+        if type(T_exp) is Type:
+            res = copy(T_exp)
+            res.sub_types = []
+            for t in T_exp.sub_types:
+                res.sub_types.append(self.substitute(t, T_val))
+            return res
+
+        raise TypeVarException()
 
 class Obj:
     @abstractmethod

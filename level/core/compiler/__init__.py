@@ -178,6 +178,8 @@ class Compiler:
         return_type = ast.MetaVar()
         ast.SubroutineDef(name, var_list, statement_list, return_type) << d
 
+        return_type_computed = self.compile_type_expression(return_type.val, from_subroutine_header=True)
+
         fun_name = name.val.key
         alternative_fun_name = name.val.name
 
@@ -195,12 +197,13 @@ class Compiler:
             ast.InitWithType(var, type_expression, const) << v
 
             # if there is no init value const.val is None
+            with_type_var = set()
             if type(type_expression.val) is ast.TypeVoid:
                 T = self.compile_driver.get_type_by_const(const.val)
             else:
-                T = self.compile_type_expression(type_expression.val, from_subroutine_header=True)
+                T = self.compile_type_expression(type_expression.val, from_subroutine_header=True, with_type_var=with_type_var)
 
-            if type(T) is TypeVar:
+            if with_type_var:
                 template = True
 
             var_types.append(T)
@@ -218,8 +221,10 @@ class Compiler:
                                                                 var_inits=var_inits,
                                                                 var_names=var_names,
                                                                 address=address,
-                                                                return_type=return_type.val,
-                                                                statement_list=statement_list.val))
+                                                                #return_type=return_type.val,
+                                                                return_type=return_type_computed,
+                                                                statement_list=statement_list.val,
+                                                                meta=d.meta))
 
             self.subroutines_route_map[alternative_fun_name] = fun_name
 
@@ -234,8 +239,10 @@ class Compiler:
                                                                     var_types=var_types,
                                                                     var_inits=var_inits,
                                                                     var_names=var_names,
-                                                                    return_type=return_type.val,
-                                                                    statement_list=statement_list.val))
+                                                                    #return_type=return_type.val,
+                                                                    return_type=return_type_computed,
+                                                                    statement_list=statement_list.val,
+                                                                    meta=d.meta))
 
             self.subroutines_route_map[alternative_fun_name] = fun_name
 
@@ -441,7 +448,7 @@ class Compiler:
             for index_expression in index_expressions:
                 index_objs.append(self.compile_expression(index_expression, obj_manager))
 
-            subroutine = self.get_defined_call(True, '[]', obj, *index_objs)
+            subroutine = self.get_defined_call(True, exp.meta, '[]', obj, *index_objs)
             if subroutine is not None:
                 return self.compile_call_execution(True, obj_manager, subroutine, obj, *index_objs)
 
@@ -473,7 +480,7 @@ class Compiler:
         obj1 = self.compile_expression(exp1, obj_manager)
         obj2 = self.compile_expression(exp2, obj_manager)
 
-        subroutine = self.get_defined_call(True, op_exp.raw_str, obj1, obj2)
+        subroutine = self.get_defined_call(True, op_exp.meta, op_exp.raw_str, obj1, obj2)
         if subroutine is not None:
             return self.compile_call_execution(True, obj_manager, subroutine, obj1, obj2)
 
@@ -484,7 +491,7 @@ class Compiler:
         op_T = type(op_exp)
         obj = self.compile_expression(exp, obj_manager)
 
-        subroutine = self.get_defined_call(True, op_exp.raw_str, obj)
+        subroutine = self.get_defined_call(True, op_exp.meta, op_exp.raw_str, obj)
         if subroutine is not None:
             return self.compile_call_execution(True, obj_manager, subroutine, obj)
 
@@ -511,14 +518,15 @@ class Compiler:
         child_obj_manager = obj_manager.create_child_obj_manager()
         self.compile_driver.call(subroutine.address)
         child_obj_manager.close()
-        T = self.compile_type_expression(subroutine.return_type)
+        # T = self.compile_type_expression(subroutine.return_type)
+        T = subroutine.return_type
         obj = obj_manager.reserve_variable(T)
         obj.set_by_acc()
 
         self.subroutines.subroutines_stack.append(subroutine)
         return obj
 
-    def get_defined_call(self, method, fun_key, *objs):
+    def get_defined_call(self, method, meta, fun_key, *objs):
         var_types = []
         first_T = None
         for i, obj in enumerate(objs):
@@ -530,9 +538,9 @@ class Compiler:
 
             var_types.append(T)
 
-        sub = self.subroutines.get(fun_key, var_types)
+        sub = self.subroutines.get(meta, fun_key, var_types)
         if sub is None:
-            sub = self.templates.get_subroutine(fun_key, var_types)
+            sub = self.templates.get_subroutine(meta, fun_key, var_types)
 
         return sub
 
@@ -546,14 +554,14 @@ class Compiler:
         for i, exp in enumerate(sub.args):
             objs.append(self.compile_expression(exp, obj_manager))
 
-        subroutine = self.get_defined_call(method, fun_key, *objs)
+        subroutine = self.get_defined_call(method, sub.meta, fun_key, *objs)
 
         if subroutine is None:
             raise CompilerException(f"can't resolve subroutine name '{sub.name}' in {sub.meta}")
 
         return self.compile_call_execution(method, obj_manager, subroutine, *objs)
 
-    def compile_type_expression(self, s, from_subroutine_header=False):
+    def compile_type_expression(self, s, from_subroutine_header=False, with_type_var=set()):
         if ast.istype(s, ast.Type):
 
             # when subroutine is created from template, unknown types are substituted with internal computed types
@@ -561,20 +569,22 @@ class Compiler:
                 return s.name
 
             res = self.compile_driver.get_type_by_name(s, from_subroutine_header=from_subroutine_header)
+            if type(res) is TypeVar:
+                with_type_var.add(True)
             return res
 
         if ast.istype(s, ast.ArrayType):
             type_expression = ast.MetaVar()
             const = ast.MetaVar()
             ast.ArrayType(type_expression, const) << s
-            T = self.compile_type_expression(type_expression.val)
+            T = self.compile_type_expression(type_expression.val, from_subroutine_header=from_subroutine_header, with_type_var=with_type_var)
             n = const.val.name
             return Type(main_type=self.compile_driver.get_array_type(), length=n, sub_types=[T])
 
         if ast.istype(s, ast.RefType):
             sub_types = []
             if s.args:
-                sub_types.append(self.compile_type_expression(s.args[0]))
+                sub_types.append(self.compile_type_expression(s.args[0], from_subroutine_header=from_subroutine_header, with_type_var=with_type_var))
             return Type(main_type=self.compile_driver.get_ref_type(), sub_types=sub_types)
 
         if ast.istype(s, ast.RecType):
@@ -588,7 +598,7 @@ class Compiler:
                 if type(type_expression.val) is ast.TypeVoid:
                     T = self.compile_driver.get_type_by_const(const.val)
                 else:
-                    T = self.compile_type_expression(type_expression.val)
+                    T = self.compile_type_expression(type_expression.val, from_subroutine_header=from_subroutine_header, with_type_var=with_type_var)
                 names.append((var.val.name, const.val.name))
                 types.append(T)
             return Type(main_type=self.compile_driver.get_rec_type(), sub_types=types, meta_data=names)

@@ -11,8 +11,9 @@ class Array(Obj):
         self.length = T.length
         self.type = T
         if ptr is None:
-            self.ptr = object_manager.reserve_variable_ptr(self.type.size(), for_child_manager)
-            #print(for_child_manager, self.ptr)
+            # print('++', self.type)
+            self.ptr = object_manager.reserve_variable_ptr(self.type.size('@'), for_child_manager)
+            # print(for_child_manager, self.ptr)
         else:
             self.ptr = ptr
         self.referenced = referenced

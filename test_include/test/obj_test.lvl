@@ -64,3 +64,11 @@ method sqr_length(var this as ref(complex)) as int
 {
   return this.x*this.x + this.y*this.y;
 }
+
+method mul(var this as ref(complex), var a as A) as complex
+{
+  var res as complex;
+  res.x = a * this.x;
+  res.y = a * this.y;
+  return res;
+}
