@@ -70,7 +70,7 @@ class Subroutines:
 
         return False
 
-    def get(self, meta, key, var_types):
+    def get(self, calling_meta, key, var_types):
         if key not in self.subroutines:
             return None
 
@@ -81,12 +81,10 @@ class Subroutines:
                 res = []
                 j = 0
                 for i, T in enumerate(var_types):
-                    # print(T)
                     j += 1
                     res.append(T == sub.var_types[i])
 
                 for k in sub.var_inits[j:]:
-                    # print(k)
                     res.append(k.name is not None)
 
                 if res and len(res) == len(sub.var_types) and all(res):
@@ -96,7 +94,7 @@ class Subroutines:
                 sub_var_no_type = sub
 
         if len(matches) > 1:
-            raise level.core.compiler.CompilerException(f"ambiguous function call '{key}' in {meta}")
+            raise level.core.compiler.CompilerException(f"ambiguous function call '{key}' in {calling_meta}")
 
         if len(matches) == 1:
             return matches[0]
@@ -130,10 +128,10 @@ class Template:
             e = statement.args[i]
             if type(e) is ast.Type:
                 key = e.name
-                #v = TypeVar(key)
-                if key in substitute:
-                    # at this moment unknown type name is replaced by internal Type object
-                    e = ast.Type(substitute[key])
+
+                v = TypeVar(key)
+                if v in substitute:
+                    e = ast.Type(substitute[v])
             else:
                 self.substitute_statement(e, substitute)
             args.append(e)
@@ -141,14 +139,10 @@ class Template:
         statement.args = args
 
     def create_subroutine(self, meta, var_types):
-        # print(list(map(str, self.var_types)))
-        _substitute = self.general_matcher.match(self.var_types, var_types)
-        if _substitute is None:
+        substitute = self.general_matcher.match(self.var_types, var_types)
+
+        if substitute is None:
             raise level.core.compiler.CompilerException(f"can't resolve template {self.name.key} defined in {self.meta} called from {meta}")
-        # print(_substitute)
-        substitute = {}
-        for v in _substitute:
-            substitute[v.name] = _substitute[v]
 
         substituted_statement_list = []
 
@@ -157,21 +151,12 @@ class Template:
             self.substitute_statement(s_clone, substitute)
             substituted_statement_list.append(s_clone)
 
-        # return_type = self.return_type.clone()
-        # self.substitute_statement(return_type, substitute)
-
-        #print(return_type)
         return_type = self.return_type
-        for var in _substitute:
+        for var in substitute:
             try:
-                return_type = var.substitute(return_type, _substitute[var])
+                return_type = var.substitute(return_type, substitute[var])
             except TypeVarException:
                 raise level.core.compiler.CompilerException(f"can't resolve template {self.name.key} defined in {self.meta} called from {meta}")
-
-        #print(_substitute)
-        # if return_type.sub_types:
-        #     print(type(return_type.sub_types[0]))
-        # print(str(return_type))
 
         address = self.compiler.compile_driver.get_current_address()
 
@@ -202,7 +187,7 @@ class Templates:
 
         return False
 
-    def get(self, meta, key, var_types):
+    def get(self, calling_meta, key, var_types):
         if key not in self.templates:
             return None
 
@@ -213,14 +198,10 @@ class Templates:
                 res = []
                 j = 0
                 for i, T in enumerate(var_types):
-                    # print(T)
                     j += 1
-                    #res.append(type(template.var_types[i]) is TypeVar or (T == template.var_types[i]))
-                    #res.append(type(template.var_types[i]) is TypeVar or (template.general_matcher.match(template.var_types[i], T) is not None))
                     res.append(template.general_matcher.match(template.var_types[i], T) is not None)
 
                 for k in template.var_inits[j:]:
-                    # print(k)
                     res.append(k.name is not None)
 
                 if res and len(res) == len(template.var_types) and all(res):
@@ -230,16 +211,16 @@ class Templates:
                 sub_var_no_type = template
 
         if len(matches) > 1:
-            raise level.core.compiler.CompilerException(f"ambiguous function call '{key}' in {meta}")
+            raise level.core.compiler.CompilerException(f"ambiguous function call '{key}' in {calling_meta}")
 
         if len(matches) == 1:
             return matches[0]
         # if it hasn't found var type match return no var type if exists
         return sub_var_no_type
 
-    def get_subroutine(self, meta, key, var_types):
-        template = self.get(meta, key, var_types)
+    def get_subroutine(self, calling_meta, key, var_types):
+        template = self.get(calling_meta, key, var_types)
         if template is None:
             return None
 
-        return template.create_subroutine(meta, var_types)
+        return template.create_subroutine(calling_meta, var_types)
