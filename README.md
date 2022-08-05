@@ -1,16 +1,19 @@
 # LEVEL Language
 
-**Level** is a novel compiled programming language being developed by Michał Stanisław Wójcik. 
+**Level** is a novel compiled programming language being developed by Michał Stanisław Wójcik.
+The ambition is to create fast (compiled to machine code) language but at the same time convenient for 
+scientific programming.
 Note that **Level** is under very dynamic development and is not ready for use yet.
-This is an early access repository.
+This is an early access repository and you are strongly disencouraged to begin any serious project 
+in **Level** yet. 
 
 **Important information about Level**
 
-- At the current phase, **Level** is a statically-typed language with minimalistic support for 
+- At the current phase of development, **Level** is a statically-typed language with minimalistic support for 
 object-oriented programing, operators overloading and simple templates.
-- At the current phase, **Level** supports only x86-64 architecture with Linux based OS. 
-- **Level compiler** source code is written in Python 3 using ONLY Python's standard library. 
-- There are no other 3rd party dependencies.
+- At the current phase of development, **Level** supports only x86-64 architecture with Linux based OS. 
+- **Level compiler** source code is written in Python 3 using purposely ONLY Python's standard library.
+- There are no other 3rd party dependencies in the source code of **Level compiler**.
 - <i>Python 3.6.0</i> or higher with installed <i>pip</i> is the only requirement to install and run **Level compiler** 
 on your Linux OS with x86-64 architecture.
 - There is no **Level** documentation yet, so the best reference so far is the source code, 
