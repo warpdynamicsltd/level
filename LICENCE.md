@@ -43,7 +43,7 @@ No rights for any commercial usage of the Material are granted by this Licence.
 </li>
 <li>
 No rights to publish, share, produce, reproduce or modify the Material 
-with exclusion for rights granted in points B.1, B.2 and B3 are granted by this Licence. 
+with exclusion of rights granted in points B.1, B.2 and B3 are granted by this Licence. 
 </li>
 <li>
 Any copy or derivative work of the Material must contain attribution to the Licensor and must contain this Licence.
