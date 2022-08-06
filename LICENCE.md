@@ -57,7 +57,7 @@ with exclusion of rights granted in points B.1, B.2 and B3 are granted by this L
 Any copy or derivative work of the Material must contain attribution to the Licensor and must contain this Licence.
 </li>
 <li>
-It can't be inferred in any way from B.6 that anyone has been granted the rights to any derivative 
+It can't be inferred in any way from B.6 that anyone has been granted the rights to create any derivative 
 work from the Material. 
 </li>
 <li>
