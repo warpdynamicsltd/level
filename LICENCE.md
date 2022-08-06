@@ -50,7 +50,7 @@ Any copy or derivative work of the Material must contain attribution to the Lice
 </li>
 <li>
 It can't be inferred in any way from B.6 that anyone has been granted the rights to any derivative 
-work of the Material. 
+work from the Material. 
 </li>
 <li>
 Any rights to the Material which are not explicitly granted by the Licence are not granted.
