@@ -17,7 +17,7 @@ Everything in this repository is the "Material". There is nothing in this reposi
 "Material". 
 </li>
 <li>The "Licence" refers to this document.</li>
-<li>The "Licensor" refers to Michał Stanisław Wójcik.
+<li>The "Licensor" is Michał Stanisław Wójcik.
 </li>
 <li>"GitHub Terms of Service" refers to the document published on <a href="https://docs.github.com/en/site-policy/github-terms/github-terms-of-service">docs.github.com/en/site-policy/github-terms/github-terms-of-service</a>.</li>
 <li>"GitHub" is understood 
