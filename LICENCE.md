@@ -85,5 +85,19 @@ The disclaimer of warranties and limitation of liability provided above shall be
 </li>
 </ol>
 
+### D. Contributions
+
+<ol>
+
+<li>By any attempt to contribute to the Material, including but not limited to making any <i>pull request</i> 
+available via GitHub Service, 
+or by the fact of contribution to the Material 
+You forfeit all your rights to the content of Your suggested modification or contributions and  
+transfer all Your rights to the content of your suggested modifications or contributions 
+free of any charge to the Licensor.</li>
+<li> Moreover, under the condition described in D.1. you forfeit all your rights to be attributed. 
+</li>
+</ol>
+
 *Fragments of the above licence are derivative work from the public licences 
 available at [creativecommons.org](https://creativecommons.org/).
