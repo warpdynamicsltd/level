@@ -8,11 +8,6 @@ tools writen by Michał Stanisław Wójcik.
 Everything in this repository is the "Material". There is nothing in this repository which is not the 
 "Material". 
 </li>
-<li>
-The "Material" refers also to any derivative work from the defined in A.1 if such exists. 
-It can't be 
-inferred in any way from this definition that anyone has been granted rights to any derivative work from the Material.
-</li>
 <li>The "Licence" are the official conditions written in this document how to use or not use, produce or not produce, 
 reproduce or not reproduce, publish or not publish the Material.</li>
 <li>The "Licensor" refers to Michał Stanisław Wójcik who is
