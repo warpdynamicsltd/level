@@ -12,13 +12,12 @@ the Material available under these terms and conditions.
 
 <ol>
 <li> The "Material" refers to all source codes of Level compiler and all source codes of integrated 
-tools writen by Michał Stanisław Wójcik. 
+tools writen by Michał Stanisław Wójcik or accepted by him as 3rd party contribution (see D.1 and D.2). 
 Everything in this repository is the "Material". There is nothing in this repository which is not the 
 "Material". 
 </li>
 <li>The "Licence" refers to this document.</li>
-<li>The "Licensor" refers to Michał Stanisław Wójcik who is
-the author of the Material.
+<li>The "Licensor" refers to Michał Stanisław Wójcik.
 </li>
 <li>"GitHub Terms of Service" refers to the document published on <a href="https://docs.github.com/en/site-policy/github-terms/github-terms-of-service">docs.github.com/en/site-policy/github-terms/github-terms-of-service</a>.</li>
 <li>"GitHub" is understood 
