@@ -97,7 +97,7 @@ The disclaimer of warranties and limitation of liability provided above shall be
 <li>By exercising the Licensed Rights You agree, that by any attempt to contribute to the Material, including but not limited to making any <i>pull request</i> 
 available via GitHub Service, 
 or by the fact of contribution to the Material 
-You forfeit all your rights to the content of Your suggested modification or contributions and  
+You forfeit all your rights to the content of Your suggested modifications or contributions and  
 transfer all Your rights to the content of your suggested modifications or contributions 
 free of any charge to the Licensor.</li>
 <li> Moreover, under the condition described in D.1. you forfeit free of any charge all your rights to be attributed. 
