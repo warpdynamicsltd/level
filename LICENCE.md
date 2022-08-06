@@ -29,9 +29,9 @@ financial profit either by the use or any result or product of it.</li>
 ### B. Licence
 <ol>
 <li> Licensor grants to GitHub only 
-those rights to the Material which are explicitly required by GitHub Terms of Service A.4.</li>
+those rights to the Material which are explicitly required by GitHub Terms of Service D.4.</li>
 <li>
-Licensor grants to GitHub Users the rights to the Material which are explicitly required by GitHub Terms of Service A.5.
+Licensor grants to GitHub Users the rights to the Material which are explicitly required by GitHub Terms of Service D.5.
 </li>
 <li>
 Licensor grants to GitHub Users who are Natural Persons the non-transferable right to clone 
