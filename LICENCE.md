@@ -12,7 +12,7 @@ the Material available under these terms and conditions.
 
 <ol>
 <li> The "Material" refers to all source codes of Level compiler and all source codes of integrated 
-tools writen by Michał Stanisław Wójcik or accepted by him as 3rd party contribution (see D.1 and D.2). 
+tools writen by Michał Stanisław Wójcik or accepted by him as 3rd party contributions (see D.1 and D.2). 
 Everything in this repository is the "Material". There is nothing in this repository which is not the 
 "Material". 
 </li>
