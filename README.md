@@ -22,7 +22,7 @@ especially files with Level code in [examples](examples) (for expected results s
 [level/install/test.py](level/install/test.py)) .
 - **Level compiler** source code in this early access phase is published under very restrictive [Level Licence](LICENCE.md), 
 which allows only non-commercial use of Level for private persons. At this phase the project also 
-does not seek community contributions, hence very restrictive contributions section D of the Level licence.  
+does not seek community contributions, hence very restrictive contributions section D of the Level Licence.  
 After the project will become more mature the final licence will be worked out.
  
 ### Short Usage Guide
