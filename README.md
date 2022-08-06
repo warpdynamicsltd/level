@@ -19,8 +19,7 @@ object-oriented programing, operators overloading and templates.
 - At the current phase of development, **Level** supports only x86-64 architecture with Linux based OS.
 - There is no **Level** documentation yet, so the best reference so far is the source code, 
 especially files with Level code in [level\examples](examples).
-- **Level compiler** source code in this early access phase is published under Attribution-NonCommercial-NoDerivatives 4.0 International
-licence. After the project will become more mature the final licence will be worked out.
+- **Level compiler** source code in this early access phase is published under [Level Licence](LICENCE.md). After the project will become more mature the final licence will be worked out.
  
 ### Short Usage Guide
 
