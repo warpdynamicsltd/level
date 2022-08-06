@@ -76,7 +76,7 @@ The above should create an ELF64 executable `hello` which
 can be executed e.g.
 by typing `./hello` in your terminal and pressing enter.
 
-A shor manual for `level` command line tool is available after executing:
+A short manual for `level` command line tool is available after executing:
 ```
 level --help
 ```
