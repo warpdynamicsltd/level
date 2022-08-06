@@ -13,7 +13,7 @@ reproduce or not reproduce, publish or not publish the Material.</li>
 <li>The "Licensor" refers to Michał Stanisław Wójcik who is
 the author of the Material.
 </li>
-<li>GitHub Terms of Service is a document published on <a href="https://docs.github.com/en/site-policy/github-terms/github-terms-of-service">docs.github.com/en/site-policy/github-terms/github-terms-of-service</a>.</li>
+<li>"GitHub Terms of Service" is a document published on <a href="https://docs.github.com/en/site-policy/github-terms/github-terms-of-service">docs.github.com/en/site-policy/github-terms/github-terms-of-service</a>.</li>
 <li>"GitHub" is understood 
 as in GitHub Terms of Service A.5.</li>
 <li>The "GitHub User" is understood as in GitHub Terms of Service A.8.</li>
