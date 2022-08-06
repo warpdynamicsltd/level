@@ -59,6 +59,6 @@ It can't be inferred in any way from B.6 that anyone has been granted the rights
 work of the Material. 
 </li>
 <li>
-Anything which is not explicitly granted by the Licence is not granted.
+Any rights to the Material which are not explicitly granted by the Licence are not granted.
 </li>
 </ol>
