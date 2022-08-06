@@ -47,7 +47,7 @@ in Level language, compile them using the Material and execute them provided
 that all these actions are undertaken for non-commercial purposes only.
 </li>
 <li>
-No rights for any commercial usage of the Material are granted by this Licence.
+No rights for any commercial use of the Material are granted by this Licence.
 </li>
 <li>
 No rights to publish, share, produce, reproduce or modify the Material 
