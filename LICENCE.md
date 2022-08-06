@@ -95,7 +95,7 @@ or by the fact of contribution to the Material
 You forfeit all your rights to the content of Your suggested modification or contributions and  
 transfer all Your rights to the content of your suggested modifications or contributions 
 free of any charge to the Licensor.</li>
-<li> Moreover, under the condition described in D.1. you forfeit all your rights to be attributed. 
+<li> Moreover, under the condition described in D.1. you forfeit free of any charge all your rights to be attributed. 
 </li>
 </ol>
 
