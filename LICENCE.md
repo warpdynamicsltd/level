@@ -1,5 +1,13 @@
 ## Level Licence
 
+By exercising the Licensed Rights (defined below), You accept and agree to be bound by the terms and conditions of this Licence.
+To the extent this License may be interpreted as a contract, 
+You are granted the Licensed Rights in consideration 
+of Your acceptance of these terms and conditions, 
+and the Licensor grants You such rights 
+in consideration of benefits the Licensor receives from making 
+the Material available under these terms and conditions.
+
 ### A. Definitions
 
 <ol>
@@ -54,5 +62,25 @@ work from the Material.
 </li>
 <li>
 Any rights to the Material which are not explicitly granted by the Licence are not granted.
+</li>
+</ol>
+
+### C. Disclaimer of Warranties and Limitation of Liability
+
+<ol>
+<li>
+The Licensor offers the Material as-is and as-available, 
+and makes no representations or warranties of any kind concerning the Material, 
+whether express, implied, statutory, or other. 
+This includes, without limitation, warranties of title, 
+merchantability, fitness for a particular purpose, non-infringement, 
+absence of latent or other defects, accuracy, or the presence or absence of errors, 
+whether or not known or discoverable.
+</li>
+<li>
+To the extent possible, in no event will the Licensor be liable to You on any legal theory (including, without limitation, negligence) or otherwise for any direct, special, indirect, incidental, consequential, punitive, exemplary, or other losses, costs, expenses, or damages arising out of this Public License or use of the Licensed Material, even if the Licensor has been advised of the possibility of such losses, costs, expenses, or damages. Where a limitation of liability is not allowed in full or in part, this limitation may not apply to You.
+</li>
+<li>
+The disclaimer of warranties and limitation of liability provided above shall be interpreted in a manner that, to the extent possible, most closely approximates an absolute disclaimer and waiver of all liability.
 </li>
 </ol>
