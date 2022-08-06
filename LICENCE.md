@@ -84,3 +84,6 @@ To the extent possible, in no event will the Licensor be liable to You on any le
 The disclaimer of warranties and limitation of liability provided above shall be interpreted in a manner that, to the extent possible, most closely approximates an absolute disclaimer and waiver of all liability.
 </li>
 </ol>
+
+*Fragments of the above licence are derivative work from the public licences 
+available at [creativecommons.org](https://creativecommons.org/).
