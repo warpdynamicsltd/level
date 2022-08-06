@@ -22,7 +22,7 @@ Everything in this repository is the "Material". There is nothing in this reposi
 <li>
 Licensed Rights means the rights granted to You subject to the terms and conditions of 
 this License, which are limited to all Copyright and Similar Rights 
-that apply to Your use of the Licensed Material 
+that apply to Your use of the Material 
 and that the Licensor has authority to license.
 </li>
 <li>"GitHub Terms of Service" refers to the document published on <a href="https://docs.github.com/en/site-policy/github-terms/github-terms-of-service">docs.github.com/en/site-policy/github-terms/github-terms-of-service</a>.</li>
