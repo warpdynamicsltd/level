@@ -19,6 +19,12 @@ Everything in this repository is the "Material". There is nothing in this reposi
 <li>The "Licence" refers to this document.</li>
 <li>The "Licensor" is Michał Stanisław Wójcik.
 </li>
+<li>
+Licensed Rights means the rights granted to You subject to the terms and conditions of 
+this License, which are limited to all Copyright and Similar Rights 
+that apply to Your use of the Licensed Material 
+and that the Licensor has authority to license.
+</li>
 <li>"GitHub Terms of Service" refers to the document published on <a href="https://docs.github.com/en/site-policy/github-terms/github-terms-of-service">docs.github.com/en/site-policy/github-terms/github-terms-of-service</a>.</li>
 <li>"GitHub" is understood 
 as in GitHub Terms of Service A.5.</li>
@@ -88,13 +94,23 @@ The disclaimer of warranties and limitation of liability provided above shall be
 
 <ol>
 
-<li>By any attempt to contribute to the Material, including but not limited to making any <i>pull request</i> 
+<li>By exercising the Licensed Rights You agree, that by any attempt to contribute to the Material, including but not limited to making any <i>pull request</i> 
 available via GitHub Service, 
 or by the fact of contribution to the Material 
 You forfeit all your rights to the content of Your suggested modification or contributions and  
 transfer all Your rights to the content of your suggested modifications or contributions 
 free of any charge to the Licensor.</li>
 <li> Moreover, under the condition described in D.1. you forfeit free of any charge all your rights to be attributed. 
+</li>
+<li>
+By exercising the Licensed Rights You agree, that by any publication of 
+derived work from the Material, You forfeit all your rights 
+to the content of the published modifications and transfer all Your rights to the content of published modifications
+free of any charge to the Licensor.
+</li>
+<li>
+It can't be inferred in any way from D.3 that anyone has been granted the rights to create any derivative 
+work from the Material. 
 </li>
 </ol>
 
