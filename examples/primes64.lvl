@@ -1,18 +1,18 @@
 sub is_prime(var n as u64) as bool {
-	var k as u64;
-	for (k = 2; k*k <= n; inc k){
-		if (n % k == 0){
-			return false;
-		}
-	}
-	return true;
+  var k as u64;
+  for (k = 2; k*k <= n; inc k){
+    if (n % k == 0){
+      return false;
+    }
+  }
+  return true;
 }
 
 entry{
-	var n as u64;
-	for (n = 2; n < 100; inc n){
-		if (is_prime(n)){
-			echo n;
-		}
-	}
+  var n as u64;
+  for (n = 2; n < 100; inc n){
+    if (is_prime(n)){
+      echo n;
+    }
+  }
 }
