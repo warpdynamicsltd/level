@@ -8,8 +8,7 @@ tools writen by Michał Stanisław Wójcik.
 Everything in this repository is the "Material". There is nothing in this repository which is not the 
 "Material". 
 </li>
-<li>The "Licence" are the official conditions written in this document how to use or not use, produce or not produce, 
-reproduce or not reproduce, publish or not publish the Material.</li>
+<li>The "Licence" is this document.</li>
 <li>The "Licensor" refers to Michał Stanisław Wójcik who is
 the author of the Material.
 </li>
@@ -36,14 +35,14 @@ Licensor grants to GitHub Users the rights to the Material which are explicitly 
 <li>
 Licensor grants to GitHub Users who are Natural Persons the non-transferable right to clone 
 or/and download the Material to their personal computers, write their own programs 
-in Level language, compile them using the Material and execute them for 
-non-commercial purposes only.
+in Level language, compile them using the Material and execute them provided 
+that all these actions are undertaken for non-commercial purposes only.
 </li>
 <li>
 No rights for any commercial usage of the Material are granted by this Licence.
 </li>
 <li>
-No rights to publish, produce, reproduce or modify the Material 
+No rights to publish, share, produce, reproduce or modify the Material 
 with exclusion for rights granted in points B.1, B.2 and B3 are granted by this Licence. 
 </li>
 <li>
