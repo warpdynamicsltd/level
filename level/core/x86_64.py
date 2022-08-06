@@ -223,6 +223,8 @@ def u8(i):
 def i8(i):
     return struct.pack('b', i)
 
+def u16(i):
+    return struct.pack('H', i)
 
 def u32(i):
     if type(i) is int:
@@ -1163,6 +1165,9 @@ def fldt_(a):
 
 def fldpi_():
     op_imm(op=[0xd9, 0xeb])
+
+def fldcw_(a):
+    op_mr_immr(op=[0xd9], d_reg=5, target=a)
 
 def fistpq_(a):
     op_mr_immr(op=[0xdf], d_reg=7, target=a)

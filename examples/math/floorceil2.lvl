@@ -1,0 +1,15 @@
+entry{
+  var x = 1 as float;
+  echo floor(x);
+  echo ceil(x);
+  var x = 7 as float;
+  echo floor(x);
+  echo ceil(x);
+  var z = -2 as float;
+  echo floor(z);
+  echo ceil(z);
+  var z = -2.13232234 as float;
+  echo ceil(z) - floor(z);
+  var z = 9.999133232234 as float;
+  echo ceil(z) - floor(z);
+}

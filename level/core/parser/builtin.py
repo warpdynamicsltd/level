@@ -35,6 +35,8 @@ functions = {
     'tan': ast.Tan,
     'cot': ast.Cot,
     'sqrt': ast.Sqrt,
+    'floor': ast.Floor,
+    'ceil' : ast.Ceil
 }
 
 

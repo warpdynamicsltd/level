@@ -4,6 +4,7 @@ from level.core.compiler.x86_64.types.bool import Bool
 from level.core.x86_64 import *
 from level.core.compiler import CompilerException
 from level.core.parser.builtin import BuiltinFloat
+from level.mathtools.float import float80
 import level.core.ast as ast
 
 class Float(Obj):
@@ -110,6 +111,40 @@ class Float(Obj):
         fldt_([self.get_ptr()])
         fsqrt_()
         fstpt_([res.get_ptr()])
+        return res
+
+    def floor(self):
+        res = level.core.compiler.x86_64.types.i64.I64(self.object_manager)
+        fldt_([self.get_ptr()])
+
+        tmp_ptr = self.object_manager.get_current_heap_end_ptr()
+        # set Rounded result is closest to but no greater than the infinitely precise result.
+        movl_([tmp_ptr], 0x77f)
+        fldcw_([tmp_ptr])
+
+        fistpq_([res.get_ptr()])
+
+        #restore default control word
+        movl_([tmp_ptr], 0x37f)
+        fldcw_([tmp_ptr])
+
+        return res
+
+    def ceil(self):
+        res = level.core.compiler.x86_64.types.i64.I64(self.object_manager)
+        fldt_([self.get_ptr()])
+
+        tmp_ptr = self.object_manager.get_current_heap_end_ptr()
+        # set Rounded result is closest to but no less than the infinitely precise result.
+        movl_([tmp_ptr], 0xb7f)
+        fldcw_([tmp_ptr])
+
+        fistpq_([res.get_ptr()])
+
+        #restore default control word
+        movl_([tmp_ptr], 0x37f)
+        fldcw_([tmp_ptr])
+
         return res
 
     def __add__(self, other):
@@ -231,13 +266,22 @@ class Float(Obj):
         res.set(self)
         return res
 
+    def set_from_float80_bin(self, value):
+        addr = SymBits(bits=64)
+        mov_(rax, addr)
+        self.MC_put_to_storage(rax)
+        if self.object_manager is not None:
+            self.object_manager.compile_driver.float_table.append(
+                level.core.compiler.x86_64.FloatInfo(bytes(value), addr))
+
     def set_from_const(self, value):
         if type(value) is ast.FloatConstType:
-            addr = SymBits(bits=64)
-            mov_(rax, addr)
-            self.MC_put_to_storage(rax)
-            if self.object_manager is not None:
-                self.object_manager.compile_driver.float_table.append(level.core.compiler.x86_64.FloatInfo(bytes(value), addr))
+            self.set_from_float80_bin(value)
+            return
+
+        if type(value) is int:
+            v = float80(str(value), 0)
+            self.set_from_float80_bin(struct.pack("QH", v[1], v[0]))
             return
 
         if type(value) is BuiltinFloat:

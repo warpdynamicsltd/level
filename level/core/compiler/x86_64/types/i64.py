@@ -86,23 +86,6 @@ class I64(Obj):
         res.MC_put_to_storage(rax)
         return res
 
-    # def start_bin_op(self):
-    #     mov_(r15, rax)
-    #     neg_(rax)
-    #     cmovl_(rax, r15)
-    #     setns_(r15b)
-    #
-    #     mov_(r14, rcx)
-    #     neg_(rcx)
-    #     cmovl_(rcx, r14)
-    #     setns_(r14b)
-    #
-    # def end_bin_op(self):
-    #     mov_(rcx, rax)
-    #     neg_(rcx)
-    #     xor_(r15b, r14b)
-    #     cmovnz_(rax, rcx)
-
     def __mul__(self, other):
         res = I64(self.object_manager, value=None)
         I64.int2reg(other, rcx)
@@ -144,9 +127,7 @@ class I64(Obj):
     def mul(self, other):
         I64.int2reg(other, rcx)
         self.MC_get_from_storage(rax)
-        #self.start_bin_op()
         imul_(rcx)
-        #self.end_bin_op()
         self.MC_put_to_storage(rax)
 
     def __iadd__(self, other):
@@ -318,8 +299,17 @@ class I64(Obj):
         if T.main_type is Float:
             v.MC_get_from_storage(rax)
             fldt_([rax])
+
+            tmp_ptr = self.object_manager.get_current_heap_end_ptr()
+            # set Rounded result is closest to but no less than the infinitely precise result.
+            movl_([tmp_ptr], 0xf7f)
+            fldcw_([tmp_ptr])
+
             ptr = self.get_ptr()
             fistpq_([ptr])
+
+            movl_([tmp_ptr], 0x37f)
+            fldcw_([tmp_ptr])
             return
 
 

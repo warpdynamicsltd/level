@@ -450,6 +450,18 @@ class Cot(UnaryExpression):
 class Sqrt(UnaryExpression):
     def __init__(self, a):
         UnaryExpression.__init__(self, 'Sqrt', a)
+
+class Sqrt(UnaryExpression):
+    def __init__(self, a):
+        UnaryExpression.__init__(self, 'Sqrt', a)
+
+class Floor(UnaryExpression):
+    def __init__(self, a):
+        UnaryExpression.__init__(self, 'Floor', a)
+
+class Ceil(UnaryExpression):
+    def __init__(self, a):
+        UnaryExpression.__init__(self, 'Ceil', a)
 """
 Type Expressions
 """

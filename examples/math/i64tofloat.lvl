@@ -1,0 +1,9 @@
+entry{
+  var x = 1.99 as float;
+  var k as int;
+  k = x;
+  echo k;
+  x = -1.99;
+  k = x;
+  echo k;
+}

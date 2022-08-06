@@ -179,6 +179,12 @@ class CompileDriver_x86_64(CompileDriver):
         if op_T is ast.Sqrt:
             return obj.sqrt()
 
+        if op_T is ast.Floor:
+            return obj.floor()
+
+        if op_T is ast.Ceil:
+            return obj.ceil()
+
         raise CompilerException("unexpected operator")
 
     def unify(self, obj1, obj2):
@@ -520,6 +526,9 @@ class StandardObjManager(ObjManager):
 
     def set_main_frame(self):
         self.compile_driver.set_frame(self.memory)
+
+    def get_current_heap_end_ptr(self):
+        return ebp + self.cursor
 
     def create_child_obj_manager(self):
         self.on_top_cursor = 0

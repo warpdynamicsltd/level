@@ -1,0 +1,92 @@
+sub massive_check(var a as ref(float), var b as ref(float), var N as int) as bool
+{
+  for (i = 0; i < N; inc i)
+  {
+    if (a[i] != b[i]) {
+      echo a[i];
+      echo b[i];
+      return false;
+    }
+  }
+  return true;
+}
+
+entry{
+  var a as array(float, 100);
+  var b as array(float, 100);
+
+  a[0] = 1.00001;
+  b[0] = 1.000001;
+
+  var ra as ref(float);
+  var rb as ref(float);
+  ra = a;
+  rb = b;
+
+  echo massive_check(ra, rb, 1) == false;
+
+  var one = 1.0 as float;
+  var N = 0 as int;
+  a[N] = floor(1.9);
+  b[N] = 1;
+  inc N;
+  a[N] = floor(1.99);
+  b[N] = 1;
+  inc N;
+  a[N] = floor(1.99999);
+  b[N] = 1;
+  inc N;
+  a[N] = floor(1.99999999);
+  b[N] = 1;
+  inc N;
+  a[N] = floor(1.99999999999);
+  b[N] = 1;
+  inc N;
+  a[N] = floor(-1.9);
+  b[N] = -2;
+  inc N;
+  a[N] = floor(-1.99);
+  b[N] = -2;
+  inc N;
+  a[N] = floor(-1.99999);
+  b[N] = -2;
+  inc N;
+  a[N] = floor(-1.99999999);
+  b[N] = -2;
+  inc N;
+  a[N] = floor(-1.99999999999);
+  b[N] = -2;
+  inc N;
+  a[N] = ceil(1.9);
+  b[N] = 2;
+  inc N;
+  a[N] = ceil(1.99);
+  b[N] = 2;
+  inc N;
+  a[N] = ceil(1.99999);
+  b[N] = 2;
+  inc N;
+  a[N] = ceil(1.99999999);
+  b[N] = 2;
+  inc N;
+  a[N] = ceil(1.99999999999);
+  b[N] = 2;
+  inc N;
+  a[N] = ceil(-1.9);
+  b[N] = -1;
+  inc N;
+  a[N] = ceil(-1.99);
+  b[N] = -1;
+  inc N;
+  a[N] = ceil(-1.99999);
+  b[N] = -1;
+  inc N;
+  a[N] = ceil(-1.99999999);
+  b[N] = -1;
+  inc N;
+  a[N] = ceil(-1.99999999999);
+  b[N] = -1;
+  inc N;
+  echo N;
+  echo massive_check(ra, rb, N);
+}
