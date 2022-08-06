@@ -18,7 +18,7 @@ reproduce or not reproduce, publish or not publish the Material.</li>
 <li>The "Licensor" refers to Michał Stanisław Wójcik who is
 the author of the Material.
 </li>
-<li>GitHub Terms of Service is a document presented on <a href="https://docs.github.com/en/site-policy/github-terms/github-terms-of-service">docs.github.com/en/site-policy/github-terms/github-terms-of-service</a>.</li>
+<li>GitHub Terms of Service is a document published on <a href="https://docs.github.com/en/site-policy/github-terms/github-terms-of-service">docs.github.com/en/site-policy/github-terms/github-terms-of-service</a>.</li>
 <li>"GitHub" is understood 
 as in GitHub Terms of Service A.5.</li>
 <li>The "GitHub User" is understood as in GitHub Terms of Service A.8.</li>
@@ -27,7 +27,7 @@ individual human beings are considered as a "Natural Person" under the terms of 
 <li>Action is understood to be undertaken for <b>non-commercial purposes</b> 
 if there is no intention to gain any financial profit from the action or from any product 
 or any other result of this action.</li>
-<li>Commercial use of the Material is any use of Material with intention to gain any 
+<li>"Commercial Use of the Material" is any use of the Material with intention to gain any 
 financial profit either by the use or any result or product of it.</li>
 </ol>
 
@@ -55,7 +55,7 @@ with exclusion for rights granted in points B.1, B.2 and B3 are granted by this 
 Any copy or derivative of the Material must contain attribution to the Licensor and must contain this Licence.
 </li>
 <li>
-It can't be inferred in any way from B.5 that anyone has been granted the rights to any derivative 
+It can't be inferred in any way from B.6 that anyone has been granted the rights to any derivative 
 work of the Material. 
 </li>
 <li>
