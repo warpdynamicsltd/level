@@ -34,7 +34,7 @@ Licensor grants to GitHub Users the rights to the Material which are explicitly 
 </li>
 <li>
 Licensor grants to GitHub Users who are Natural Persons the non-transferable right to clone 
-or/and download the Material to their personal computers, write their own programs 
+or/and download the Material, write their own programs 
 in Level language, compile them using the Material and execute them provided 
 that all these actions are undertaken for non-commercial purposes only.
 </li>
