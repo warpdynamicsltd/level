@@ -1,7 +1,7 @@
 # LEVEL Language
 
 **Level** is a novel compiled programming language being developed by Michał Stanisław Wójcik.
-The ambition is to create fast (compiled to machine code) language but at the same time convenient for 
+The ambition is to create fast (compiled to machine code) language convenient for 
 scientific programming.
 Note that **Level** is under very dynamic development and is not ready for use yet.
 This is an early access repository and you are strongly disencouraged to begin any serious project 
