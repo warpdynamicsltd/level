@@ -18,7 +18,13 @@ def test_run(expected_result):
 
 
 def test_source(cmd, expected_stdout, expected_stderr=b''):
-    process = subprocess.Popen(['level', 'c', '-dr', *cmd],
+
+    if expected_stderr == b'':
+        switch = '-dr'
+    else:
+        switch = '-r'
+
+    process = subprocess.Popen(['level', 'c', switch, *cmd],
                                stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE)
     stdout, stderr = process.communicate()
@@ -33,10 +39,10 @@ def test_source(cmd, expected_stdout, expected_stderr=b''):
         raise e
 
     try:
-        assert stderr == expected_stderr
+        assert expected_stderr in bytes(stderr)
     except Exception as e:
         print(cmd)
-        print(f"stdout is: {stderr}")
-        print(f"stdout should be: {expected_stderr}")
+        print(f"stderr is: {stderr}")
+        print(f"stderr should include: {expected_stderr}")
         raise e
     print('.', end='', flush=True)

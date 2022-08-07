@@ -1,0 +1,6 @@
+import test:error as *;
+
+entry
+{
+  echo g(0);
+}

@@ -44,7 +44,7 @@ class Linker:
         return line_n, char_n
 
 
-    def file_to_alphabet_characters(self, filename, lead=None):
+    def file_to_alphabet_characters(self, filename, lead=None, module_name=None):
         with open(filename, "rb") as f:
             raw = f.read()
             # h = hashlib.sha256(raw).digest()
@@ -54,9 +54,9 @@ class Linker:
             # self.loaded.add(h)
 
             text = str(raw, encoding='utf-8')
-            self.text_recursive(text, lead)
+            self.text_recursive(text, lead, module_name)
 
-    def text_recursive(self, text, lead):
+    def text_recursive(self, text, lead, module_name):
         line_n = 1
         char_n = 1
         while True:
@@ -73,6 +73,7 @@ class Linker:
                         else:
                             if module_lead.name == '*':
                                 child_lead = None
+                                #child_lead = Lead(key=module_lead.key, name=0)
                             else:
                                 child_lead = Lead(key=module_lead.key, name=module_lead.name)
                     else:
@@ -85,7 +86,7 @@ class Linker:
                                 child_lead = Lead(key=f"{module_lead.key}", name=f"{lead.name}:{module_lead.name}")
 
 
-                    self.file_to_alphabet_characters(filename, child_lead)
+                    self.file_to_alphabet_characters(filename, child_lead, module_lead.key)
                 else:
                     if lead is None:
                         lead = Lead(key="main", name=None)
@@ -97,12 +98,12 @@ class Linker:
             else:
                 break
 
-        self.text_to_alphabet_characters(text, lead, line_n, char_n)
+        self.text_to_alphabet_characters(text, lead, module_name, line_n, char_n)
 
 
-    def text_to_alphabet_characters(self, text, lead, line_n=1, char_n=1):
+    def text_to_alphabet_characters(self, text, lead, module_name, line_n=1, char_n=1):
         for c in text:
-            self.chars.append(level.core.parser.code.Char(c, meta=level.core.parser.code.MetaParserInfo(line_n, char_n, lead)))
+            self.chars.append(level.core.parser.code.Char(c, meta=level.core.parser.code.MetaParserInfo(line_n, char_n, lead, module_name)))
 
             char_n += 1
 

@@ -406,7 +406,7 @@ class Compiler:
     def compile_expression(self, exp, obj_manager):
         if ast.istype(exp, ast.Call):
             if ast.istype(exp.args[0], ast.Var):
-                return self.compile_call(ast.SubroutineCall(exp.lead.name, *exp.args[1:]).add_meta(exp.meta), obj_manager)
+                return self.compile_call(ast.SubroutineCall(exp.calling_name.name, *exp.args[1:]).add_meta(exp.meta), obj_manager)
 
             if ast.istype(exp.args[0], ast.ValueAtName):
                 expression = ast.MetaVar()

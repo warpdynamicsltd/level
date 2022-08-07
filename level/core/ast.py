@@ -38,7 +38,7 @@ class Element:
         self.name = name
         self.args = args
         self.meta = None
-        self.lead = None
+        self.calling_name = None
         self.raw_str = None
         self.term = None
 
@@ -64,8 +64,8 @@ class Element:
         self.meta = meta
         return self
 
-    def add_lead(self, lead):
-        self.lead = lead
+    def add_calling_name(self, lead):
+        self.calling_name = lead
         return self
 
     def add_raw_str(self, raw_str):
@@ -80,7 +80,7 @@ class Element:
         x = copy.copy(self)
         x.name = self.name
         x.meta = self.meta
-        x.lead = self.lead
+        x.calling_name = self.calling_name
         x.raw_str = self.raw_str
         x.term = self.term
         x.args = []

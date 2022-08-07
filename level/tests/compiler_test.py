@@ -24,8 +24,8 @@ statement_list = StatementList(
     Assign(x, Const(0x3)),
     Assign(z, Const(0x4)),
     Init(y),
-    Assign(y, Call(Var('f'), x).add_lead(Lead('f', 'f'))),
-    Echo(Call(Var('f'), z).add_lead(Lead('f', 'f'))),
+    Assign(y, Call(Var('f'), x).add_calling_name(Lead('f', 'f'))),
+    Echo(Call(Var('f'), z).add_calling_name(Lead('f', 'f'))),
     Echo(x),
     Return(Const(1)))
 

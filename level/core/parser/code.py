@@ -12,18 +12,25 @@ class ParseException(Exception):
         message = f"parser error: {message}"
         Exception.__init__(self, message)
 
+class CallingName:
+    def __init__(self, key, name):
+        self.key = key
+        self.name = name
+
 class MetaParserInfo:
-    def __init__(self, n_line, n_char, lead=None):
+    def __init__(self, n_line, n_char, lead=None, module_name=None):
+        # print(lead)
         self.n_line = n_line
         self.n_char = n_char
         self.lead = lead
+        self.module_name = module_name
 
     def __str__(self):
-        if self.lead is not None:
-            lead = self.lead.key
+        if self.module_name is not None:
+            module_name = self.module_name
         else:
-            lead = "main"
-        return f"{lead} : line {self.n_line}[{self.n_char}]"
+            module_name = "main"
+        return f"{module_name} : line {self.n_line}[{self.n_char}]"
 
     def __repr__(self):
         return str(self)
@@ -121,14 +128,6 @@ class TerminalSymb(Symb):
     def __hash__(self):
         return hash(self.visual())
 
-# class TerminalVarSymb(TerminalSymb):
-#     def __init__(self, value, meta=None):
-#         TerminalSymb.__init__(self, 'T', value, meta)
-#
-# class TerminalOpSymb(TerminalSymb):
-#     def __init__(self, value, meta=None):
-#         TerminalSymb.__init__(self, 'T', value, meta)
-
 class BracketSymb(Symb):
     def __init__(self, opening, closing, value, meta=None):
         self.opening = opening
@@ -169,7 +168,7 @@ class Parser:
     def __init__(self, text):
         self.text = text
         linker = level.core.parser.linker.Linker()
-        linker.text_recursive(text, lead=None)
+        linker.text_recursive(text, lead=None, module_name=None)
         #self.root = Root(self.text_to_alphabet_characters(text))
         self.root = Root(linker.chars)
 
@@ -595,7 +594,7 @@ class Parser:
 
         if type(expression) is ast.Var:
             direct_fun_name = expression.term.visual()
-            lead = self.build_calling_name(expression.term)
+            calling_name = self.build_calling_name(expression.term)
 
             if direct_fun_name in builtin.functions:
                 return builtin.functions[direct_fun_name](*expressions).add_raw_str(direct_fun_name)
@@ -603,7 +602,7 @@ class Parser:
             if direct_fun_name == '__api__':
                 return ast.ApiCall(*expressions).add_meta(expression.term.meta)
 
-            res.add_lead(lead)
+            res.add_calling_name(calling_name)
 
         return res
 
@@ -651,7 +650,7 @@ class Parser:
                 else:
                     alternative_name = lead.name + ':' + term.visual()
 
-            res = level.core.parser.linker.Lead(key=lead.name + ":" + term.visual(), name=alternative_name)
+            res = CallingName(key=lead.name + ":" + term.visual(), name=alternative_name)
 
         return res
 
@@ -1110,24 +1109,7 @@ class Parser:
             statements = self.parse_statement_list(stream[code_bracket_index].value)
             return ast.SubroutineDef(func_name, ast.VarList(*variables).add_meta(stream[0].meta), statements, return_type).add_meta(stream[0].meta)
 
-        #else:
         raise ParseException(f"badly formed function definition in {stream[0].meta}")
-
-    # def parse_defs(self, stream):
-    #     defs = []
-    #
-    #     if stream:
-    #         meta = stream[0].meta
-    #     else:
-    #         meta = None
-    #
-    #     while(stream and type(stream[0]) is TerminalSymb and stream[0] == 'sub'):
-    #         code_bracket_index = self.find(stream, BracketSymb(opening='{', closing='}', value=None))
-    #         def_ = self.parse_def(stream[1:code_bracket_index + 1])
-    #         stream = stream[code_bracket_index + 1:]
-    #         defs.append(def_)
-    #
-    #     return ast.DefBlock(*defs).add_meta(meta)
 
     def parse_types(self, stream):
         if not (type(stream) is list and stream):

@@ -1,0 +1,6 @@
+import test:error2 as *;
+
+sub g(var x as int)
+{
+  return 2*y;
+}

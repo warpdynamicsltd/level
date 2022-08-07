@@ -1,0 +1,4 @@
+sub s()
+{
+  return a;
+}
