@@ -1,0 +1,13 @@
+type A as rec(
+  var x as B,
+  var y as B
+);
+
+type B as int;
+
+entry
+{
+  var a as A;
+  a.x = 7;
+  echo a.x;
+}

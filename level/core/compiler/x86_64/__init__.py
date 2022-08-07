@@ -41,7 +41,6 @@ class CompileDriver_x86_64(CompileDriver):
 
         self.while_stack = []
 
-        self.types_dict = dict()
         self.string_table = []
         self.float_table = []
 
@@ -101,7 +100,6 @@ class CompileDriver_x86_64(CompileDriver):
 
     def get_ref_type_for_obj(self, obj=None):
         if obj is None:
-            # return Type(Ref, sub_types=[Type(U32)])
             return Type(Ref, sub_types=[Type(Byte)])
         else:
             return Type(Ref, sub_types=[obj.type])
@@ -112,17 +110,11 @@ class CompileDriver_x86_64(CompileDriver):
     def set_type_by_name(self, name, T):
         self.types_dict[name] = T
 
-    def get_type_by_name(self, t, from_subroutine_header=False):
+    def get_simple_type_by_name(self, t):
         if t.name in translate_simple_types:
             return Type(eval(translate_simple_types[t.name]))
 
-        if t.name in self.types_dict:
-            return self.types_dict[t.name]
-
-        if from_subroutine_header:
-            return TypeVar(t.name)
-
-        raise CompilerException(f"can't resolve type '{t.name}' in {t.meta}")
+        return None
 
     def get_array_type(self):
         return Array

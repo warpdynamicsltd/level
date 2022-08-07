@@ -5,6 +5,7 @@ from collections import defaultdict
 import level.core.ast as ast
 #from level.core.compiler import CallAddress
 from level.core.compiler.subroutines import Subroutine, Subroutines, CallAddress, Template, Templates
+from level.core.compiler.type_defs import TypeDefs, TypeDef
 from level.core.compiler.types import Type, TypeVar
 
 
@@ -112,6 +113,7 @@ class Compiler:
         self.obj_manager_type = obj_manager_type
         self.subroutines = Subroutines()
         self.templates = Templates()
+        self.type_defs = TypeDefs()
         self.subroutines_route_map = {}
         self.templates_route_map = {}
         self.main_program = False
@@ -150,11 +152,12 @@ class Compiler:
             t_var = ast.MetaVar()
             type_expression = ast.MetaVar()
             ast.AssignType(t_var, type_expression) << arg
-            T = self.compile_type_expression(type_expression.val)
-            type_name = t_var.val.name.name
-            T.user_name = type_name
-            # print(str(T))
-            self.compile_driver.set_type_by_name(type_name, T)
+            self.type_defs.add(
+                TypeDef(
+                    compiler=self,
+                    t=t_var.val.name,
+                    type_vars=[],
+                    type_def=type_expression.val))
 
     def compile_def_headers(self, defs):
         for d in defs.args:
@@ -475,6 +478,7 @@ class Compiler:
             obj = self.compile_expression(expression.val, obj_manager)
             if obj.type.main_type.__name__ == 'Ref':
                 obj = self.compile_driver.deref(obj)
+
             return obj.get_element(const.val.name)
 
         if ast.istype(exp, ast.BinaryExpression):
@@ -571,6 +575,7 @@ class Compiler:
 
         return self.compile_call_execution(method, obj_manager, subroutine, *objs)
 
+
     def compile_type_expression(self, s, from_subroutine_header=False, with_type_var=set()):
         if ast.istype(s, ast.Type):
 
@@ -578,10 +583,11 @@ class Compiler:
             if type(s.name) is Type:
                 return s.name
 
-            res = self.compile_driver.get_type_by_name(s, from_subroutine_header=from_subroutine_header)
-            if type(res) is TypeVar:
-                with_type_var.add(True)
-            return res
+            res = self.compile_driver.get_simple_type_by_name(s)
+            if res is not None:
+                return res
+            else:
+                return self.type_defs.get_type(from_subroutine_header=from_subroutine_header, with_type_var=with_type_var, t=s)
 
         if ast.istype(s, ast.ArrayType):
             type_expression = ast.MetaVar()
