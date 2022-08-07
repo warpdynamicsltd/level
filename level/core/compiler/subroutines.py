@@ -1,3 +1,5 @@
+import sys
+
 from collections import defaultdict
 
 from level.core.compiler.types import Type, TypeVar, TypeVarException
@@ -13,17 +15,19 @@ class Subroutine:
     def __init__(self,
                  compiler,
                  name,
-                 var_types : list,
-                 var_inits : list,
-                 var_names : list,
+                 var_types,
+                 first_default,
+                 var_inits,
+                 var_names,
                  address : CallAddress,
                  return_type: Type,
-                 statement_list: list,
+                 statement_list,
                  meta):
         self.compiler = compiler
         self.name = name
         self.address = address
         self.var_types = var_types
+        self.first_default = first_default
         self.var_inits = var_inits
         self.return_type = return_type
         self.statement_list = statement_list
@@ -53,6 +57,16 @@ class Subroutine:
         obj_manager.close()
         self.compiled = True
 
+    def match(self, var_types):
+        if not self.var_types:
+        # we want functions without arguments to be checked at the end if there is no other candidates
+            return False
+
+        if len(var_types) < len(self.var_types[:self.first_default]):
+            return False
+        limit = len(var_types)
+        return var_types == self.var_types[:limit]
+
 class Subroutines:
     def __init__(self):
         self.subroutines = defaultdict(list)
@@ -75,31 +89,34 @@ class Subroutines:
             return None
 
         matches = []
-        sub_var_no_type = None
+        no_args_matches = []
         for sub in self.subroutines[key]:
-            if len(sub.var_types) >= len(var_types):
-                res = []
-                j = 0
-                for i, T in enumerate(var_types):
-                    j += 1
-                    res.append(T == sub.var_types[i])
-
-                for k in sub.var_inits[j:]:
-                    res.append(k.name is not None)
-
-                if res and len(res) == len(sub.var_types) and all(res):
-                    matches.append(sub)
+            if sub.match(var_types):
+                matches.append(sub)
 
             if not sub.var_types:
-                sub_var_no_type = sub
+                no_args_matches.append(sub)
 
         if len(matches) > 1:
-            raise level.core.compiler.CompilerException(f"ambiguous function call '{key}' in {calling_meta}")
+            msg = ""
+            for sub in matches:
+                msg += f"matched function {sub.name.key} in {sub.meta}\n"
+            raise level.core.compiler.CompilerException(f"{msg}ambiguous function call '{key}' in {calling_meta}")
 
         if len(matches) == 1:
             return matches[0]
+
+        if len(no_args_matches) > 1:
+            msg = ""
+            for sub in no_args_matches:
+                msg += f"matched function {sub.name.key} in {sub.meta}\n"
+            raise level.core.compiler.CompilerException(f"{msg}ambiguous function call '{key}' in {calling_meta}")
         # if it hasn't found var type match return no var type if exists
-        return sub_var_no_type
+
+        if len(no_args_matches) == 1:
+            return no_args_matches[0]
+
+        return None
 
 
 class Template:
@@ -107,14 +124,16 @@ class Template:
                  compiler,
                  name,
                  var_types,
+                 first_default,
                  var_inits,
                  var_names,
-                 return_type,
+                 return_type : Type,
                  statement_list,
                  meta):
         self.compiler = compiler
         self.name = name
         self.var_types = var_types
+        self.first_default = first_default
         self.var_inits = var_inits
         self.return_type = return_type
         self.statement_list = statement_list
@@ -138,8 +157,9 @@ class Template:
 
         statement.args = args
 
-    def create_subroutine(self, meta, var_types):
-        substitute = self.general_matcher.match(self.var_types, var_types)
+    def create_subroutine(self, meta, var_types, substitute=None):
+        if substitute is None:
+            substitute = self.general_matcher.match(self.var_types, var_types)
 
         if substitute is None:
             raise level.core.compiler.CompilerException(f"can't resolve template {self.name.key} defined in {self.meta} called from {meta}")
@@ -160,16 +180,32 @@ class Template:
 
         address = self.compiler.compile_driver.get_current_address()
 
+
         return Subroutine(
                         compiler=self.compiler,
                         name=self.name,
-                        var_types=var_types,
+
+                        # when there are default parameters in the final positions of arguments they might not take part in arguments query
+                        # but they can never contain type variable
+                        # thus we can easily add the reminder of var types to var_types
+                        var_types=var_types + self.var_types[len(var_types):],
+                        first_default=self.first_default,
                         var_inits=self.var_inits,
                         var_names=self.var_names,
                         address=address,
                         return_type=return_type,
                         statement_list=ast.StatementList(*substituted_statement_list),
                         meta=self.meta)
+
+    def match(self, var_types):
+        if not self.var_types:
+        # we want functions without arguments to be checked at the end if there is no other candidates
+            return None
+
+        if len(var_types) < len(self.var_types[:self.first_default]):
+            return None
+        limit = len(var_types)
+        return self.general_matcher.match(self.var_types[:limit], var_types)
 
 class Templates:
     def __init__(self):
@@ -192,35 +228,27 @@ class Templates:
             return None
 
         matches = []
-        sub_var_no_type = None
         for template in self.templates[key]:
-            if len(template.var_types) >= len(var_types):
-                res = []
-                j = 0
-                for i, T in enumerate(var_types):
-                    j += 1
-                    res.append(template.general_matcher.match(template.var_types[i], T) is not None)
-
-                for k in template.var_inits[j:]:
-                    res.append(k.name is not None)
-
-                if res and len(res) == len(template.var_types) and all(res):
-                    matches.append(template)
-
-            if not template.var_types:
-                sub_var_no_type = template
+            substitute = template.match(var_types)
+            if substitute is not None:
+                matches.append((template, substitute))
 
         if len(matches) > 1:
-            raise level.core.compiler.CompilerException(f"ambiguous function call '{key}' in {calling_meta}")
+            msg = ""
+            for template, _ in matches:
+                msg += f"matched function {template.name.key} in {template.meta}\n"
+            raise level.core.compiler.CompilerException(f"{msg}ambiguous function call '{key}' in {calling_meta}")
 
         if len(matches) == 1:
             return matches[0]
-        # if it hasn't found var type match return no var type if exists
-        return sub_var_no_type
+
+        return None
 
     def get_subroutine(self, calling_meta, key, var_types):
-        template = self.get(calling_meta, key, var_types)
-        if template is None:
-            return None
+        res = self.get(calling_meta, key, var_types)
 
-        return template.create_subroutine(calling_meta, var_types)
+        if res is None:
+            return None
+        template, substitute = res
+
+        return template.create_subroutine(calling_meta, var_types, substitute)

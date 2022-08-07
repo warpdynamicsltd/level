@@ -190,7 +190,8 @@ class Compiler:
         var_names = []
 
         template = False
-        for v in var_list.val.args:
+        first_default = None
+        for i, v in enumerate(var_list.val.args):
             var = ast.MetaVar()
             type_expression = ast.MetaVar()
             const = ast.MetaVar()
@@ -206,6 +207,15 @@ class Compiler:
             if with_type_var:
                 template = True
 
+            if first_default is None and type(const.val) is not ast.ConstVoid:
+                first_default = i
+
+            if type(const.val) is not ast.ConstVoid and with_type_var:
+                raise CompilerException(f"template vars not allowed with default values in {type_expression.val.meta}")
+
+            if first_default is not None and i > first_default and type(const.val) is ast.ConstVoid:
+                raise CompilerException(f"default value required in {var.val.meta}")
+
             var_types.append(T)
             var_inits.append(const.val)
             var_names.append(var.val.name)
@@ -218,10 +228,10 @@ class Compiler:
                                                                 compiler=self,
                                                                 name=name.val,
                                                                 var_types=var_types,
+                                                                first_default=first_default,
                                                                 var_inits=var_inits,
                                                                 var_names=var_names,
                                                                 address=address,
-                                                                #return_type=return_type.val,
                                                                 return_type=return_type_computed,
                                                                 statement_list=statement_list.val,
                                                                 meta=d.meta))
@@ -237,6 +247,7 @@ class Compiler:
                                                                     compiler=self,
                                                                     name=name.val,
                                                                     var_types=var_types,
+                                                                    first_default=first_default,
                                                                     var_inits=var_inits,
                                                                     var_names=var_names,
                                                                     #return_type=return_type.val,
@@ -500,7 +511,7 @@ class Compiler:
         return res
 
     def compile_call_execution(self, method, obj_manager, subroutine, *objs):
-        i = 0
+        i = -1
         first_T = None
         for i, obj in enumerate(objs):
             if (method and i == 0 and obj.type.main_type.__name__ != 'Ref') or (obj.type == first_T):
@@ -518,7 +529,6 @@ class Compiler:
         child_obj_manager = obj_manager.create_child_obj_manager()
         self.compile_driver.call(subroutine.address)
         child_obj_manager.close()
-        # T = self.compile_type_expression(subroutine.return_type)
         T = subroutine.return_type
         obj = obj_manager.reserve_variable(T)
         obj.set_by_acc()

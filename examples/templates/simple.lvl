@@ -16,6 +16,21 @@ sub g(var x as A) as int
   return [z]*f(x, 2);
 }
 
+sub g(var x as A, var y as int, var a = 3.0 as float) as float
+{
+  return x + y + a;
+}
+
+sub h(var x as A, var y = 1 as int, var a = 3.0 as float)
+{
+  return x + y;
+}
+
+sub h(var z as int)
+{
+  echo z;
+}
+
 entry{
   var a as int;
   var z as u32;
@@ -24,4 +39,7 @@ entry{
   echo g(z);
   echo g(a);
   echo f(0xd);
+  echo g(a, a) == 17.0;
+  echo h(3, 4);
+  exec h(12);
 }
