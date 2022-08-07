@@ -60,7 +60,7 @@ test_source([test_path(r"oop/sqbracket.lvl")], b"+00000000:00000002\n+00000000:0
 test_source([test_path(r"templates/simple.lvl")], b"+00000000:00000012\n+00000000:00000012\n00000000:0000000d\n+00000000:00000000\n00000001\n+00000000:00000007\n+00000000:0000000c\n")
 test_source([test_path(r"templates/compound.lvl")], b"+00000000:0000000f\n+00000000:00000001\n00000002\n+00000000:00000013\n+00000000:00000007\n3fff:80000000:00000000\n00000003\n00000003\n00000003\n+00000000:00000004\n")
 
-test_source([test_path(r"types/order.lvl")], b"+00000000:00000007\n")
+test_source([test_path(r"types/order.lvl")], b"+00000000:00000007\n+00000000:0000000c\n")
 
 # ERRORS
 

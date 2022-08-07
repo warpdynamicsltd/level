@@ -1,3 +1,13 @@
+sub f(var a as A)
+{
+  echo a.x;
+}
+
+sub f(var n as int)
+{
+  echo 12;
+}
+
 type A as rec(
   var x as B,
   var y as B
@@ -9,5 +19,6 @@ entry
 {
   var a as A;
   a.x = 7;
-  echo a.x;
+  exec f(a);
+  exec f(1);
 }
