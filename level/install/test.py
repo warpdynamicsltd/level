@@ -1,4 +1,7 @@
 import os
+import time
+
+start = time.time()
 
 import level.tests.addressing_test
 import level.tests.hello_test
@@ -77,4 +80,6 @@ test_source([test_path(r"errors/nesting/nesting3.lvl")], b"", b"test:error : lin
 if to_be_uninstalled:
     os.system(f"level uninstall {test_include_path()}")
 
-print("\nAll tests OK")
+
+print("\nDone in %.2f s" % (time.time() - start))
+print("All tests OK")
