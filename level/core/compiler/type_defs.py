@@ -10,11 +10,39 @@ class TypeDef:
         self.type_def = type_def
         self.T = None
 
+    def substitute_statement(self, statement, substitute):
+        args = []
+        for i in range(len(statement.args)):
+            e = statement.args[i]
+            if type(e) is ast.Type:
+                key = e.name
+
+                v = TypeVar(key)
+                if v in substitute:
+                    s = substitute[v]
+                    if type(s) is TypeVar:
+                        e = ast.Type(substitute[v].name)
+                    else:
+                        e = ast.Type(substitute[v])
+            else:
+                self.substitute_statement(e, substitute)
+            args.append(e)
+
+        statement.args = args
+
     def compile(self, from_subroutine_header, with_type_var, types=[]):
-        if self.T is not None:
+        if not self.type_vars and self.T is not None:
             return self.T
-        #print(self.t.name)
-        T = self.compiler.compile_type_expression(self.type_def, from_subroutine_header=from_subroutine_header, with_type_var=with_type_var)
+
+        substitute = {}
+        for i, t in enumerate(types):
+            substitute[self.type_vars[i]] = t
+
+        type_def = self.type_def.clone()
+
+        self.substitute_statement(type_def, substitute)
+
+        T = self.compiler.compile_type_expression(type_def, from_subroutine_header=from_subroutine_header, with_type_var=with_type_var)
         T.user_name = self.t.name
         self.T = T
         return T

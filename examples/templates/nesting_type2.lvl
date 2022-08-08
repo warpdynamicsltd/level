@@ -1,0 +1,24 @@
+import test:template as T;
+
+entry
+{
+  var c as T:Compose2(float, int);
+  c.a = 1;
+  c.b = 3;
+  exec T:f(c);
+
+  var r as T:Compose1(float);
+  r = ref 3.0;
+  exec T:g(c, r);
+
+  var k as T:Compose2(int, T:Compose1(float));
+  k.a = 3;
+  k.b = r;
+  exec T:h(k, c);
+
+  echo val T:hello(ref k, r);
+  echo T:hello2(ref k, r);
+
+  echo 1.0;
+  echo 3.0;
+}

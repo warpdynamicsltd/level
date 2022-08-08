@@ -161,6 +161,9 @@ class Template:
         if substitute is None:
             substitute = self.general_matcher.match(self.var_types, var_types)
 
+        # print(list(map(str, self.var_types)))
+        # print(list(map(str, var_types)))
+
         if substitute is None:
             raise level.core.compiler.CompilerException(f"can't resolve template {self.name.key} defined in {self.meta} called from {meta}")
 

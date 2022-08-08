@@ -1,0 +1,76 @@
+type Compose1(A) as ref(A);
+
+type Compose2(A, B) as rec(
+  var a as A,
+  var b as B
+)
+
+sub f(var x as Compose2(A, B))
+{
+  var a as A;
+  var b as B;
+  a = x.a;
+  b = x.b;
+  echo x.a;
+  echo x.b;
+}
+
+sub g(var x as Compose2(A, B), var y as Compose1(A)) as Compose2(B, A)
+{
+  var a as A;
+  a = val y;
+  echo a;
+
+  var res as Compose2(B, A);
+  return res;
+}
+
+sub h(var x as Compose2(A, Compose1(B)), var z as Compose2(B, A))
+{
+  var a as A;
+  var r as Compose1(B);
+  r = x.b;
+  echo val r;
+  echo z.b;
+}
+
+sub hello(var z as ref(Compose2(A, B)), var k as B) as B
+{
+  var b as B;
+  b = 7;
+  echo z.a;
+  # return b;
+  return k;
+}
+
+sub hello2(var z as ref(Compose2(A, B)), var k as B) as A
+{
+  var b as B;
+  b = 7;
+  echo z.a;
+  # return b;
+  return z.a;
+}
+
+entry
+{
+  var c as Compose2(float, int);
+  c.a = 1;
+  c.b = 3;
+  exec f(c);
+
+  var r as Compose1(float);
+  r = ref 3.0;
+  exec g(c, r);
+
+  var k as Compose2(int, Compose1(float));
+  k.a = 3;
+  k.b = r;
+  exec h(k, c);
+
+  echo val hello(ref k, r);
+  echo hello2(ref k, r);
+
+  echo 1.0;
+  echo 3.0;
+}

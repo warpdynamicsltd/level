@@ -11,9 +11,7 @@ class Array(Obj):
         self.length = T.length
         self.type = T
         if ptr is None:
-            # print('++', self.type)
-            self.ptr = object_manager.reserve_variable_ptr(self.type.size('@'), for_child_manager)
-            # print(for_child_manager, self.ptr)
+            self.ptr = object_manager.reserve_variable_ptr(self.type.size(), for_child_manager)
         else:
             self.ptr = ptr
         self.referenced = referenced
@@ -37,7 +35,6 @@ class Array(Obj):
         mul_(rcx)
         T = self.type.sub_types[0]
         self.MC_get_from_storage(rcx)
-        #and_(rax, 0xffffffff)
         add_(rcx, rax)
         ref = Ref(object_manager=self.object_manager, T=Type(Ref, sub_types=[T]))
         ref.MC_put_to_storage(rcx)

@@ -10,9 +10,7 @@ class Type:
         self.user_name = user_name
         self.override_size = None
 
-    def size(self, mark=''):
-        # print(mark)
-        # print("**", str(self))
+    def size(self):
         if self.main_type.size is None:
             if self.sub_types:
                 return self.length * sum([t.size() for t in self.sub_types])
@@ -63,6 +61,9 @@ class TypeVar:
             for t in T_exp.sub_types:
                 res.sub_types.append(self.substitute(t, T_val))
             return res
+
+        if type(T_exp) is TypeVar:
+            return T_exp
 
         raise TypeVarException()
 

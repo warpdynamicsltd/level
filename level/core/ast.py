@@ -99,6 +99,9 @@ class Expression(Element):
 class TypeExpression(Element):
     pass
 
+class TypeTemplateExpression(Element):
+    pass
+
 class TypeVoid(TypeExpression):
     def __init__(self):
         Type.__init__(self, None)
@@ -462,10 +465,13 @@ class Floor(UnaryExpression):
 class Ceil(UnaryExpression):
     def __init__(self, a):
         UnaryExpression.__init__(self, 'Ceil', a)
+
+
+
 """
 Type Expressions
 """
-class Type(TypeExpression):
+class Type(TypeExpression, TypeTemplateExpression):
     def __repr__(self):
         return f"Type({self.name})"
 
@@ -486,11 +492,31 @@ class RecType(TypeExpression):
                 raise GrammarTreeError()
         TypeExpression.__init__(self, 'RecType', *type_init_statements)
 
+class TypeFunctorType(TypeExpression):
+    def __init__(self, name, *type_expressions):
+        for e in type_expressions:
+            if not(istype(e, TypeExpression)):
+                raise GrammarTreeError()
+        TypeExpression.__init__(self, name, *type_expressions)
+
+
+
 class AssignType(Statement):
     def __init__(self, t_var, type_expression):
-        if not(istype(t_var, Type) and istype(type_expression, TypeExpression)):
+        if not(istype(t_var, TypeTemplateExpression) and istype(type_expression, TypeExpression)):
             raise GrammarTreeError()
         Statement.__init__(self, 'AssignType', t_var, type_expression)
+
+class TypeTemplate(TypeTemplateExpression):
+    def __init__(self, t_var_name, *t_vars):
+        if not(istype(t_var_name, Type)):
+            raise GrammarTreeError()
+        for t_var in t_vars:
+            if not(istype(t_var, Type)):
+                raise GrammarTreeError()
+
+        TypeTemplateExpression.__init__(self, 'TypeTemplate', t_var_name, *t_vars)
+
 
 class AssignTypeList(Element):
     def __init__(self, *assign_types):

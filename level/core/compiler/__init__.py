@@ -149,14 +149,19 @@ class Compiler:
 
     def compile_types(self, types_block):
         for arg in types_block.args:
-            t_var = ast.MetaVar()
+            template_var = ast.MetaVar()
             type_expression = ast.MetaVar()
-            ast.AssignType(t_var, type_expression) << arg
+            ast.AssignType(template_var, type_expression) << arg
+
+            type_vars = []
+            for v in template_var.val.args[1:]:
+                type_vars.append(TypeVar(v.name))
+
             self.type_defs.add(
                 TypeDef(
                     compiler=self,
-                    t=t_var.val.name,
-                    type_vars=[],
+                    t=template_var.val.args[0].name,
+                    type_vars=type_vars,
                     type_def=type_expression.val))
 
     def compile_def_headers(self, defs):
@@ -167,9 +172,6 @@ class Compiler:
         while self.subroutines.subroutines_stack:
             subroutine = self.subroutines.subroutines_stack.pop()
             subroutine.compile()
-        # for key in self.subroutines.subroutines:
-        #     for subroutine in self.subroutines.subroutines[key]:
-        #         subroutine.compile()
 
     def compile_def_header(self, d):
         """
@@ -578,7 +580,6 @@ class Compiler:
 
     def compile_type_expression(self, s, from_subroutine_header=False, with_type_var=set()):
         if ast.istype(s, ast.Type):
-
             # when subroutine is created from template, unknown types are substituted with internal computed types
             if type(s.name) is Type:
                 return s.name
@@ -618,3 +619,12 @@ class Compiler:
                 names.append((var.val.name, const.val.name))
                 types.append(T)
             return Type(main_type=self.compile_driver.get_rec_type(), sub_types=types, meta_data=names)
+
+        if ast.istype(s, ast.TypeFunctorType):
+            Ts = []
+            for exp in s.args:
+                T = self.compile_type_expression(exp, from_subroutine_header=from_subroutine_header,
+                                             with_type_var=with_type_var)
+                Ts.append(T)
+            return self.type_defs.get_type(from_subroutine_header=from_subroutine_header, with_type_var=with_type_var,
+                                           t=s.name, types=Ts)
