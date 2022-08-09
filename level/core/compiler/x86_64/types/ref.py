@@ -2,6 +2,7 @@ import level
 from level.core.compiler.types import Obj, Type
 from level.core.compiler.x86_64.types.u32 import U32
 from level.core.compiler.x86_64.types.byte import Byte
+from level.core.compiler.x86_64.types.byte import Bool
 from level.core.x86_64 import *
 from level.core.parser.builtin import BuiltinValue
 
@@ -96,6 +97,24 @@ class Ref(Obj):
         ref.MC_put_to_storage(rcx)
         obj = T.main_type(self.object_manager, ptr=ref.ptr, T=T, referenced=True)
         return obj
+
+    def __eq__(self, other):
+        res = Bool(self.object_manager, value=None)
+        self.MC_get_from_storage(rax)
+        other.MC_get_from_storage(rcx)
+        xor_(rax, rcx)
+        setz_(al)
+        res.MC_put_to_storage(al)
+        return res
+
+    def __ne__(self, other):
+        res = Bool(self.object_manager, value=None)
+        self.MC_get_from_storage(rax)
+        other.MC_get_from_storage(rcx)
+        xor_(rax, rcx)
+        setnz_(al)
+        res.MC_put_to_storage(al)
+        return res
 
     def cast(self, T):
         res = self.object_manager.reserve_variable(T)
