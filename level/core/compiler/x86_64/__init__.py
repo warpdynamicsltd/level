@@ -140,7 +140,11 @@ class CompileDriver_x86_64(CompileDriver):
     def deref(self, ref):
         return ref.get_obj()
 
-    def unary_operator(self, op_T, obj):
+    def get_typeid(self, obj_manager, obj):
+        res = obj_manager.reserve_variable(Type(U64), hash(obj.type))
+        return res
+
+    def unary_operator(self, op_T, obj, obj_manager):
         if op_T is ast.Plus:
             return +obj
 
@@ -176,6 +180,9 @@ class CompileDriver_x86_64(CompileDriver):
 
         if op_T is ast.Ceil:
             return obj.ceil()
+
+        if op_T is ast.TypeId:
+            return self.get_typeid(obj_manager, obj)
 
         raise CompilerException("unexpected operator")
 

@@ -358,6 +358,9 @@ class Dec(Statement):
 """
     Expressions
 """
+class TypeId(UnaryExpression):
+    def __init__(self, a):
+        CompoundExpression.__init__(self, 'TypeId', a)
 
 
 class Minus(UnaryExpression):
@@ -465,6 +468,7 @@ class Floor(UnaryExpression):
 class Ceil(UnaryExpression):
     def __init__(self, a):
         UnaryExpression.__init__(self, 'Ceil', a)
+
 
 
 

@@ -24,7 +24,10 @@ class Type:
         return f"Type(main_type={self.main_type.__name__}, length={self.length}, sub_types={[str(t) for t in self.sub_types]}, meta_data={meta_data_repr}, user_name={self.user_name})"
 
     def __eq__(self, other):
-        return str(self) == str(other)
+        return hash(self) == hash(other)
+
+    def __hash__(self):
+        return hash((hash(self.main_type.__name__), self.length, hash(tuple(hash(t) for t in self.sub_types)), hash(self.user_name)))
 
     def substitute(self, a, T):
         pass

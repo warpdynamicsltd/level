@@ -513,7 +513,7 @@ class Compiler:
             return self.compile_call_execution(True, obj_manager, subroutine, obj)
 
 
-        res = self.compile_driver.unary_operator(op_T, obj)
+        res = self.compile_driver.unary_operator(op_T, obj, obj_manager)
         return res
 
     def compile_call_execution(self, method, obj_manager, subroutine, *objs):
