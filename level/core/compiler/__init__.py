@@ -114,8 +114,6 @@ class Compiler:
         self.subroutines = Subroutines()
         self.templates = Templates()
         self.type_defs = TypeDefs()
-        self.subroutines_route_map = {}
-        self.templates_route_map = {}
         self.main_program = False
         self.memory = memory
 
@@ -160,7 +158,7 @@ class Compiler:
             self.type_defs.add(
                 TypeDef(
                     compiler=self,
-                    t=template_var.val.args[0].name,
+                    t=template_var.val.args[0],
                     type_vars=type_vars,
                     type_def=type_expression.val))
 
@@ -185,8 +183,7 @@ class Compiler:
 
         return_type_computed = self.compile_type_expression(return_type.val, from_subroutine_header=True)
 
-        fun_name = name.val.key
-        alternative_fun_name = name.val.name
+        fun_name = name.val
 
         address = self.compile_driver.get_current_address()
 
@@ -241,8 +238,6 @@ class Compiler:
                                                                 statement_list=statement_list.val,
                                                                 meta=d.meta))
 
-            self.subroutines_route_map[alternative_fun_name] = fun_name
-
             return subroutine
         else:
             if self.templates.exists(fun_name, var_types):
@@ -260,8 +255,6 @@ class Compiler:
                                                                     statement_list=statement_list.val,
                                                                     meta=d.meta))
 
-            self.subroutines_route_map[alternative_fun_name] = fun_name
-
             return template
 
     def compile_statements(self, statements, obj_manager):
@@ -269,7 +262,6 @@ class Compiler:
             self.compile_statement(s, obj_manager)
 
     def compile_statement(self, s, obj_manager):
-        #print(type(s))
         if ast.istype(s, ast.Init):
             var = ast.MetaVar()
             ast.Init(var) << s
@@ -411,7 +403,8 @@ class Compiler:
     def compile_expression(self, exp, obj_manager):
         if ast.istype(exp, ast.Call):
             if ast.istype(exp.args[0], ast.Var):
-                return self.compile_call(ast.SubroutineCall(exp.calling_name.name, *exp.args[1:]).add_meta(exp.meta), obj_manager)
+                return self.compile_call(ast.SubroutineCall(exp.calling_name, *exp.args[1:]).add_meta(exp.meta),
+                                         obj_manager)
 
             if ast.istype(exp.args[0], ast.ValueAtName):
                 expression = ast.MetaVar()
@@ -561,16 +554,11 @@ class Compiler:
         return sub
 
     def compile_call(self, sub, obj_manager, method=False):
-        if sub.name not in self.subroutines_route_map:
-            raise CompilerException(f"can't resolve subroutine name '{sub.name}' in {sub.meta}")
-
-        fun_key = self.subroutines_route_map[sub.name]
-
         objs = []
         for i, exp in enumerate(sub.args):
             objs.append(self.compile_expression(exp, obj_manager))
 
-        subroutine = self.get_defined_for_call(method, sub.meta, fun_key, *objs)
+        subroutine = self.get_defined_for_call(method, sub.meta, sub.name, *objs)
 
         if subroutine is None:
             raise CompilerException(f"can't resolve subroutine name '{sub.name}' in {sub.meta}")
@@ -627,4 +615,4 @@ class Compiler:
                                              with_type_var=with_type_var)
                 Ts.append(T)
             return self.type_defs.get_type(from_subroutine_header=from_subroutine_header, with_type_var=with_type_var,
-                                           t=s.name, types=Ts)
+                                           t=s, types=Ts)

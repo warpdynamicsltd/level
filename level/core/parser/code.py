@@ -17,6 +17,9 @@ class CallingName:
         self.key = key
         self.name = name
 
+    def __repr__(self):
+        return f"CallingName({self.key}, {self.name})"
+
 class MetaParserInfo:
     def __init__(self, n_line, n_char, lead=None, module_name=None):
         # print(lead)
@@ -638,19 +641,9 @@ class Parser:
     def build_calling_name(self, term):
         lead = term.meta.lead
         if lead is None:
-            res = CallingName(key=term.visual(), name=term.visual())
+            return term.visual()
         else:
-            if lead.name is None:
-                alternative_name = lead.key + ':' + term.visual()
-            else:
-                if lead.name == '*':
-                    alternative_name = term.visual()
-                else:
-                    alternative_name = lead.name + ':' + term.visual()
-
-            res = CallingName(key=lead.name + ":" + term.visual(), name=alternative_name)
-
-        return res
+            return lead.name + ":" + term.visual()
 
     def parse_type_expression(self, stream):
         # print(stream)
@@ -663,7 +656,7 @@ class Parser:
                 if key in builtin.translate_simple_types:
                     return ast.Type(stream.visual()).add_meta(stream.meta)
                 else:
-                    return ast.Type(self.build_calling_name(stream).name).add_meta(stream.meta)
+                    return ast.Type(self.build_calling_name(stream)).add_meta(stream.meta)
 
         if type(stream) is BracketSymb or type(stream) is ArgSymb:
             return self.parse_type_expression(stream.value)
@@ -903,7 +896,7 @@ class Parser:
                     for arg in args:
                         if type(arg.arg) is not TerminalSymb:
                             raise ParseException(f"template variable expected in {arg.meta}")
-                        var_name = self.build_calling_name(arg.arg).name
+                        var_name = self.build_calling_name(arg.arg)
                         var_types.append(var_type(var_name).add_meta(arg.arg.meta))
                     type_index = 4
                 else:
@@ -1087,13 +1080,10 @@ class Parser:
             if not method:
                 func_name = self.build_calling_name(stream[0])
             else:
-                direct_fun_name = stream[0].visual()
-                func_name = level.core.parser.linker.Lead(direct_fun_name, direct_fun_name)
+                func_name = stream[0].visual()
         else:
             if stream and type(stream[0]) is BracketSymb and stream[0].opening == '[':
-                # print(stream[0])
-                direct_fun_name = '[]'
-                func_name = level.core.parser.linker.Lead(direct_fun_name, direct_fun_name)
+                func_name = '[]'
             else:
                 raise ParseException(f"badly formed function definition in {stream[0].meta}")
 

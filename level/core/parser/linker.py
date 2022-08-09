@@ -13,6 +13,9 @@ class Lead:
         self.key = key
         self.name = name
 
+    def __repr__(self):
+        return f"Lead({self.key}, {self.name})"
+
 class Linker:
     def __init__(self):
         self.chars = []
@@ -73,7 +76,6 @@ class Linker:
                         else:
                             if module_lead.name == '*':
                                 child_lead = None
-                                #child_lead = Lead(key=module_lead.key, name=0)
                             else:
                                 child_lead = Lead(key=module_lead.key, name=module_lead.name)
                     else:

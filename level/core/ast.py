@@ -64,8 +64,8 @@ class Element:
         self.meta = meta
         return self
 
-    def add_calling_name(self, lead):
-        self.calling_name = lead
+    def add_calling_name(self, calling_name):
+        self.calling_name = calling_name
         return self
 
     def add_raw_str(self, raw_str):

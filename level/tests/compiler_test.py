@@ -9,7 +9,7 @@ x = Var('x')
 y = Var('y')
 z = Var('z')
 
-subroutine_def = SubroutineDef(SimpleNamespace(key='f', name='f'),
+subroutine_def = SubroutineDef('f',
                                VarList(InitWithType(x, Type('u32'), ConstVoid())),
                                StatementList(
                                    Init(y),
@@ -24,8 +24,8 @@ statement_list = StatementList(
     Assign(x, Const(0x3)),
     Assign(z, Const(0x4)),
     Init(y),
-    Assign(y, Call(Var('f'), x).add_calling_name(Lead('f', 'f'))),
-    Echo(Call(Var('f'), z).add_calling_name(Lead('f', 'f'))),
+    Assign(y, Call(Var('f'), x).add_calling_name('f')),
+    Echo(Call(Var('f'), z).add_calling_name('f')),
     Echo(x),
     Return(Const(1)))
 
