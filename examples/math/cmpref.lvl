@@ -1,0 +1,15 @@
+import test:obj_template as T;
+
+entry{
+  var a as float;
+  var b as float;
+
+  var r1 as ref(float);
+  var r2 as ref(float);
+
+  r1 = ref a;
+  r2 = ref a;
+  echo r1 == r2;
+  r2 = ref b;
+  echo r1 != r2;
+}

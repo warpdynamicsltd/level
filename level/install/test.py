@@ -37,6 +37,7 @@ test_source([test_path(r"nesting/nesting7.lvl")], b"+00000000:00000003\n+0000000
 test_source([test_path(r"nesting/nesting8.lvl")], b"+00000000:00000003\n+00000000:00000004\n")
 test_source([test_path(r"nesting/nesting9.lvl")], b"+00000000:00000003\n+00000000:00000004\n")
 test_source([test_path(r"sub/calling.lvl")],  b"00000002\n00000003\n00000001\n00000001\n+00000000:00000005\n+00000000:00000004\n+00000000:00000006\nno-type\n+00000000:00000008\n+00000000:00000003\n")
+test_source([test_path(r"math/cmpref.lvl")], b"00000001\n00000001\n")
 test_source([test_path(r"math/cmpu64.lvl")], b"00000001\n")
 test_source([test_path(r"math/cmpu32.lvl")], b"00000001\n")
 test_source([test_path(r"math/cmpi64.lvl")], b"00000001\n")
@@ -52,6 +53,7 @@ test_source([test_path(r"math/eqfloat.lvl")], b"3fff:800053e2:d6238da4\n3fff:800
 test_source([test_path(r"math/floorceil.lvl")],  b"3fff:800053e2:d6238da4\n3fff:80000863:7bd05af7\n00000001\n+00000000:00000014\n00000001\n")
 test_source([test_path(r"math/floorceil2.lvl")],  b"+00000000:00000001\n+00000000:00000001\n+00000000:00000007\n+00000000:00000007\n-00000000:00000002\n-00000000:00000002\n+00000000:00000001\n+00000000:00000001\n")
 test_source([test_path(r"math/i64tofloat.lvl")], b'+00000000:00000001\n-00000000:00000001\n')
+
 
 test_source([test_path(r"alloc.lvl")], b"07\n09\n")
 test_source([test_path(r"sbrk.lvl")], b"00000001\n00000001\n00000000:0000000a\n")
