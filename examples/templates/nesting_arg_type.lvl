@@ -1,0 +1,17 @@
+import test:obj_template as *;
+
+entry{
+  echo f(int, 2, u32);
+  echo f(int, 2.0, real) == 6.0;
+
+  var p as point(real, real);
+
+  var a as real;
+  var b as real;
+  a = 1.0;
+  b = 1.0;
+
+  p = new(point(real, real), a, b);
+  exec p.transform(int);
+  echo p.x == 2.0;
+}

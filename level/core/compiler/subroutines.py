@@ -48,7 +48,8 @@ class Subroutine:
         self.compiler.compile_driver.set_call_address(self.address)
 
         for i, name in enumerate(self.var_names):
-            obj_manager.reserve_variable_by_name(self.var_types[i], name)
+            if name is not None:
+                obj_manager.reserve_variable_by_name(self.var_types[i], name)
 
         for s in self.statement_list.args:
             self.compiler.compile_statement(s, obj_manager)
@@ -160,9 +161,6 @@ class Template:
     def create_subroutine(self, meta, var_types, substitute=None):
         if substitute is None:
             substitute = self.general_matcher.match(self.var_types, var_types)
-
-        # print(list(map(str, self.var_types)))
-        # print(list(map(str, var_types)))
 
         if substitute is None:
             raise level.core.compiler.CompilerException(f"can't resolve template {self.name.key} defined in {self.meta} called from {meta}")

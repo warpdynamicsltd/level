@@ -174,7 +174,7 @@ class DefBlock(Element):
 class VarList(Element):
     def __init__(self, *vars):
         for v in vars:
-            if not istype(v, InitWithType):
+            if not (istype(v, InitWithType) or istype(v, TypeExpression)):
                 raise GrammarTreeError()
 
         Element.__init__(self, 'VarList', *vars)
@@ -188,7 +188,7 @@ class SubroutineDef(Element):
 class SubroutineCall(Expression):
     def __init__(self, name, *expressions):
         for e in expressions:
-            if not istype(e, Expression):
+            if not (istype(e, Expression) or istype(e, TypeExpression)):
                 raise GrammarTreeError()
         Element.__init__(self, name, *expressions)
 
@@ -197,7 +197,7 @@ class Call(Expression):
         if not istype(expression, Expression):
             raise GrammarTreeError()
         for e in expressions:
-            if not istype(e, Expression):
+            if not (istype(e, Expression) or istype(e, TypeExpression)):
                 raise GrammarTreeError()
         Element.__init__(self, 'Call', expression, *expressions)
 
@@ -215,7 +215,7 @@ class ValueAt(Expression):
             raise GrammarTreeError()
         for e in expressions:
             if not istype(e, Expression):
-                raise  GrammarTreeError
+                raise  GrammarTreeError()
         Expression.__init__(self, 'ValueAt', expression, *expressions)
 
 class ValueAtName(Expression):

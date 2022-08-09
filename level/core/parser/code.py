@@ -588,7 +588,7 @@ class Parser:
         args = self.parse_list(stream[-1].value, ',')
         expressions = []
         for arg in args:
-            exp = self.parse_expression(arg.value)
+            exp = self.parse_type_expression_or_expression(arg.value)
             exp.meta = arg.meta
             expressions.append(exp)
 
@@ -670,6 +670,32 @@ class Parser:
             return res
 
         raise ParseException(f"badly formed type expression in {meta(stream)}")
+
+    def parse_type_expression_or_expression(self, stream):
+        try:
+            return self.parse_expression(stream)
+        except ParseException:
+            pass
+
+        try:
+            return self.parse_type_expression(stream)
+        except ParseException:
+            pass
+
+        raise ParseException(f"either type or expression expected in {meta(stream)}")
+
+    def parse_type_expression_or_var_statement(self, stream):
+        try:
+            return self.parse_var_statement(stream)
+        except ParseException:
+            pass
+
+        try:
+            return self.parse_type_expression(stream)
+        except ParseException:
+            pass
+
+        raise ParseException(f"either var statement or type expected in {meta(stream)}")
 
     def parse_type_function(self, stream):
         if not(type(stream) is list and stream):
@@ -770,20 +796,18 @@ class Parser:
 
         if type(stream) is TerminalSymb:
             if self.is_var_token(stream):
-                return ast.Var(stream.visual()).add_meta(stream.meta).add_term(stream)
+                calling_name = self.build_calling_name(stream)
+                return ast.Var(stream.visual()).add_meta(stream.meta).add_term(stream).add_calling_name(calling_name)
 
         if type(stream) is BracketSymb or type(stream) is ArgSymb:
 
             if type(stream) is BracketSymb and stream.opening == '{':
-                # print(stream)
                 return ast.Ref(self.parse_expression(stream.value)).add_meta(stream.meta)
 
             if type(stream) is BracketSymb and stream.opening == '[':
-                # print(stream)
                 return ast.Val(self.parse_expression(stream.value)).add_meta(stream.meta)
 
             if not stream.value:
-                # print(type(stream))
                 raise ParseException(f"expected expression in {meta(stream)}")
 
             return self.parse_expression(stream.value)
@@ -935,10 +959,12 @@ class Parser:
                         exp_type = self.parse_type_expression(stream[type_expression_index:])
                     else:
                         raise ParseException(f"expected type expression in {meta(stream)}")
-                    return ast.InitWithType(ast.Var(stream[1].visual()).add_meta(stream[1].meta), exp_type, const).add_meta(stream[0].meta)
+                    return ast.InitWithType(ast.Var(stream[1].visual()).add_meta(stream[1].meta).add_calling_name(stream[1])
+                                            , exp_type, const).add_meta(stream[0].meta)
                 else:
                     if len(stream) == as_index:
-                        return ast.InitWithType(ast.Var(stream[1].visual()).add_meta(stream[1].meta), ast.TypeVoid(), const).add_meta(stream[0].meta)
+                        return ast.InitWithType(ast.Var(stream[1].visual()).add_meta(stream[1].meta).add_calling_name(stream[1])
+                                                , ast.TypeVoid(), const).add_meta(stream[0].meta)
                     else:
                         raise ParseException(f"badly formed type in 'var' statement in {stream[-1].meta}")
             else:
@@ -976,7 +1002,7 @@ class Parser:
                 var_name = stream[0].visual()
                 exp = self.parse_expression(stream[2:limit])
                 exp.meta = stream[1].meta
-                return limit, ast.Identify(ast.Var(var_name).add_meta(stream[2].meta), exp).add_meta(stream[0].meta)
+                return limit, ast.Identify(ast.Var(var_name).add_meta(stream[2].meta).add_calling_name(stream[0]), exp).add_meta(stream[0].meta)
 
         if limit is not None:
             for op in builtin.statement_operators:
@@ -1092,7 +1118,7 @@ class Parser:
             args = self.parse_list(stream[1].value, ',')
             variables = []
             for arg in args:
-                variables.append(self.parse_var_statement(arg.value))
+                variables.append(self.parse_type_expression_or_var_statement(arg.value))
 
         if len(stream) > type_index and stream[type_index:code_bracket_index]:
             return_type = self.parse_type_expression(stream[type_index:code_bracket_index])

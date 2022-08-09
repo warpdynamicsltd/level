@@ -1,0 +1,38 @@
+type real as float;
+
+sub f(A, var b as B, C) as B
+{
+  var x as A;
+  var c as C;
+  x = 3;
+  c = 1;
+  return x + b + c;
+}
+
+type point(A, B) as rec(
+  var x as A,
+  var y as B
+)
+
+sub new(point(A, B), var x as A, var y as B) as point(A, B)
+{
+  var this as point(A, B);
+  this.x = x;
+  this.y = y;
+
+  return this;
+}
+
+sub new(point(A, B), var x as A, var x as B) as point(A, B)
+{
+  var this as point(A, B);
+  return this;
+}
+
+
+method transform(var this as ref(point(C, D)), A){
+  var k as A;
+  k = 1;
+  this.x = this.x + k;
+  this.y = this.y + k;
+}
