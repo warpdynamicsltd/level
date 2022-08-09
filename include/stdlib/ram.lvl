@@ -1,0 +1,5 @@
+sub alloc_blocks(var n as int) as ref(byte)
+{
+  res = __api__(syscall, 9, 0, 4096*n, 7, 32 + 2, -1, 0);
+  return res;
+}

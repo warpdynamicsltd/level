@@ -74,6 +74,8 @@ test_source([test_path(r"templates/nesting_arg_type.lvl")], b"+00000000:00000006
 test_source([test_path(r"templates/nesting_arg_type2.lvl")], b"+00000000:00000006\n00000001\n00000001\n")
 
 test_source([test_path(r"types/order.lvl")], b"+00000000:00000007\n+00000000:0000000c\n")
+test_source([test_path(r"collections/stack64_test.lvl")], b"00000001\n00000001\n")
+
 
 # ERRORS
 

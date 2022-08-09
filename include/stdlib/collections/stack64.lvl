@@ -1,0 +1,73 @@
+import stdlib:ram;
+
+type stack64 as rec(
+  var index as int,
+  var start as ref(u64),
+  var current_block as ref(u64)
+);
+
+sub new(stack64) as stack64
+{
+  var this as stack64;
+  this.current_block = stdlib:ram:alloc_blocks(1);
+  this.start = this.current_block;
+  this.current_block[0] = 0;
+  this.current_block[511] = 0;
+  this.index = 1;
+  return this;
+}
+
+method push(var this as ref(stack64), var v as u64)
+{
+  if (this.index < 511)
+  {
+    this.current_block[this.index] = v;
+    inc this.index;
+    return;
+  }
+  if (this.index == 511)
+  {
+    var current_block as ref(u64);
+    if (this.current_block[this.index] == 0)
+    {
+      current_block = stdlib:ram:alloc_blocks(1);
+      this.current_block[this.index] = current_block;
+      current_block[0] = this.current_block;
+    }
+    else
+    {
+      current_block = this.current_block[this.index];
+    }
+
+
+    this.current_block = current_block;
+    this.index = 1;
+    return;
+  }
+}
+
+method pop(var this as ref(stack64)) as u64
+{
+  var res as u64;
+  if (this.index > 1)
+  {
+    dec this.index;
+    res = this.current_block[this.index];
+    return res;
+  }
+
+  if (this.index == 1)
+  {
+    if (this.current_block[0] == 0)
+    {
+      return 0;
+    }
+    else
+    {
+      res = this.current_block[1];
+      this.current_block = this.current_block[0];
+      this.index = 511;
+      return res;
+    }
+  }
+}

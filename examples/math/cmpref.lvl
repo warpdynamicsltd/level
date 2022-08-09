@@ -1,5 +1,3 @@
-import test:obj_template as T;
-
 entry{
   var a as float;
   var b as float;
