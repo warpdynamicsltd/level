@@ -24,7 +24,7 @@ especially files with Level code in [examples](examples) (for expected results s
 which allows only non-commercial use of Level for private persons. At this phase the project also 
 does not seek community contributions, hence very restrictive contributions section D of the Level Licence.
 Please read very carefully section D of the Level Licence before you attempt to contribute to the project.
-After the project will become more mature the proper licence will be worked out.
+After the project will become more mature a proper licence will be worked out.
  
 ### Short Usage Guide
 
