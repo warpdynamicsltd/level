@@ -2,7 +2,7 @@ from level.core.compiler.types import Obj, Type
 from level.core.compiler.x86_64.types.u32 import U32
 from level.core.compiler.x86_64.types.ref import Ref
 from level.core.x86_64 import *
-from level.core.compiler import CompilerException
+from level.core.compiler import CompilerNotLocatedException
 class Rec(Obj):
     size = None
     def __init__(self, object_manager, T, ptr=None, for_child_manager=False, value=None, referenced=False):
@@ -69,7 +69,7 @@ class Rec(Obj):
             dec_(ecx)
             jnz_(loop)
         else:
-            raise CompilerException(f"no cast from {obj.type} to {self.type}")
+            raise CompilerNotLocatedException(f"no cast from {obj.type} to {self.type}")
 
     def to_acc(self):
         self.MC_get_from_storage(r15)

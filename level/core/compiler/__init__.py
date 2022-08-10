@@ -13,6 +13,8 @@ from level.core.parser.builtin import translate_simple_types
 class CompilerException(Exception):
     pass
 
+class CompilerNotLocatedException(Exception):
+    pass
 
 class CompileDriver(ABC):
     @abstractmethod
@@ -119,6 +121,11 @@ class Compiler:
         self.main_program = False
         self.memory = memory
 
+        self.meta = None
+
+    def update_meta(self, exp):
+        self.meta = exp.meta
+
     def compile(self):
         self.compile_driver.begin()
 
@@ -149,6 +156,7 @@ class Compiler:
 
     def compile_types(self, types_block):
         for arg in types_block.args:
+            self.update_meta(arg)
             template_var = ast.MetaVar()
             type_expression = ast.MetaVar()
             ast.AssignType(template_var, type_expression) << arg
@@ -174,6 +182,7 @@ class Compiler:
             subroutine.compile()
 
     def compile_def_header(self, d):
+        self.update_meta(d)
         """
         This function doesn't generate any machine code
         """
@@ -197,6 +206,7 @@ class Compiler:
         template = False
         first_default = None
         for i, v in enumerate(var_list.val.args):
+            self.update_meta(v)
             var = ast.MetaVar()
             type_expression = ast.MetaVar()
             const = ast.MetaVar()
@@ -282,6 +292,8 @@ class Compiler:
             raise CompilerException(f"global name '{name}' can't be used as variable name in {var_exp.meta}")
 
     def compile_statement(self, s, obj_manager):
+        self.update_meta(s)
+
         if ast.istype(s, ast.Init):
             var = ast.MetaVar()
             ast.Init(var) << s
@@ -435,6 +447,8 @@ class Compiler:
         return obj(*objs)
 
     def compile_expression(self, exp, obj_manager):
+        self.update_meta(exp)
+
         if ast.istype(exp, ast.Call):
             if ast.istype(exp.args[0], ast.Var):
                 name = exp.calling_name
@@ -611,6 +625,8 @@ class Compiler:
         return sub
 
     def compile_call(self, sub, obj_manager, method=False):
+        self.update_meta(sub)
+
         objs = []
         for i, exp in enumerate(sub.args):
             if ast.istype(exp, ast.Expression):
@@ -628,6 +644,8 @@ class Compiler:
 
 
     def compile_type_expression(self, s, from_subroutine_header=False, with_type_var=set()):
+        self.update_meta(s)
+
         if ast.istype(s, ast.Type):
             # when subroutine is created from template, unknown types are substituted with internal computed types
             if type(s.name) is Type:

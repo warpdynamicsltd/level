@@ -203,7 +203,7 @@ class CompileDriver_x86_64(CompileDriver):
         if op_T is ast.SizeOf:
             return self.get_sizeof(obj_manager, obj)
 
-        raise CompilerException("unexpected operator")
+        raise CompilerNotLocatedException("unexpected operator")
 
     def unify(self, obj1, obj2):
         # print(obj1, obj2)
@@ -276,7 +276,7 @@ class CompileDriver_x86_64(CompileDriver):
             res = obj1 << obj2
 
         if res is None:
-            raise CompilerException("unexpected operator")
+            raise CompilerNotLocatedException("unexpected operator")
         else:
             return res
 

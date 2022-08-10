@@ -2,7 +2,7 @@ from level.core.compiler.types import Obj, Type
 import level.core.compiler.x86_64.types.i64
 from level.core.compiler.x86_64.types.bool import Bool
 from level.core.x86_64 import *
-from level.core.compiler import CompilerException
+from level.core.compiler import CompilerNotLocatedException
 from level.core.parser.builtin import BuiltinFloat
 from level.mathtools.float import float80
 import level.core.ast as ast
@@ -256,7 +256,7 @@ class Float(Obj):
             fstpt_([rdi])
             return
 
-        raise CompilerException(f"no cast from {T} to float")
+        raise CompilerNotLocatedException(f"no cast from {T} to float")
 
     def set(self, v):
         self.MC_get_from_storage(rdi)

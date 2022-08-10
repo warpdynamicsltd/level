@@ -127,11 +127,14 @@ def do_test(args):
     import level.install.test
 
 def do_cmp(args):
+    sys.exit(do_cmp_(args))
+
+def do_cmp_(args):
     stop_if_no_setup()
 
     if not os.path.isfile(args.source[0]):
         sys.stderr.write(f"path '{args.source[0]}' doesn't exist\n")
-        return
+        return 1
 
     with open(args.source[0], "rb", buffering=100000) as f:
         code = str(f.read(), encoding='utf-8')
@@ -141,15 +144,15 @@ def do_cmp(args):
             except LinkerException as e:
                 sys.stderr.write(str(e))
                 sys.stderr.write('\n')
-                return
+                return 1
             except ParseException as e:
                 sys.stderr.write(str(e))
                 sys.stderr.write('\n')
-                return
+                return 1
             except Exception as e:
                 sys.stderr.write("unrecognised parser error")
                 sys.stderr.write('\n')
-                return
+                return 1
         else:
             program = Parser(code).parse()
 
@@ -160,18 +163,30 @@ def do_cmp(args):
             except CompilerException as e:
                 sys.stderr.write(str(e))
                 sys.stderr.write('\n')
-                return
+                return 1
+            except CompilerNotLocatedException as e:
+                sys.stderr.write(str(e))
+                sys.stderr.write(f": compiler error in {comp.meta}")
+                sys.stderr.write('\n')
+                return 1
             except GrammarTreeError as e:
                 sys.stderr.write(str(e))
+                sys.stderr.write(f": compiler error in {comp.meta}")
                 sys.stderr.write('\n')
-                return
+                return 1
             except Exception as e:
-                sys.stderr.write("unrecognised compiler error")
+                sys.stderr.write(str(e))
+                sys.stderr.write(f": unrecognised compiler error in {comp.meta}")
                 sys.stderr.write('\n')
-                return
+                return 1
         else:
-            comp = Compiler(program, StandardObjManager, CompileDriver_x86_64)
-            comp.compile()
+            try:
+                comp = Compiler(program, StandardObjManager, CompileDriver_x86_64)
+                comp.compile()
+            except Exception as e:
+                sys.stderr.write(f"compiler error in {comp.meta}\n")
+                sys.stderr.write('\n')
+                raise e
 
         if args.out is None:
             filename = Path(args.source[0]).stem
@@ -183,9 +198,9 @@ def do_cmp(args):
                 try:
                     cmp(filename)
                 except Exception as e:
-                    sys.stderr.write("unrecognised compile time error")
+                    sys.stderr.write("unrecognised error")
                     sys.stderr.write('\n')
-                    return
+                    return 1
             else:
                 cmp(filename)
 
@@ -196,9 +211,11 @@ def do_cmp(args):
                 except Exception as e:
                     sys.stderr.write("unrecognised compile time error")
                     sys.stderr.write('\n')
-                    return
+                    return 1
             else:
                 run_listen(*args.source[1:])
+
+    return 0
 
 def main():
     args = get_args()
