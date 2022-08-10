@@ -98,6 +98,9 @@ class CompileDriver_x86_64(CompileDriver):
     def get_array_type_by_const(self, c):
         return Type(main_type=Array, length=c.name, sub_types=[Type(U32)])
 
+    def get_ref_type_for_type(self, T):
+        return Type(Ref, sub_types=[T])
+
     def get_ref_type_for_obj(self, obj=None):
         if obj is None:
             return Type(Ref, sub_types=[Type(Byte)])
@@ -141,7 +144,17 @@ class CompileDriver_x86_64(CompileDriver):
         return ref.get_obj()
 
     def get_typeid(self, obj_manager, obj):
-        res = obj_manager.reserve_variable(Type(U64), hash(obj.type))
+        if type(obj) is Type:
+            res = obj_manager.reserve_variable(Type(U64), hash(obj))
+        else:
+            res = obj_manager.reserve_variable(Type(U64), hash(obj.type))
+        return res
+
+    def get_sizeof(self, obj_manager, obj):
+        if type(obj) is Type:
+            res = obj_manager.reserve_variable(Type(I64), obj.size())
+        else:
+            res = obj_manager.reserve_variable(Type(I64), obj.type.size())
         return res
 
     def unary_operator(self, op_T, obj, obj_manager):
@@ -186,6 +199,9 @@ class CompileDriver_x86_64(CompileDriver):
 
         if op_T is ast.TypeId:
             return self.get_typeid(obj_manager, obj)
+
+        if op_T is ast.SizeOf:
+            return self.get_sizeof(obj_manager, obj)
 
         raise CompilerException("unexpected operator")
 

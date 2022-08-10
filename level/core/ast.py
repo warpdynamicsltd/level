@@ -362,6 +362,10 @@ class TypeId(UnaryExpression):
     def __init__(self, a):
         CompoundExpression.__init__(self, 'TypeId', a)
 
+class SizeOf(UnaryExpression):
+    def __init__(self, a):
+        CompoundExpression.__init__(self, 'SizeOf', a)
+
 
 class Minus(UnaryExpression):
     def __init__(self, a):
@@ -504,7 +508,7 @@ class Type(TypeExpression, TypeTemplateExpression):
 
 class ArrayType(TypeExpression):
     def __init__(self, t, c):
-        if not(istype(t, TypeExpression) and istype(c, Const)):
+        if not((istype(t, TypeExpression) or istype(t, Expression)) and istype(c, Const)):
             raise GrammarTreeError()
         TypeExpression.__init__(self, 'ArrayType', t, c)
 
