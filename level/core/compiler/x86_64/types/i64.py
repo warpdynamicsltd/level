@@ -9,7 +9,7 @@ from level.core.compiler.x86_64.types.byte import Byte
 from level.core.compiler.x86_64.types.bool import Bool
 import level.core.compiler.x86_64.types.float
 from level.core.x86_64 import *
-from level.core.compiler import CompilerException
+from level.core.compiler import CompilerNotLocatedException
 
 class I64(Obj):
     size = 8
@@ -367,7 +367,7 @@ class I64(Obj):
         if T.main_type in {Byte, U64, I64, Ref, Bool}:
             self.MC_put_to_storage(rax)
         else:
-            raise CompilerException(f"no cast from {T} to int")
+            raise CompilerNotLocatedException(f"no cast from {T} to int")
 
     def set(self, v):
         v.MC_get_from_storage(rax)

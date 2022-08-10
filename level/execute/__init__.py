@@ -26,7 +26,6 @@ def run_listen(*args):
     process = subprocess.run([tmp_f.name, *args],
                                stdout=sys.stdout,
                                stderr=sys.stderr)
-    #stdout, stderr = process.communicate()
     os.remove(tmp_f.name)
 
 
@@ -40,7 +39,6 @@ def cmp(filename):
                 text_offset=begin.offset,
                 entry=begin.entry,
                 n_segments=begin.n_segments,
-                #segment_size=begin.segment_size)
                 segment_size = 0x1000 + len(machine_code))
 
     with open(filename, 'wb', buffering=0x100000) as fout:
