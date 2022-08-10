@@ -193,9 +193,9 @@ class CompileDriver_x86_64(CompileDriver):
             return obj1, obj2
 
         if obj2.priority > obj1.priority:
-            return obj1.cast(obj2.type), obj2
+            return obj2.type(obj1), obj2
         else:
-            return obj1, obj2.cast(obj1.type)
+            return obj1, obj1.type(obj2)
 
     def operator(self, op_T, obj1, obj2):
         # print(op_T)

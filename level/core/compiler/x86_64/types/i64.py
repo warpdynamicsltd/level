@@ -2,7 +2,11 @@ from level.core.compiler.types import Obj, Type
 from level.core.compiler.x86_64.types.bool import Bool
 from level.core.compiler.x86_64.types.i32 import I32
 from level.core.compiler.x86_64.types.u32 import U32
+from level.core.compiler.x86_64.types.u64 import U64
 from level.core.compiler.x86_64.types.float import Float
+from level.core.compiler.x86_64.types.ref import Ref
+from level.core.compiler.x86_64.types.byte import Byte
+from level.core.compiler.x86_64.types.bool import Bool
 import level.core.compiler.x86_64.types.float
 from level.core.x86_64 import *
 from level.core.compiler import CompilerException
@@ -284,7 +288,8 @@ class I64(Obj):
         mov_(rax, value)
         self.MC_put_to_storage(rax)
 
-    def prepare_cast(self, T, v):
+    def cast_and_store(self, v):
+        T = v.type
         if (T.main_type is I32) or (T.main_type is U32):
             xor_(rcx, rcx)
             mov_(rbx, 1)
@@ -312,15 +317,11 @@ class I64(Obj):
             fldcw_([tmp_ptr])
             return
 
-
-        self.MC_put_to_storage(rax)
+        if T.main_type in {Byte, U64, I64, Ref, Bool}:
+            self.MC_put_to_storage(rax)
+        else:
+            raise CompilerException(f"no cast from {T} to int")
 
     def set(self, v):
         v.MC_get_from_storage(rax)
-        self.prepare_cast(v.type, v)
-        #self.MC_put_to_storage(rax)
-
-    def cast(self, T):
-        res = self.object_manager.reserve_variable(T)
-        res.set(self)
-        return res
+        self.cast_and_store(v)
