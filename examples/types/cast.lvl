@@ -1,0 +1,19 @@
+type C(A, B) as rec(
+  var a as A,
+  var b as B
+);
+
+sub ()(C(A, B), var a as int) as C(A, B)
+{
+  var x as C(A, B);
+  x.a = a;
+  return x;
+}
+
+entry
+{
+  echo int(3.5);
+  echo float(1);
+  c = C(int, int)(3);
+  echo c.a;
+}

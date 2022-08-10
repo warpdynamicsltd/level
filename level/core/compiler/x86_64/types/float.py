@@ -239,7 +239,8 @@ class Float(Obj):
         res.MC_put_to_storage(al)
         return res
 
-    def prepare_cast(self, T, v):
+    def cast_and_store(self, v):
+        T = v.type
         if T.main_type is Float:
             v.MC_get_from_storage(rsi)
             mov_(rax, [rsi])
@@ -255,16 +256,11 @@ class Float(Obj):
             fstpt_([rdi])
             return
 
-        raise CompilerException(f"no cast from {T} to Float")
+        raise CompilerException(f"no cast from {T} to float")
 
     def set(self, v):
         self.MC_get_from_storage(rdi)
-        self.prepare_cast(v.type, v)
-
-    def cast(self, T):
-        res = self.object_manager.reserve_variable(T)
-        res.set(self)
-        return res
+        self.cast_and_store(v)
 
     def set_from_float80_bin(self, value):
         addr = SymBits(bits=64)

@@ -279,15 +279,10 @@ class I32(Obj):
         mov_(eax, value)
         self.MC_put_to_storage(eax)
 
-    def prepare_cast(self, T):
-        return
+    def cast_and_store(self, v):
+        pass
 
     def set(self, v):
         v.MC_get_from_storage(rax)
-        self.prepare_cast(v.type)
+        self.cast_and_store(v)
         self.MC_put_to_storage(rax)
-
-    def cast(self, T):
-        res = self.object_manager.reserve_variable(T)
-        res.set(self)
-        return res

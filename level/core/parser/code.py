@@ -1108,8 +1108,8 @@ class Parser:
             else:
                 func_name = stream[0].visual()
         else:
-            if stream and type(stream[0]) is BracketSymb and stream[0].opening == '[':
-                func_name = '[]'
+            if stream and type(stream[0]) is BracketSymb and (stream[0].opening == '[' or stream[0].opening == '('):
+                func_name = f"{stream[0].opening}{stream[0].closing}"
             else:
                 raise ParseException(f"badly formed function definition in {stream[0].meta}")
 

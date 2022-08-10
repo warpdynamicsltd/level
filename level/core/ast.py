@@ -499,7 +499,7 @@ class RecType(TypeExpression):
 class TypeFunctorType(TypeExpression):
     def __init__(self, name, *type_expressions):
         for e in type_expressions:
-            if not(istype(e, TypeExpression)):
+            if not(istype(e, TypeExpression) or istype(e, Expression)):
                 raise GrammarTreeError()
         TypeExpression.__init__(self, name, *type_expressions)
 

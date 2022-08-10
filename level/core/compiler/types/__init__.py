@@ -32,6 +32,11 @@ class Type:
     def substitute(self, a, T):
         pass
 
+    def __call__(self, obj):
+        res = obj.object_manager.reserve_variable(self)
+        res.set(obj)
+        return res
+
 class TypeVarException(Exception):
     pass
 

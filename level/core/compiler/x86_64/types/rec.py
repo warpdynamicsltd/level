@@ -2,7 +2,7 @@ from level.core.compiler.types import Obj, Type
 from level.core.compiler.x86_64.types.u32 import U32
 from level.core.compiler.x86_64.types.ref import Ref
 from level.core.x86_64 import *
-
+from level.core.compiler import CompilerException
 class Rec(Obj):
     size = None
     def __init__(self, object_manager, T, ptr=None, for_child_manager=False, value=None, referenced=False):
@@ -59,14 +59,17 @@ class Rec(Obj):
         return obj
 
     def set(self, obj):
-        self.MC_get_from_storage(rdi)
-        obj.MC_get_from_storage(rsi)
-        mov_(ecx, self.type.size())
-        loop = address()
-        mov_(al, [rsi + ecx - 1])
-        mov_([rdi + ecx - 1], al)
-        dec_(ecx)
-        jnz_(loop)
+        if obj.type.main_type in {Rec, Ref}:
+            self.MC_get_from_storage(rdi)
+            obj.MC_get_from_storage(rsi)
+            mov_(ecx, self.type.size())
+            loop = address()
+            mov_(al, [rsi + ecx - 1])
+            mov_([rdi + ecx - 1], al)
+            dec_(ecx)
+            jnz_(loop)
+        else:
+            raise CompilerException(f"no cast from {obj.type} to {self.type}")
 
     def to_acc(self):
         self.MC_get_from_storage(r15)

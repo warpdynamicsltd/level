@@ -238,8 +238,3 @@ class U64(Obj):
     def set(self, v):
         v.MC_get_from_storage(rax)
         self.MC_put_to_storage(rax)
-
-    def cast(self, T):
-        res = self.object_manager.reserve_variable(T)
-        res.set(self)
-        return res

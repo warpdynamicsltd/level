@@ -50,18 +50,13 @@ class Ref(Obj):
             mov_([self.ptr], reg)
 
     def set(self, ref_obj):
-        # mov_(rax, [ref_obj.ptr])
-        # mov_([self.ptr], rax)
         ref_obj.MC_get_from_storage(rax)
         self.MC_put_to_storage(rax)
-        #self.type = ref_obj.type
 
     def to_acc(self):
-        #mov_(rax, [self.ptr])
         self.MC_get_from_storage(rax)
 
     def set_by_acc(self):
-        # mov_([self.ptr], rax)
         self.MC_put_to_storage(rax)
 
     def bind(self, obj):
@@ -70,7 +65,6 @@ class Ref(Obj):
         else:
             mov_(rax, [obj.ptr])
 
-        #mov_([self.ptr], rax)
         self.MC_put_to_storage(rax)
         self.type = Type(main_type=Ref, sub_types=[obj.type])
 
@@ -91,7 +85,6 @@ class Ref(Obj):
         mul_(rcx)
         T = self.type.sub_types[0]
         self.MC_get_from_storage(rcx)
-        # and_(rax, 0xffffffff)
         add_(rcx, rax)
         ref = Ref(object_manager=self.object_manager, T=Type(Ref, sub_types=[T]))
         ref.MC_put_to_storage(rcx)
@@ -114,9 +107,4 @@ class Ref(Obj):
         xor_(rax, rcx)
         setnz_(al)
         res.MC_put_to_storage(al)
-        return res
-
-    def cast(self, T):
-        res = self.object_manager.reserve_variable(T)
-        res.set(self)
         return res
