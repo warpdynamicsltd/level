@@ -1,0 +1,21 @@
+sub f(ref(array(A, 10)), var k as A) as A
+{
+  return k + 1;
+}
+
+entry
+{
+  var k as int;
+  echo f(ref(array(int, 10)), 2);
+  echo typeid(int) == typeid(k);
+  echo sizeof(array(int, 10));
+  echo sizeof(ref(int));
+
+  var a as array(int, 10);
+  a[3] = 15;
+  var r as ref(array(int, 10));
+  r = ref a;
+  echo typeid(r) == typeid(ref(array(int, 10)));
+  echo sizeof(r) == 8;
+  echo sizeof(r) == sizeof(ref(array(int, 10)));
+}

@@ -30,7 +30,8 @@ unary_operators = {
     'val': ast.Val,
     'abs': ast.Abs,
     'sgn': ast.Sgn,
-    'typeid': ast.TypeId}
+    'typeid': ast.TypeId,
+    'sizeof': ast.SizeOf}
 
 
 functions = {
@@ -45,7 +46,8 @@ functions = {
     'sqrt': ast.Sqrt,
     'floor': ast.Floor,
     'ceil' : ast.Ceil,
-    'typeid' : ast.TypeId
+    'typeid' : ast.TypeId,
+    'sizeof' : ast.SizeOf
 }
 
 

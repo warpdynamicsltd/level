@@ -6,7 +6,7 @@ import level.core.ast as ast
 #from level.core.compiler import CallAddress
 from level.core.compiler.subroutines import Subroutine, Subroutines, CallAddress, Template, Templates
 from level.core.compiler.type_defs import TypeDefs, TypeDef
-from level.core.compiler.types import Type, TypeVar
+from level.core.compiler.types import Obj, Type, TypeVar
 from level.core.parser.builtin import translate_simple_types
 
 
@@ -443,6 +443,8 @@ class Compiler:
                 elif name in translate_simple_types:
                     T = self.compile_type_expression(ast.Type(name))
                     return self.compile_object_call(obj_manager, T, exp.args[1:])
+                elif name == 'array':
+                    return self.compile_type_expression(ast.ArrayType(*exp.args[1:]))
                 else:
                     return self.compile_type_expression(ast.TypeFunctorType(exp.calling_name, *exp.args[1:]).add_meta(exp.meta))
 
@@ -467,10 +469,15 @@ class Compiler:
             expression = ast.MetaVar()
             ast.Ref(expression) << exp
             obj = self.compile_expression(expression.val, obj_manager)
-            T = self.compile_driver.get_ref_type_for_obj(obj)
-            ref = obj_manager.reserve_variable(T)
-            self.compile_driver.bind(ref, obj)
-            return ref
+            if isinstance(obj, Obj):
+                T = self.compile_driver.get_ref_type_for_obj(obj)
+                ref = obj_manager.reserve_variable(T)
+                self.compile_driver.bind(ref, obj)
+                return ref
+            else:
+                T = obj
+                return self.compile_driver.get_ref_type_for_type(T)
+
 
         if ast.istype(exp, ast.Val):
             expression = ast.MetaVar()
@@ -636,7 +643,12 @@ class Compiler:
             type_expression = ast.MetaVar()
             const = ast.MetaVar()
             ast.ArrayType(type_expression, const) << s
-            T = self.compile_type_expression(type_expression.val, from_subroutine_header=from_subroutine_header, with_type_var=with_type_var)
+            exp = type_expression.val
+            if ast.istype(exp, ast.TypeExpression):
+                T = self.compile_type_expression(exp, from_subroutine_header=from_subroutine_header,
+                                                 with_type_var=with_type_var)
+            else:
+                T = self.compile_expression(exp, None)
             n = const.val.name
             return Type(main_type=self.compile_driver.get_array_type(), length=n, sub_types=[T])
 
