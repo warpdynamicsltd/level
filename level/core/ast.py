@@ -375,6 +375,10 @@ class Not(UnaryExpression):
     def __init__(self, a):
         CompoundExpression.__init__(self, 'Not', a)
 
+class BNot(UnaryExpression):
+    def __init__(self, a):
+        CompoundExpression.__init__(self, 'BNot', a)
+
 class Abs(UnaryExpression):
     def __init__(self, a):
         CompoundExpression.__init__(self, 'Abs', a)
@@ -435,6 +439,25 @@ class Gt(BinaryExpression):
     def __init__(self, a, b):
         BinaryExpression.__init__(self, 'Gt', a, b)
 
+class BAnd(BinaryExpression):
+    def __init__(self, a, b):
+        BinaryExpression.__init__(self, 'BAnd', a, b)
+
+class BOr(BinaryExpression):
+    def __init__(self, a, b):
+        BinaryExpression.__init__(self, 'BOr', a, b)
+
+class BXor(BinaryExpression):
+    def __init__(self, a, b):
+        BinaryExpression.__init__(self, 'BXor', a, b)
+
+class RShift(BinaryExpression):
+    def __init__(self, a, b):
+        BinaryExpression.__init__(self, 'Rshift', a, b)
+
+class LShift(BinaryExpression):
+    def __init__(self, a, b):
+        BinaryExpression.__init__(self, 'Lshift', a, b)
 
 
 class Sin(UnaryExpression):

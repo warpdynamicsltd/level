@@ -81,6 +81,53 @@ class Byte(Obj):
         setnz_(al)
         res.MC_put_to_storage(al)
         return res
+    
+    def __invert__(self):
+        res = Byte(self.object_manager, value=None)
+        self.MC_get_from_storage(al)
+        not_(al)
+        res.MC_put_to_storage(al)
+        return res
+
+    def __and__(self, other):
+        res = Byte(self.object_manager, value=None)
+        other.MC_get_from_storage(cl)
+        self.MC_get_from_storage(al)
+        and_(al, cl)
+        res.MC_put_to_storage(al)
+        return res
+
+    def __or__(self, other):
+        res = Byte(self.object_manager, value=None)
+        other.MC_get_from_storage(cl)
+        self.MC_get_from_storage(al)
+        or_(al, cl)
+        res.MC_put_to_storage(al)
+        return res
+
+    def __xor__(self, other):
+        res = Byte(self.object_manager, value=None)
+        other.MC_get_from_storage(cl)
+        self.MC_get_from_storage(al)
+        xor_(al, cl)
+        res.MC_put_to_storage(al)
+        return res
+
+    def __rshift__(self, other):
+        res = Byte(self.object_manager, value=None)
+        other.MC_get_from_storage(cl)
+        self.MC_get_from_storage(al)
+        shr_(al, cl)
+        res.MC_put_to_storage(al)
+        return res
+
+    def __lshift__(self, other):
+        res = Byte(self.object_manager, value=None)
+        other.MC_get_from_storage(cl)
+        self.MC_get_from_storage(al)
+        shl_(al, cl)
+        res.MC_put_to_storage(al)
+        return res
 
     def cast(self, T):
         res = self.object_manager.reserve_variable(T)

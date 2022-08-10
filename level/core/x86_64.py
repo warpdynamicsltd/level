@@ -899,6 +899,17 @@ def ror_(a, b):
             op_mr_immr(op=[0xc1], d_reg=1, target=a, imm=u8(b))
             return
 
+    if type(a) is Register and type(b) is Register and b.bits == 8 and b.reg == 1:
+        if a.bits == 8:
+            op_mr_immr(op=[0xd2], d_reg=1, target=a)
+            return
+        if a.bits == 32:
+            op_mr_immr(op=[0xd3], d_reg=1, target=a)
+            return
+        if a.bits == 64:
+            op_mr_immr(op=[0xd3], d_reg=1, target=a)
+            return
+
     raise MachineException('Unexpected end')
 
 
@@ -922,6 +933,17 @@ def rol_(a, b):
             op_mr_immr(op=[0xc1], d_reg=0, target=a, imm=u8(b))
             return
 
+    if type(a) is Register and type(b) is Register and b.bits == 8 and b.reg == 1:
+        if a.bits == 8:
+            op_mr_immr(op=[0xd2], d_reg=0, target=a)
+            return
+        if a.bits == 32:
+            op_mr_immr(op=[0xd3], d_reg=0, target=a)
+            return
+        if a.bits == 64:
+            op_mr_immr(op=[0xd3], d_reg=0, target=a)
+            return
+
     raise MachineException('Unexpected end')
 
 
@@ -931,6 +953,7 @@ def roll_(a, b):
 
 def rolb_(a, b):
     op_mr_immr(op=[0xc0], d_reg=0, target=a, imm=u8(b))
+
 
 def shl_(a, b):
     if type(a) is Register and is_u8(b):
@@ -944,6 +967,17 @@ def shl_(a, b):
             op_mr_immr(op=[0xc1], d_reg=4, target=a, imm=u8(b))
             return
 
+    if type(a) is Register and type(b) is Register and b.bits == 8 and b.reg == 1:
+        if a.bits == 8:
+            op_mr_immr(op=[0xd2], d_reg=4, target=a)
+            return
+        if a.bits == 32:
+            op_mr_immr(op=[0xd3], d_reg=4, target=a)
+            return
+        if a.bits == 64:
+            op_mr_immr(op=[0xd3], d_reg=4, target=a)
+            return
+
     raise MachineException('Unexpected end')
 
 
@@ -953,6 +987,40 @@ def shll_(a, b):
 
 def shlb_(a, b):
     op_mr_immr(op=[0xc0], d_reg=4, target=a, imm=u8(b))
+
+def sal_(a, b):
+    if type(a) is Register and is_u8(b):
+        if a.bits == 8:
+            op_mr_immr(op=[0xc0], d_reg=4, target=a, imm=u8(b))
+            return
+        if a.bits == 32:
+            op_mr_immr(op=[0xc1], d_reg=4, target=a, imm=u8(b))
+            return
+        if a.bits == 64:
+            op_mr_immr(op=[0xc1], d_reg=4, target=a, imm=u8(b))
+            return
+
+    if type(a) is Register and type(b) is Register and b.bits == 8 and b.reg == 1:
+        if a.bits == 8:
+            op_mr_immr(op=[0xd2], d_reg=4, target=a)
+            return
+        if a.bits == 32:
+            op_mr_immr(op=[0xd3], d_reg=4, target=a)
+            return
+        if a.bits == 64:
+            op_mr_immr(op=[0xd3], d_reg=4, target=a)
+            return
+
+    raise MachineException('Unexpected end')
+
+
+def sall_(a, b):
+    op_mr_immr(op=[0xc1], d_reg=4, target=a, imm=u8(b))
+
+
+def salb_(a, b):
+    op_mr_immr(op=[0xc0], d_reg=4, target=a, imm=u8(b))
+
 
 def shr_(a, b):
     if type(a) is Register and is_u8(b):
@@ -966,6 +1034,17 @@ def shr_(a, b):
             op_mr_immr(op=[0xc1], d_reg=5, target=a, imm=u8(b))
             return
 
+    if type(a) is Register and type(b) is Register and b.bits == 8 and b.reg == 1:
+        if a.bits == 8:
+            op_mr_immr(op=[0xd2], d_reg=5, target=a)
+            return
+        if a.bits == 32:
+            op_mr_immr(op=[0xd3], d_reg=5, target=a)
+            return
+        if a.bits == 64:
+            op_mr_immr(op=[0xd3], d_reg=5, target=a)
+            return
+
     raise MachineException('Unexpected end')
 
 
@@ -975,6 +1054,39 @@ def shrl_(a, b):
 
 def shrb_(a, b):
     op_mr_immr(op=[0xc0], d_reg=5, target=a, imm=u8(b))
+
+def sar_(a, b):
+    if type(a) is Register and is_u8(b):
+        if a.bits == 8:
+            op_mr_immr(op=[0xc0], d_reg=7, target=a, imm=u8(b))
+            return
+        if a.bits == 32:
+            op_mr_immr(op=[0xc1], d_reg=7, target=a, imm=u8(b))
+            return
+        if a.bits == 64:
+            op_mr_immr(op=[0xc1], d_reg=7, target=a, imm=u8(b))
+            return
+
+    if type(a) is Register and type(b) is Register and b.bits == 8 and b.reg == 1:
+        if a.bits == 8:
+            op_mr_immr(op=[0xd2], d_reg=7, target=a)
+            return
+        if a.bits == 32:
+            op_mr_immr(op=[0xd3], d_reg=7, target=a)
+            return
+        if a.bits == 64:
+            op_mr_immr(op=[0xd3], d_reg=7, target=a)
+            return
+
+    raise MachineException('Unexpected end')
+
+
+def sarl_(a, b):
+    op_mr_immr(op=[0xc1], d_reg=7, target=a, imm=u8(b))
+
+
+def sarb_(a, b):
+    op_mr_immr(op=[0xc0], d_reg=7, target=a, imm=u8(b))
 
 
 def call_(a):

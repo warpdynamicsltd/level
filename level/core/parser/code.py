@@ -189,7 +189,7 @@ class Parser:
 
         self.binary_operators = builtin.binary_operators
 
-        self.composed_operators = {'<-', '==', '!=', '<=', '>=', '$='}
+        self.composed_operators = {'<-', '==', '!=', '<=', '>=', '$=', '<<', '>>'}
 
         self.unary_operators = builtin.unary_operators
 
@@ -830,6 +830,22 @@ class Parser:
                 return res
 
             res = self.try_binary_parse(stream, ['*', '/', '%'])
+            if res is not None:
+                return res
+
+            res = self.try_binary_parse(stream, ['|'])
+            if res is not None:
+                return res
+
+            res = self.try_binary_parse(stream, ['^'])
+            if res is not None:
+                return res
+
+            res = self.try_binary_parse(stream, ['&'])
+            if res is not None:
+                return res
+
+            res = self.try_binary_parse(stream, ['>>', '<<'])
             if res is not None:
                 return res
 

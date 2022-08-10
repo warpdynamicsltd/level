@@ -13,12 +13,19 @@ binary_operators = {
     '<=': ast.Le,
     '>=': ast.Ge,
     'and': ast.And,
-    'or': ast.Or}
+    'or': ast.Or,
+    '&': ast.BAnd,
+    '|': ast.BOr,
+    '^': ast.BXor,
+    '>>': ast.RShift,
+    '<<': ast.LShift
+}
 
 unary_operators = {
     '+': ast.Plus,
     '-': ast.Minus,
     'not': ast.Not,
+    '~'  : ast.BNot,
     'ref': ast.Ref,
     'val': ast.Val,
     'abs': ast.Abs,

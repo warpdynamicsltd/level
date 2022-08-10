@@ -14,7 +14,7 @@
     <keywords keywords="as;break;dec;def;echo;else;entry;exec;for;if;import;inc;method;return;sub;type;typeid;var;while" ignore_case="false" />
     <keywords2 keywords="array;bool;byte;false;float;i32;i64;int;rec;ref;true;u32;u64;val" />
     <keywords3 />
-    <keywords4 keywords="!;$=;%;&amp;;*;+;-;/;&lt;-;=;^;abs;and;ceil;cos;cot;exp;floor;log;not;or;sgn;sin;sqrt;tan;~">
+    <keywords4 keywords="!;$=;%;&amp;;*;+;-;/;&lt;;&lt;-;&lt;&lt;;=;&gt;;&gt;&gt;;^;abs;and;ceil;cos;cot;exp;floor;log;not;or;sgn;sin;sqrt;tan;~">
       <keyword name=";" />
     </keywords4>
   </highlighting>
