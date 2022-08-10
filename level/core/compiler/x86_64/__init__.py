@@ -154,6 +154,9 @@ class CompileDriver_x86_64(CompileDriver):
         if op_T is ast.Not:
             return obj.not_()
 
+        if op_T is ast.BNot:
+            return ~obj
+
         if op_T is ast.Abs:
             return abs(obj)
 
@@ -198,7 +201,7 @@ class CompileDriver_x86_64(CompileDriver):
             return obj1, obj1.type(obj2)
 
     def operator(self, op_T, obj1, obj2):
-        # print(op_T)
+        #print(op_T)
         obj1, obj2 = self.unify(obj1, obj2)
         res = None
 
@@ -240,6 +243,21 @@ class CompileDriver_x86_64(CompileDriver):
 
         if op_T is ast.Or:
             res = obj1.or_(obj2)
+
+        if op_T is ast.BAnd:
+            res = obj1 & obj2
+
+        if op_T is ast.BOr:
+            res = obj1 | obj2
+
+        if op_T is ast.BXor:
+            res = obj1 ^ obj2
+
+        if op_T is ast.RShift:
+            res = obj1 >> obj2
+
+        if op_T is ast.LShift:
+            res = obj1 << obj2
 
         if res is None:
             raise CompilerException("unexpected operator")

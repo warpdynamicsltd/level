@@ -250,6 +250,53 @@ class I32(Obj):
         neg_(eax)
         res.MC_put_to_storage(eax)
         return res
+    
+    def __invert__(self):
+        res = I32(self.object_manager, value=None)
+        self.MC_get_from_storage(eax)
+        not_(eax)
+        res.MC_put_to_storage(eax)
+        return res
+
+    def __and__(self, other):
+        res = I32(self.object_manager, value=None)
+        I32.int2reg(other, ecx)
+        self.MC_get_from_storage(eax)
+        and_(eax, ecx)
+        res.MC_put_to_storage(eax)
+        return res
+
+    def __or__(self, other):
+        res = I32(self.object_manager, value=None)
+        I32.int2reg(other, ecx)
+        self.MC_get_from_storage(eax)
+        or_(eax, ecx)
+        res.MC_put_to_storage(eax)
+        return res
+
+    def __xor__(self, other):
+        res = I32(self.object_manager, value=None)
+        I32.int2reg(other, ecx)
+        self.MC_get_from_storage(eax)
+        xor_(eax, ecx)
+        res.MC_put_to_storage(eax)
+        return res
+
+    def __rshift__(self, other):
+        res = I32(self.object_manager, value=None)
+        I32.int2reg(other, ecx)
+        self.MC_get_from_storage(eax)
+        sar_(eax, cl)
+        res.MC_put_to_storage(eax)
+        return res
+
+    def __lshift__(self, other):
+        res = I32(self.object_manager, value=None)
+        I32.int2reg(other, ecx)
+        self.MC_get_from_storage(eax)
+        sal_(eax, cl)
+        res.MC_put_to_storage(eax)
+        return res
 
     def __pos__(self):
         return self

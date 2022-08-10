@@ -228,6 +228,53 @@ class U64(Obj):
         res.MC_put_to_storage(rax)
         return res
 
+    def __invert__(self):
+        res = U64(self.object_manager, value=None)
+        self.MC_get_from_storage(rax)
+        not_(rax)
+        res.MC_put_to_storage(rax)
+        return res
+
+    def __and__(self, other):
+        res = U64(self.object_manager, value=None)
+        U64.int2reg(other, rcx)
+        self.MC_get_from_storage(rax)
+        and_(rax, rcx)
+        res.MC_put_to_storage(rax)
+        return res
+
+    def __or__(self, other):
+        res = U64(self.object_manager, value=None)
+        U64.int2reg(other, rcx)
+        self.MC_get_from_storage(rax)
+        or_(rax, rcx)
+        res.MC_put_to_storage(rax)
+        return res
+
+    def __xor__(self, other):
+        res = U64(self.object_manager, value=None)
+        U64.int2reg(other, rcx)
+        self.MC_get_from_storage(rax)
+        xor_(rax, rcx)
+        res.MC_put_to_storage(rax)
+        return res
+
+    def __rshift__(self, other):
+        res = U64(self.object_manager, value=None)
+        U64.int2reg(other, rcx)
+        self.MC_get_from_storage(rax)
+        shr_(rax, cl)
+        res.MC_put_to_storage(rax)
+        return res
+
+    def __lshift__(self, other):
+        res = U64(self.object_manager, value=None)
+        U64.int2reg(other, rcx)
+        self.MC_get_from_storage(rax)
+        shl_(rax, cl)
+        res.MC_put_to_storage(rax)
+        return res
+
     def __pos__(self):
         return self
 
