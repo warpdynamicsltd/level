@@ -20,7 +20,7 @@ class U64(Obj):
                  for_child_manager=False,
                  T=None,
                  referenced=False):
-        #self.size = 4
+
         if T is None:
             self.type = Type(U64)
         else:
