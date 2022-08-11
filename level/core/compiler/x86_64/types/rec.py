@@ -1,3 +1,5 @@
+import copy as COPY
+
 from level.core.compiler.types import Obj, Type
 from level.core.compiler.x86_64.types.u32 import U32
 from level.core.compiler.x86_64.types.ref import Ref
@@ -5,32 +7,34 @@ from level.core.x86_64 import *
 from level.core.compiler import CompilerNotLocatedException
 class Rec(Obj):
     size = None
-    def __init__(self, object_manager, T, ptr=None, for_child_manager=False, value=None, referenced=False):
+    def __init__(self, object_manager, T, ptr=None, for_child_manager=False, value=None, referenced=False, copy=False):
         self.object_manager = object_manager
         self.length = 1
         self.type = T
-        #print(T, T.size())
         if ptr is None:
-            self.ptr = object_manager.reserve_variable_ptr(self.type.size(), for_child_manager)
+            objs = []
+            for i, t in enumerate(self.type.sub_types):
+                name, value = self.type.meta_data[i]
+                if not copy:
+                    obj = object_manager.reserve_variable(t, value=value, for_child_manager=for_child_manager)
+                else:
+                    obj = object_manager.reserve_variable(t, value=None, for_child_manager=for_child_manager, copy=copy)
+                objs.append(obj)
+            self.ptr = objs[0].ptr
+
         else:
             self.ptr = ptr
+
         self.referenced = referenced
 
         self.index_map = dict()
         self.type_map = dict()
-        self.init_map = dict()
 
         s = 0
         for i, t in enumerate(self.type.sub_types):
             name, value = self.type.meta_data[i]
             self.index_map[name] = s
             self.type_map[name] = t
-            self.init_map[name] = value
-            if value is not None:
-                self.MC_get_from_storage(r14)
-                add_(r14, s)
-                t.main_type(self.object_manager, ptr=r14, value=value, T=T, referenced=False)
-
             s += t.size()
 
 

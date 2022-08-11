@@ -107,8 +107,8 @@ class ObjManager(ABC):
     def reserve_variable_for_child_obj_manager(self, T, handle):
         pass
 
-    def reserve_variable_by_name(self, T, name, value=None):
-        self.objs[name] = self.reserve_variable(T, value)
+    def reserve_variable_by_name(self, T, name, value=None, copy=False):
+        self.objs[name] = self.reserve_variable(T, value, copy=copy)
 
 class Compiler:
     def __init__(self, program : ast.Program, obj_manager_type: type, compile_driver_type: type, memory: int=0x100000):
@@ -307,7 +307,7 @@ class Compiler:
                 calling_name in self.calling_keys or \
                 name in translate_simple_types or \
                 calling_name in self.type_defs.type_defs or \
-                calling_name is self.globals.globals_dict:
+                calling_name in self.globals.globals_dict:
             raise CompilerException(f"global name '{name}' can't be used as variable name in {var_exp.meta}")
 
     def compile_statement(self, s, obj_manager):
@@ -343,7 +343,7 @@ class Compiler:
             obj = self.compile_expression(exp.val, obj_manager)
 
             if type(var_exp.val) is ast.Var:
-                if var_exp.val.name not in obj_manager.objs:
+                if not (var_exp.val.name in obj_manager.objs or var_exp.val.calling_name in self.globals.globals_dict):
                     self.var_name_raise_not_available(var_exp.val)
                     obj_manager.reserve_variable_by_name(obj.type, var_exp.val.name)
 
@@ -612,7 +612,7 @@ class Compiler:
         self.compile_driver.call(subroutine.address)
         child_obj_manager.close()
         T = subroutine.return_type
-        obj = obj_manager.reserve_variable(T)
+        obj = obj_manager.reserve_variable(T, copy=True)
         obj.set_by_acc()
 
         self.subroutines.subroutines_stack.append(subroutine)

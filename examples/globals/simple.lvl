@@ -6,8 +6,8 @@ global a as int;
 global s as ref(byte);
 
 type V as rec(
-  var a as int,
-  var b as int
+  var a = 0 as int,
+  var b = 0 as int
 )
 
 sub f()

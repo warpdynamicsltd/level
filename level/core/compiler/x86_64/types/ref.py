@@ -8,7 +8,7 @@ from level.core.parser.builtin import BuiltinValue
 
 class Ref(Obj):
     size = 8
-    def __init__(self, object_manager, for_child_manager=False, ptr=None, T=None, value=None, referenced=False):
+    def __init__(self, object_manager, for_child_manager=False, ptr=None, T=None, value=None, referenced=False, copy=False):
         self.object_manager = object_manager
         self.referenced = referenced
 
@@ -74,9 +74,9 @@ class Ref(Obj):
             self.MC_get_from_storage(rax)
             ref.MC_put_to_storage(rax)
             obj = self.type.sub_types[0].main_type(object_manager=self.object_manager, T=self.type.sub_types[0],
-                                                   ptr=ref.ptr, referenced=True)
+                                                   ptr=ref.ptr, referenced=True, copy=True)
         else:
-            obj = self.type.sub_types[0].main_type(object_manager=self.object_manager, T=self.type.sub_types[0], ptr=self.ptr, referenced=True)
+            obj = self.type.sub_types[0].main_type(object_manager=self.object_manager, T=self.type.sub_types[0], ptr=self.ptr, referenced=True, copy=True)
         return obj
 
     def get_element(self, index):
