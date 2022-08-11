@@ -326,8 +326,6 @@ class CompileDriver_x86_64(CompileDriver):
 
         set_symbol(self.args_addr)
         add_bytes(bytes(8))
-        #set_symbol(self.static_brk)
-        #add_bytes(bytes(8))
 
 
     def echo_obj(self, obj):
@@ -579,10 +577,10 @@ class StandardObjManager(ObjManager):
 
     def reserve_variable_ptr(self, size, for_child_manager=False):
         if for_child_manager:
-            res = ebp + (self.on_top_cursor + self.size)
+            res = rbp + (self.on_top_cursor + self.size)
             self.on_top_cursor = self.on_top_cursor + size
         else:
-            res = ebp + self.cursor
+            res = rbp + self.cursor
             self.cursor = self.cursor + size
         return res
 

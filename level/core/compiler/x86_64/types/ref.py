@@ -66,7 +66,7 @@ class Ref(Obj):
             mov_(rax, [obj.ptr])
 
         self.MC_put_to_storage(rax)
-        self.type = Type(main_type=Ref, sub_types=[obj.type])
+        #self.type = Type(main_type=Ref, sub_types=[obj.type])
 
     def get_obj(self):
         if self.referenced:

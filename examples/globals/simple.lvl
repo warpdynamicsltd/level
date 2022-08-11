@@ -1,0 +1,39 @@
+import test:obj_test as T;
+
+global v as V;
+global r as ref;
+global a as int;
+global s as ref(byte);
+
+type V as rec(
+  var a as int,
+  var b as int
+)
+
+sub f()
+{
+  inc v.a;
+  dec v.b;
+  r = ref v.b;
+  a = a + 3;
+  s = "hello";
+  T:glob_c.x = T:glob_c.x + 3;
+}
+
+entry
+{
+  var u as T:complex;
+  echo typeid(u) == typeid(T:glob_c);
+  a = 0;
+  exec f();
+  exec f();
+  echo v.a;
+  echo v.b;
+  echo a;
+  var ri as ref(int);
+  ri = r;
+
+  echo val ri;
+  echo T:glob_c.x;
+  echo s;
+}

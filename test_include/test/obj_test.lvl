@@ -1,3 +1,5 @@
+global glob_c as complex;
+
 type complex as rec(
   var x as int,
   var y as int

@@ -155,13 +155,14 @@ class StatementList(Element):
         Element.__init__(self, 'StatementList', *statements)
 
 class Program(Element):
-    def __init__(self, assign_type_block, def_block, code_block):
+    def __init__(self, assign_type_block, global_inits, def_block, code_block):
         if not (istype(assign_type_block, AssignTypeList) and
+                istype(global_inits, GlobalBlock) and
                 istype(def_block, DefBlock) and
                 istype(code_block, StatementList)):
             raise GrammarTreeError()
 
-        Element.__init__(self, 'Program', assign_type_block, def_block, code_block)
+        Element.__init__(self, 'Program', assign_type_block, global_inits, def_block, code_block)
 
 class DefBlock(Element):
     def __init__(self, *defs):
@@ -170,6 +171,14 @@ class DefBlock(Element):
                 raise GrammarTreeError()
 
         Element.__init__(self, 'DefBlock', *defs)
+
+class GlobalBlock(Element):
+    def __init__(self, *global_inits):
+        for g in global_inits:
+            if not istype(g, InitGlobalWithType):
+                raise GrammarTreeError()
+
+        Element.__init__(self, 'GlobalBlock', *global_inits)
 
 class VarList(Element):
     def __init__(self, *vars):
@@ -314,6 +323,12 @@ class InitWithType(Statement):
         if not(istype(var, Var) and istype(type_expression, TypeExpression) and istype(const, Const)):
             raise GrammarTreeError()
         Statement.__init__(self, 'InitWithType', var, type_expression, const)
+
+class InitGlobalWithType(Statement):
+    def __init__(self, var, type_expression, const):
+        if not(istype(var, Var) and istype(type_expression, TypeExpression) and istype(const, Const)):
+            raise GrammarTreeError()
+        Statement.__init__(self, 'InitGlobalWithType', var, type_expression, const)
 
 class InitRef(Statement):
     def __init__(self, var):

@@ -12,24 +12,24 @@ z = Var('z')
 subroutine_def = SubroutineDef('f',
                                VarList(InitWithType(x, Type('u32'), ConstVoid())),
                                StatementList(
-                                   Init(y),
+                                   InitWithType(y, Type('u32'), ConstVoid()),
                                    Assign(y, x),
                                    Echo(y),
                                    Return(y)
                                ), Type('u32'))
 
 statement_list = StatementList(
-    Init(x),
-    Init(z),
+    InitWithType(x, Type('u32'), ConstVoid()),
+    InitWithType(z, Type('u32'), ConstVoid()),
     Assign(x, Const(0x3)),
     Assign(z, Const(0x4)),
-    Init(y),
+    InitWithType(y, Type('u32'), ConstVoid()),
     Assign(y, Call(Var('f'), x).add_calling_name('f')),
     Echo(Call(Var('f'), z).add_calling_name('f')),
     Echo(x),
     Return(Const(1)))
 
-p = Program(AssignTypeList(), DefBlock(subroutine_def), statement_list)
+p = Program(AssignTypeList(), GlobalBlock(), DefBlock(subroutine_def), statement_list)
 comp = Compiler(p, StandardObjManager, CompileDriver_x86_64)
 comp.compile()
 
