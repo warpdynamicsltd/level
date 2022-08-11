@@ -1,8 +1,9 @@
+import level
 from setuptools import setup, find_packages
 
 setup(
     name='Level',
-    version='0.1.4a',
+    version=level.__version__,
     packages=find_packages(),
     url='www.golevel.org',
     license='Copyright (c) 2022 Warp Dynamics Limited. All rights reserved.',

@@ -38,10 +38,13 @@ You may obtain **Level compiler** source code from the official repository using
 ```
 git clone git@github.com:warpdynamicsltd/level.git
 ```
-To install **Level compiler** execute the following commands in your terminal:
+To install **Level compiler**, go to the root directory of this project.
+Assuming you are still where you ran `git clone` you can go there by
+
 ```
 cd level
 ```
+and run the following command in your terminal:
 ```
 ./install.sh
 ```
@@ -68,7 +71,7 @@ All tests OK
 ```
 #### Compile Level code
 
-To compile a text file `hello.lvl` with **Level** code, execute the following command 
+To compile a text file `hello.lvl` with **Level** code, run the following command 
 in your terminal:
 ```
 level c hello.lvl
@@ -77,7 +80,7 @@ The above should create an ELF64 executable `hello` which
 can be executed e.g.
 by typing `./hello` in your terminal and pressing enter.
 
-A short manual for `level` command line tool is available after executing:
+A short manual for `level` command line tool is available after running:
 ```
 level --help
 ```
