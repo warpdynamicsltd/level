@@ -9,14 +9,15 @@ def system(s):
 def main():
     issue = sys.argv[1]
     res = system("git branch --show-current")
-    if res == f"LVL-{issue}":
+    branch = f"LVL-{issue}"
+    if res == branch:
         cmd = "python scripts/incv.py"
         print(cmd)
         os.system(cmd)
         cmd = f'git commit -am"close #{issue}"'
         print(cmd)
         os.system(cmd)
-        cmd = f'git push'
+        cmd = f'git push --set-upstream origin {branch}'
         print(cmd)
         os.system(cmd)
     else:
