@@ -1,0 +1,21 @@
+type complex as rec(
+  var x = 0 as int,
+  var y = 0 as int
+)
+
+sub f(var c as complex) as complex
+{
+  var res as complex;
+  res.x = c.x + 1;
+  res.y = c.y + 1;
+  return res;
+}
+
+entry
+{
+  var a as complex;
+  a.x = 3;
+  echo a.x;
+  echo f(a).x;
+  echo "end";
+}

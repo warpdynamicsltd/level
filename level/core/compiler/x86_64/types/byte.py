@@ -12,7 +12,8 @@ class Byte(Obj):
                  ptr=None,
                  for_child_manager=False,
                  T=None,
-                 referenced=False):
+                 referenced=False,
+                 copy=False):
 
         if T is None:
             self.type = Type(Byte)

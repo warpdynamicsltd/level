@@ -1,0 +1,38 @@
+global global_z as complex;
+
+type complex as rec(
+  var x = 0 as int,
+  var y = 0 as int,
+  var r as rec(
+    var a = 3 as float,
+    var b as float
+  )
+)
+
+sub f(var c as complex) as complex
+{
+  var res as complex;
+  res.x = c.x + 1;
+  res.y = c.y + 1;
+  res.r.a = c.r.a + 3;
+  res.r.b = c.r.b + 3;
+
+  global_z.r.a = 10;
+
+  return res;
+}
+
+entry
+{
+  var a as complex;
+  var u as complex;
+  a.x = 7;
+  echo int(a.r.a);
+  echo a.x;
+  echo int(global_z.r.a);
+  u = f(a);
+  echo u.x;
+  echo int(u.r.a);
+  echo int(global_z.r.a);
+  echo "end";
+ }

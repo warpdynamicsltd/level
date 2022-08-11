@@ -49,7 +49,7 @@ class Subroutine:
 
         for i, name in enumerate(self.var_names):
             if name is not None:
-                obj_manager.reserve_variable_by_name(self.var_types[i], name)
+                obj_manager.reserve_variable_by_name(self.var_types[i], name, copy=True)
 
         for s in self.statement_list.args:
             self.compiler.compile_statement(s, obj_manager)

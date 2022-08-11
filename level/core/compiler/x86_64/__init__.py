@@ -584,8 +584,8 @@ class StandardObjManager(ObjManager):
             self.cursor = self.cursor + size
         return res
 
-    def reserve_variable(self, T, value=None, for_child_manager=False):
-        return T.main_type(self, T=T, value=value, for_child_manager=for_child_manager)
+    def reserve_variable(self, T, value=None, for_child_manager=False, copy=False):
+        return T.main_type(self, T=T, value=value, for_child_manager=for_child_manager, copy=copy)
 
     def reserve_variable_for_child_obj_manager(self, T, obj=None, value=None):
         if obj is not None:

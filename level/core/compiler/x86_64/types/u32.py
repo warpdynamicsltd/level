@@ -19,7 +19,8 @@ class U32(Obj):
                  ptr=None,
                  for_child_manager=False,
                  T=None,
-                 referenced=False):
+                 referenced=False,
+                 copy=False):
         #self.size = 4
         if T is None:
             self.type = Type(U32)

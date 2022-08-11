@@ -81,7 +81,8 @@ test_source([test_path(r"types/sizeof.lvl")], b"+00000000:00000003\n00000001\n+0
 test_source([test_path(r"collections/stack64_test.lvl")], b"00000001\n00000001\n")
 
 test_source([test_path(r"globals/simple.lvl")], b"00000001\n+00000000:00000002\n-00000000:00000002\n+00000000:00000006\n-00000000:00000002\n+00000000:00000006\nhello\n")
-
+test_source([test_path(r"rec/defaults.lvl")], b"+00000000:00000003\n+00000000:00000004\nend\n")
+test_source([test_path(r"rec/nested.lvl")], b"+00000000:00000003\n+00000000:00000007\n+00000000:00000003\n+00000000:00000008\n+00000000:00000006\n+00000000:0000000a\nend\n")
 
 # ERRORS
 
