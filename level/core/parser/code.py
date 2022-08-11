@@ -952,18 +952,19 @@ class Parser:
         else:
             raise ParseException(f"expected '{key}' statement in {stream[0].meta}")
 
-    def parse_var_statement(self, stream):
+    def parse_var_statement(self, stream, key='var', init_type=ast.InitWithType):
         if not (type(stream) is list and stream):
             raise ParseException()
 
         if stream and stream[-1] == ';':
             stream = stream[:-1]
 
-        if type(stream[0]) is TerminalSymb and stream[0] == 'var':
+        if type(stream[0]) is TerminalSymb and stream[0] == key:
             if len(stream) > 3 and type(stream[1]) is TerminalSymb and self.is_var_token(stream[1]):
                 const = ast.ConstVoid()
                 type_expression_index = 3
                 as_index = 2
+                calling_name = self.build_calling_name(stream[1])
                 if type(stream[2]) is TerminalSymb and stream[2] == '=':
                     as_index = self.find(stream, "as")
                     const = self.parse_const(stream[3:as_index])
@@ -975,11 +976,11 @@ class Parser:
                         exp_type = self.parse_type_expression(stream[type_expression_index:])
                     else:
                         raise ParseException(f"expected type expression in {meta(stream)}")
-                    return ast.InitWithType(ast.Var(stream[1].visual()).add_meta(stream[1].meta).add_calling_name(stream[1])
+                    return init_type(ast.Var(stream[1].visual()).add_meta(stream[1].meta).add_calling_name(calling_name)
                                             , exp_type, const).add_meta(stream[0].meta)
                 else:
                     if len(stream) == as_index:
-                        return ast.InitWithType(ast.Var(stream[1].visual()).add_meta(stream[1].meta).add_calling_name(stream[1])
+                        return init_type(ast.Var(stream[1].visual()).add_meta(stream[1].meta).add_calling_name(calling_name)
                                                 , ast.TypeVoid(), const).add_meta(stream[0].meta)
                     else:
                         raise ParseException(f"badly formed type in 'var' statement in {stream[-1].meta}")
@@ -1154,14 +1155,20 @@ class Parser:
         else:
             raise ParseException(f"badly formed '{key}' block in {stream[0].meta}")
 
+    def find_first_of(self, term_list, i, stream):
+        return min([self.find(stream[i:], term) for term in term_list])
+
     def parse_program(self, stream):
         if type(stream) is list and not stream:
             raise ParseException('nothing to parse')
 
+        term_list = ['sub', 'type', 'method', 'entry', 'global']
+
+        global_inits = []
         type_defs = []
         subroutines = []
 
-        while (stream and type(stream[0]) is TerminalSymb and stream[0] in {'sub', 'type', 'method'}):
+        while (stream and type(stream[0]) is TerminalSymb and stream[0] in {'sub', 'type', 'method', 'global'}):
             if stream[0] == 'sub':
                 code_bracket_index = self.find(stream, BracketSymb(opening='{', closing='}', value=None))
                 def_ = self.parse_def(stream[1:code_bracket_index + 1])
@@ -1176,12 +1183,14 @@ class Parser:
                 subroutines.append(def_)
                 continue
 
+            if stream[0] == 'global':
+                limit = self.find_first_of(term_list, 1, stream) + 1
+                global_init_statement = self.parse_var_statement(stream[:limit], 'global', ast.InitGlobalWithType)
+                global_inits.append(global_init_statement)
+                stream = stream[limit:]
+
             if stream[0] == 'type':
-                a = self.find(stream[1:], 'type') + 1
-                b = self.find(stream[1:], 'sub') + 1
-                c = self.find(stream[1:], 'entry') + 1
-                d = self.find(stream[1:], 'method') + 1
-                limit = min(a, b, c, d)
+                limit = self.find_first_of(term_list, 1, stream) + 1
                 type_statement = self.parse_type_statement('type', stream[:limit], ast.AssignType, ast.Type)
                 type_defs.append(type_statement)
                 stream = stream[limit:]
@@ -1194,4 +1203,8 @@ class Parser:
 
         stream, program_block = self.parse_block('entry', stream)
         statements = self.parse_statement_list(program_block)
-        return ast.Program(ast.AssignTypeList(*type_defs), ast.DefBlock(*subroutines), statements).add_meta(meta)
+        return ast.Program(
+            ast.AssignTypeList(*type_defs),
+            ast.GlobalBlock(*global_inits),
+            ast.DefBlock(*subroutines),
+            statements).add_meta(meta)

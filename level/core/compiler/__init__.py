@@ -6,6 +6,7 @@ import level.core.ast as ast
 #from level.core.compiler import CallAddress
 from level.core.compiler.subroutines import Subroutine, Subroutines, CallAddress, Template, Templates
 from level.core.compiler.type_defs import TypeDefs, TypeDef
+from level.core.compiler.globals import Globals, Global
 from level.core.compiler.types import Obj, Type, TypeVar
 from level.core.parser.builtin import translate_simple_types
 
@@ -118,6 +119,7 @@ class Compiler:
         self.templates = Templates()
         self.calling_keys = set()
         self.type_defs = TypeDefs()
+        self.globals = Globals(self)
         self.main_program = False
         self.memory = memory
 
@@ -130,14 +132,18 @@ class Compiler:
         self.compile_driver.begin()
 
         types = ast.MetaVar()
+        global_inits = ast.MetaVar()
         defs = ast.MetaVar()
         statements = ast.MetaVar()
 
-        ast.Program(types, defs, statements) << self.program
+        ast.Program(types, global_inits, defs, statements) << self.program
 
         self.compile_types(types.val)
 
         self.compile_def_headers(defs.val)
+
+        self.compile_global_inits(global_inits.val)
+        self.globals.compile()
 
         self.main_program = True
 
@@ -152,6 +158,8 @@ class Compiler:
         self.compile_subroutines()
 
         self.compile_driver.add_compiler_data()
+        self.globals.set_data_address()
+
         object_manager.close()
 
     def compile_types(self, types_block):
@@ -171,6 +179,10 @@ class Compiler:
                     t=template_var.val.args[0],
                     type_vars=type_vars,
                     type_def=type_expression.val))
+
+    def compile_global_inits(self, global_inits):
+        for g_init_def in global_inits.args:
+            self.globals.add(Global(g_init_def, self))
 
     def compile_def_headers(self, defs):
         for d in defs.args:
@@ -195,6 +207,10 @@ class Compiler:
         return_type_computed = self.compile_type_expression(return_type.val, from_subroutine_header=True)
 
         fun_name = name.val
+
+        if fun_name in self.type_defs.type_defs:
+            raise CompilerException(f"global name '{fun_name}' can't be used as subroutine name in {d.meta}")
+
         self.calling_keys.add(fun_name)
 
         address = self.compile_driver.get_current_address()
@@ -244,7 +260,6 @@ class Compiler:
                 var_inits.append(None)
                 var_names.append(None)
 
-        # print(var_types)
 
         if not template:
             if self.subroutines.exists(fun_name, var_types):
@@ -288,19 +303,15 @@ class Compiler:
     def var_name_raise_not_available(self, var_exp):
         name = var_exp.name
         calling_name = var_exp.calling_name
-        if calling_name in self.calling_keys or name in translate_simple_types or calling_name in self.type_defs.type_defs:
+        if \
+                calling_name in self.calling_keys or \
+                name in translate_simple_types or \
+                calling_name in self.type_defs.type_defs or \
+                calling_name is self.globals.globals_dict:
             raise CompilerException(f"global name '{name}' can't be used as variable name in {var_exp.meta}")
 
     def compile_statement(self, s, obj_manager):
         self.update_meta(s)
-
-        if ast.istype(s, ast.Init):
-            var = ast.MetaVar()
-            ast.Init(var) << s
-            T = self.compile_driver.get_type_by_var(var.val)
-            self.var_name_raise_not_available(var.val)
-            obj_manager.reserve_variable_by_name(T, var.val.name)
-            return
 
         if ast.istype(s, ast.InitWithType):
             var = ast.MetaVar()
@@ -505,6 +516,9 @@ class Compiler:
             return obj
 
         if ast.istype(exp, ast.Var):
+            if exp.calling_name in self.globals.globals_dict:
+                return self.globals.get_obj(exp.calling_name, obj_manager)
+
             if obj_manager is None or exp.name not in obj_manager.objs:
                 if exp.name in translate_simple_types:
                     name = exp.name
@@ -512,6 +526,7 @@ class Compiler:
                     name = exp.calling_name
                 T = self.compile_type_expression(ast.Type(name).add_meta(exp.meta))
                 return T
+
             return obj_manager.objs[exp.name]
 
         if ast.istype(exp, ast.ValueAt):
