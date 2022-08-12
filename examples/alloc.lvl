@@ -1,9 +1,11 @@
+import stdlib:sys:calls;
+
 entry
 {
   var m1 as ref(byte);
   var m2 as ref(byte);
-  m1 = __api__(syscall, 9, 0, 4096, 7, 32 + 2, -1, 0);
-  m2 = __api__(syscall, 9, 0, 10*4096, 7, 32 + 2, -1, 0);
+  m1 = stdlib:sys:calls:alloc_blocks(1);
+  m2 = stdlib:sys:calls:alloc_blocks(10);
   var N1 as int;
   var N2 as int;
 
@@ -14,4 +16,8 @@ entry
 
   echo m1[N1];
   echo m2[N2];
+
+  echo stdlib:sys:calls:delete_blocks(m1, 1);
+  echo stdlib:sys:calls:delete_blocks(m2, 10);
+  echo "end";
 }

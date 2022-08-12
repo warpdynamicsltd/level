@@ -1,18 +1,22 @@
+import stdlib:sys:calls as *;
+
 entry{
   var r as ref(byte);
-  r = __api__(sbrk, 10);
+  N = 1000000;
+  r = sbrk(N);
   var a as u64;
   a = r;
   r[0] = 3;
-  r[9] = 7;
+  r[N - 1] = 7;
   echo r[0] == 3;
-  echo r[9] == 7;
+  echo r[N - 1] == 7;
 
   var r_next as ref(byte);
-  r_next = __api__(sbrk, 10);
+  r_next = sbrk(N);
   var b as u64;
   b = r_next;
-  echo b - a;
+  echo r_next[-1] == 7;
+  echo b - a == N;
 }
 
 type complex as rec{

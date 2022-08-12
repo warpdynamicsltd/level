@@ -4,9 +4,10 @@ from level.core.compiler.x86_64.types.u32 import U32
 from level.core.compiler.x86_64.types.byte import Byte
 from level.core.compiler.x86_64.types.byte import Bool
 from level.core.x86_64 import *
-from level.core.parser.builtin import BuiltinValue
+from level.core.parser.builtin import BuiltinValue, BuiltinRef
 
 class Ref(Obj):
+    priority = 32
     size = 8
     def __init__(self, object_manager, for_child_manager=False, ptr=None, T=None, value=None, referenced=False, copy=False):
         self.object_manager = object_manager
@@ -34,6 +35,9 @@ class Ref(Obj):
             if self.object_manager is not None:
                 self.object_manager.compile_driver.string_table.append(level.core.compiler.x86_64.StringInfo(value, addr))
             return
+        if type(value) is BuiltinRef and value.value == 'null':
+            mov_(rax, 0)
+            self.MC_put_to_storage(rax)
 
     def MC_get_from_storage(self, reg):
         if self.referenced:
@@ -91,6 +95,29 @@ class Ref(Obj):
         obj = T.main_type(self.object_manager, ptr=ref.ptr, T=T, referenced=True)
         return obj
 
+    def __add__(self, other):
+        other.MC_get_from_storage(rax)
+        mov_(rcx, self.type.sub_types[0].size())
+        mul_(rcx)
+        T = self.type.sub_types[0]
+        self.MC_get_from_storage(rcx)
+        add_(rcx, rax)
+        ref = Ref(object_manager=self.object_manager, T=Type(Ref, sub_types=[T]))
+        ref.MC_put_to_storage(rcx)
+        return ref
+
+    def __sub__(self, other):
+        other.MC_get_from_storage(rax)
+        mov_(rcx, self.type.sub_types[0].size())
+        mul_(rcx)
+        T = self.type.sub_types[0]
+        self.MC_get_from_storage(rcx)
+        sub_(rcx, rax)
+        ref = Ref(object_manager=self.object_manager, T=Type(Ref, sub_types=[T]))
+        ref.MC_put_to_storage(rcx)
+        return ref
+
+
     def __eq__(self, other):
         res = Bool(self.object_manager, value=None)
         self.MC_get_from_storage(rax)
@@ -106,5 +133,45 @@ class Ref(Obj):
         other.MC_get_from_storage(rcx)
         xor_(rax, rcx)
         setnz_(al)
+        res.MC_put_to_storage(al)
+        return res
+
+    def __lt__(self, other):
+        res = Bool(self.object_manager, value=None)
+        other.MC_get_from_storage(rdx)
+        self.MC_get_from_storage(rcx)
+        xor_(rax, rax)
+        cmp_(rcx, rdx)
+        setb_(al)
+        res.MC_put_to_storage(al)
+        return res
+
+    def __gt__(self, other):
+        res = Bool(self.object_manager, value=None)
+        other.MC_get_from_storage(rdx)
+        self.MC_get_from_storage(rcx)
+        xor_(rax, rax)
+        cmp_(rcx, rdx)
+        seta_(al)
+        res.MC_put_to_storage(al)
+        return res
+
+    def __le__(self, other):
+        res = Bool(self.object_manager, value=None)
+        other.MC_get_from_storage(rdx)
+        self.MC_get_from_storage(rcx)
+        xor_(rax, rax)
+        cmp_(rcx, rdx)
+        setbe_(al)
+        res.MC_put_to_storage(al)
+        return res
+
+    def __ge__(self, other):
+        res = Bool(self.object_manager, value=None)
+        other.MC_get_from_storage(rdx)
+        self.MC_get_from_storage(rcx)
+        xor_(rax, rax)
+        cmp_(rcx, rdx)
+        setae_(al)
         res.MC_put_to_storage(al)
         return res
