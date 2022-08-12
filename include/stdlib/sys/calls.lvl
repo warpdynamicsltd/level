@@ -10,7 +10,7 @@ sub delete_blocks(var addr as ref(byte), var n as int) as bool
   return false;
 }
 
-sub brk(var addr = 0 as ref(byte)) as ref(byte)
+sub brk(var addr = null as ref(byte)) as ref(byte)
 {
   return __api__(syscall, 12, addr);
 }

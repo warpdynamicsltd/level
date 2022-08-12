@@ -757,6 +757,10 @@ class Parser:
 
         candidate = "".join(map(lambda k: k.visual(), stream))
 
+        res = builtin.translate_reserved_const(candidate)
+        if res is not None:
+            return ast.Const(res).add_meta(stream[0].meta)
+
         if re.match(r"^([+-]?)\d+$", candidate, re.MULTILINE) is not None:
             return ast.Const(int(candidate))
 
@@ -772,7 +776,6 @@ class Parser:
         raise ParseException(f"invalid const value in {meta(stream[0])}")
 
     def parse_const(self, stream):
-        # print(stream)
         if type(stream) is StringSymb:
             return ast.Const(bytes(stream.string(), encoding='utf-8')).add_meta(stream.meta)
 
@@ -784,7 +787,10 @@ class Parser:
             if res is not None:
                 return ast.Const(res).add_meta(stream.meta)
 
-        return self.composed_const(stream)
+        if type(stream) is list:
+            return self.composed_const(stream)
+
+        raise ParseException(f"invalid const value in {meta(stream)}")
 
     def parse_expression(self, stream):
         if not stream:
