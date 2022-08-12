@@ -1,0 +1,61 @@
+import stdlib:sys:brk_allocator as *;
+import stdlib:collections:stack as *;
+
+entry
+{
+  var allocator as Allocator;
+
+  var payload as u64;
+
+  stack = new (Stack(u64, Allocator), ref(allocator), 11);
+
+  N = 113;
+
+  echo "start pushing";
+
+  for (k = 1; k < N; inc k)
+  {
+    payload = k;
+    exec stack.push(payload);
+  }
+
+  var k as u64;
+  var res as bool;
+
+  k = N - 1;
+  res = true;
+
+  echo "start popping";
+
+  while (stack.pop(ref payload))
+  {
+    # echo payload;
+    res = res and (payload == k);
+    dec k;
+  }
+
+  echo res;
+
+  echo "start pushing";
+
+  for (k = 1; k < N; inc k)
+  {
+    payload = k;
+    exec stack.push(payload);
+  }
+
+  k = N - 1;
+  res = true;
+
+  echo "start popping";
+
+  while (stack.pop(ref payload))
+  {
+    res = res and (payload == k);
+    dec k;
+  }
+
+
+  echo res;
+  echo "end";
+}

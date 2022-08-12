@@ -1,0 +1,8 @@
+import stdlib:sys:calls;
+
+type Allocator as int;
+
+method allocate(var this as ref(Allocator), var size as int) as ref(byte)
+{
+  return stdlib:sys:calls:sbrk(size);
+}
