@@ -63,7 +63,10 @@ entry
   b[N] = -3.14159265359;
   inc N;
   a[N] = 3.1415926535897932384626434;
-  b[N] = float:pi;
+
+  var pi = float:pi as float;
+
+  b[N] = pi;
   inc N;
   A = float:pi/4;
   a[N] = sin(A)/cos(A);
