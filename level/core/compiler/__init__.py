@@ -126,7 +126,8 @@ class Compiler:
         self.meta = None
 
     def update_meta(self, exp):
-        self.meta = exp.meta
+        if exp is not None and exp.meta is not None:
+            self.meta = exp.meta
 
     def compile(self):
         self.compile_driver.begin()
@@ -563,7 +564,7 @@ class Compiler:
         if ast.istype(exp, ast.UnaryExpression):
             return self.compile_unary(exp, exp.args[0], obj_manager)
 
-        raise CompilerException(f"wrong expression type: {type(exp)}")
+        raise CompilerException(f"wrong expression type: {str(exp)} in {exp.meta}")
 
 
     def compile_binary(self, op_exp, exp1, exp2, obj_manager):
@@ -580,7 +581,10 @@ class Compiler:
 
     def compile_unary(self, op_exp, exp, obj_manager):
         op_T = type(op_exp)
-        obj = self.compile_expression(exp, obj_manager)
+        if ast.istype(exp, ast.TypeExpression):
+            obj = self.compile_type_expression(exp)
+        else:
+            obj = self.compile_expression(exp, obj_manager)
 
         subroutine = self.get_defined_for_call(True, op_exp.meta, op_exp.raw_str, obj)
         if subroutine is not None:
