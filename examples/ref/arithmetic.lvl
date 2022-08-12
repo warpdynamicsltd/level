@@ -1,0 +1,25 @@
+import stdlib:sys:calls as *;
+
+entry
+{
+  var a as array(u32, 10);
+  a[4] = 2;
+  a[5] = 3;
+  a[6] = 4;
+  var r as ref(u32);
+  r = ref a[5];
+  echo r[-1];
+  echo r[0];
+  echo r[1];
+
+  echo val (r - 1);
+  echo val (r + 0);
+  echo val (r + 1);
+
+  echo r - 1 < r;
+  echo r + 1 > r;
+  echo r - 1 <= r;
+  echo r + 1 >= r;
+  echo r <= r;
+  echo r >= r;
+}

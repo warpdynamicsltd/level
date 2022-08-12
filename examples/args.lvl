@@ -1,5 +1,5 @@
 import stdlib:types as *;
-import stdlib:kernel:args as *;
+import stdlib:os:args as *;
 
 entry
 {

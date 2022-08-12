@@ -16,7 +16,7 @@ from level.core.compiler.x86_64.types.ref import Ref
 from level.core.compiler.x86_64.types.rec import Rec
 from level.core.compiler.x86_64.types.byte import Byte
 
-from level.core.parser.builtin import translate_simple_types, BuiltinValue, BuiltinFloat
+from level.core.parser.builtin import translate_simple_types, BuiltinValue, BuiltinFloat, BuiltinRef
 
 from level.core.x86_64 import *
 
@@ -92,6 +92,9 @@ class CompileDriver_x86_64(CompileDriver):
 
         if type(c.name) is BuiltinFloat:
             return Type(Float)
+
+        if type(c.name) is BuiltinRef:
+            return Type(Ref)
 
         raise CompilerException (f"unknown const symbol '{c.name}' in {c.meta}")
 
@@ -373,11 +376,6 @@ class CompileDriver_x86_64(CompileDriver):
         self.echo_n()
 
     def print(self, addr, size):
-        # mov_(edx, size)
-        # mov_(rcx, addr)
-        # mov_(ebx, 1)
-        # mov_(eax, 4)
-        # int_(0x80)
         mov_(rsi, addr)
         mov_(rdx, size)
         mov_(rdi, 1)

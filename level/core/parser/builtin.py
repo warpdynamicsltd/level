@@ -84,6 +84,8 @@ class BuiltinValue:
 class BuiltinFloat(BuiltinValue):
     pass
 
+class BuiltinRef(BuiltinValue):
+    pass
 
 def translate_reserved_const(const):
     if const == 'true':
@@ -92,5 +94,7 @@ def translate_reserved_const(const):
         return False
     if const == 'float:pi':
         return BuiltinFloat('pi')
+    if const == 'null':
+        return BuiltinRef('null')
 
     return None
