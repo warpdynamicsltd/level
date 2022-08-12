@@ -1,0 +1,31 @@
+type P(A, B) as rec(
+  var x as A,
+  var y as B
+)
+
+sub i(P(A, B)) as P(A, B)
+{
+  var p as P(A, B);
+  p.x = 3;
+  p.y = 3;
+  return p;
+}
+
+sub f(var a as A, var b as B) as P(A, B)
+{
+  var k as P(A, B);
+  q = i(P(A, B));
+  k.x = q.x + a;
+  k.y = q.y + b;
+  return k;
+}
+
+entry
+{
+  var a = 1 as int;
+  var b = 2 as int;
+
+  k = f(a, b);
+  echo k.x;
+  echo k.y;
+}

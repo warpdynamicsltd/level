@@ -734,7 +734,7 @@ class Parser:
         for arg in args:
             expressions.append(self.parse_type_expression(arg.value))
 
-        return ast.TypeFunctorType(self.build_calling_name(stream[0]), *expressions).add_meta(stream[0].meta)
+        return ast.TypeFunctor(self.build_calling_name(stream[0]), *expressions).add_meta(stream[0].meta)
 
     def try_parse_type_function(self, stream):
         try:
