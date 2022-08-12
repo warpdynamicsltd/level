@@ -146,7 +146,11 @@ class Template:
         args = []
         for i in range(len(statement.args)):
             e = statement.args[i]
-            if type(e) is ast.Type:
+
+            # we need to add ast.Var because some ast.Call are supposed to be translated int ast.TypeFunctor
+            # and then all ast.Var in that ast.Call will be transformed to ast.Type
+            # hence the need to replace all template variables in ast.Var
+            if type(e) is ast.Type or type(e) is ast.Var:
                 key = e.name
 
                 v = TypeVar(key)

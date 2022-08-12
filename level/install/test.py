@@ -73,6 +73,7 @@ test_source([test_path(r"templates/arg_type.lvl")], b"+00000000:00000006\n000000
 test_source([test_path(r"templates/arg_type_comp.lvl")], b"+00000000:00000006\n00000001\n00000001\n")
 test_source([test_path(r"templates/nesting_arg_type.lvl")], b"+00000000:00000006\n00000001\n00000001\n")
 test_source([test_path(r"templates/nesting_arg_type2.lvl")], b"+00000000:00000006\n00000001\n00000001\n")
+test_source([test_path(r"templates/compound2.lvl")], b"+00000000:00000004\n+00000000:00000005\n")
 
 test_source([test_path(r"types/order.lvl")], b"+00000000:00000007\n+00000000:0000000c\n")
 test_source([test_path(r"types/cast.lvl")], b"+00000000:00000003\n3fff:80000000:00000000\n+00000000:00000003\n")

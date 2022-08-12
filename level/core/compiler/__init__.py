@@ -471,7 +471,7 @@ class Compiler:
                 elif name == 'array':
                     return self.compile_type_expression(ast.ArrayType(*exp.args[1:]))
                 else:
-                    return self.compile_type_expression(ast.TypeFunctorType(exp.calling_name, *exp.args[1:]).add_meta(exp.meta))
+                    return self.compile_type_expression(ast.TypeFunctor(exp.calling_name, *exp.args[1:]).add_meta(exp.meta))
 
             if ast.istype(exp.args[0], ast.ValueAtName):
                 expression = ast.MetaVar()
@@ -707,7 +707,7 @@ class Compiler:
                 types.append(T)
             return Type(main_type=self.compile_driver.get_rec_type(), sub_types=types, meta_data=names)
 
-        if ast.istype(s, ast.TypeFunctorType):
+        if ast.istype(s, ast.TypeFunctor):
             Ts = []
             for exp in s.args:
                 if ast.istype(exp, ast.TypeExpression):
