@@ -13,14 +13,30 @@ entry
 
   echo "start pushing";
 
+  var k as u64;
+  var res as bool;
+
+
   for (k = 1; k < N; inc k)
   {
     payload = k;
     exec stack.push(payload);
   }
 
-  var k as u64;
-  var res as bool;
+  echo "start iterating";
+
+  iter = stack.iterator();
+
+  res = true;
+  k = 1;
+
+  while (iter.next(ref payload))
+  {
+    res = res and (payload == k);
+    inc k;
+  }
+
+  echo res;
 
   k = N - 1;
   res = true;
@@ -54,6 +70,7 @@ entry
     res = res and (payload == k);
     dec k;
   }
+
 
   echo res;
   echo "end";
