@@ -3,6 +3,9 @@ import level.core.ast as ast
 from level.core.compiler.types import Type, TypeVar
 
 class TypeDef:
+    # used just for stats
+    n_compiled = 0
+
     def __init__(self, compiler, t, type_vars, type_def):
         self.compiler = compiler
         self.t = t
@@ -31,6 +34,13 @@ class TypeDef:
         statement.args = args
 
     def compile(self, from_subroutine_header, with_type_var, types=[]):
+        h = hash(tuple(types))
+        if (self.t.name, from_subroutine_header, h) in self.compiler.type_defs_compiled:
+            wtv, resT = self.compiler.type_defs_compiled[self.t.name, from_subroutine_header, h]
+            if wtv:
+                with_type_var.add(True)
+            return resT
+
         if not self.type_vars and self.T is not None:
             return self.T
 
@@ -45,6 +55,9 @@ class TypeDef:
         T = self.compiler.compile_type_expression(type_def, from_subroutine_header=from_subroutine_header, with_type_var=with_type_var)
         T.user_name = self.t.name
         self.T = T
+        TypeDef.n_compiled += 1
+        wtv = True if len(with_type_var) > 0 else False
+        self.compiler.type_defs_compiled[self.t.name, from_subroutine_header, h] = wtv, T
         return T
 
 

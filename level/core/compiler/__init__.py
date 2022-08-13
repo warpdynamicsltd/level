@@ -125,6 +125,10 @@ class Compiler:
 
         self.meta = None
 
+        # for internal cache use
+        self.subroutines_compiled = set()
+        self.type_defs_compiled = {}
+
     def update_meta(self, exp):
         if exp is not None and exp.meta is not None:
             self.meta = exp.meta

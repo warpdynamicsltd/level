@@ -28,7 +28,7 @@ class Ref(Obj):
 
     def set_from_const(self, value):
         if type(value) is bytes:
-            self.type.sub_types[0].length = len(value)
+            # self.type.sub_types[0].length = len(value)
             addr = SymBits(bits=64)
             mov_(rax, addr)
             self.MC_put_to_storage(rax)

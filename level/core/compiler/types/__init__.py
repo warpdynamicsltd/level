@@ -24,10 +24,13 @@ class Type:
         return f"Type(main_type={self.main_type.__name__}, length={self.length}, sub_types={[str(t) for t in self.sub_types]}, meta_data={meta_data_repr}, user_name={self.user_name})"
 
     def __eq__(self, other):
-        return hash(self) == hash(other)
+        if type(other) is Type:
+            return hash(self) == hash(other)
+        else:
+            return False
 
     def __hash__(self):
-        return hash((hash(self.main_type.__name__), self.length, hash(tuple(hash(t) for t in self.sub_types)), hash(self.user_name)))
+        return hash((hash(self.main_type.__name__), self.length, tuple(hash(t) for t in self.sub_types), hash(self.user_name)))
 
     def substitute(self, a, T):
         pass
@@ -68,6 +71,7 @@ class TypeVar:
             res.sub_types = []
             for t in T_exp.sub_types:
                 res.sub_types.append(self.substitute(t, T_val))
+
             return res
 
         if type(T_exp) is TypeVar:
