@@ -58,13 +58,13 @@ method push(var this as ref(Stack(T:main, T:allocator)), var v as T:main)
   }
 }
 
-method pop(var this as ref(Stack(T:main, T:allocator)), var res as ref(T:main)) as bool
+method pop(var this as ref(Stack(T:main, T:allocator)), var out as ref(T:main)) as bool
 {
   dec this.index;
 
   if (this.index >= 0)
   {
-    val res = this.data_block.data[this.index];
+    val out = this.data_block.data[this.index];
     return true;
   }
 
@@ -75,10 +75,57 @@ method pop(var this as ref(Stack(T:main, T:allocator)), var res as ref(T:main)) 
 
     this.data_block = prev_data_block;
     this.index = this.buff_length - 1;
-    val res = this.data_block.data[this.index];
+    val out = this.data_block.data[this.index];
     return true;
   }
 
   this.index = 0;
   return false;
 }
+
+method iterator(var this as ref(Stack(T:main, T:allocator))) as StackIterator(T:main)
+{
+  var res as StackIterator(T:main);
+  res.index = 0;
+  res.end_index = this.index;
+  res.data_block = this.start;
+  res.buff_length = this.buff_length;
+  return res
+}
+
+type StackIterator(T:main) as rec(
+  var index as int,
+  var buff_length as int,
+  var end_index as int,
+  var data_block as ref(DataBlock(T:main)),
+)
+
+method next(var this as ref(StackIterator(T:main)), var out as ref(T:main)) as bool
+{
+  if (this.index < this.buff_length)
+  {
+    # echo u64(this.data_block.next_addr);
+    if (this.data_block.next_addr == null and this.index == this.end_index)
+    {
+      return false;
+    }
+    val out = this.data_block.data[this.index];
+    inc this.index;
+    return true;
+  }
+
+  if (this.index == this.buff_length)
+  {
+    if (this.data_block.next_addr == null)
+    {
+      return false
+    }
+
+    this.data_block = this.data_block.next_addr;
+    this.index = 0;
+    val out = this.data_block.data[this.index];
+    inc this.index;
+    return true;
+  }
+}
+
