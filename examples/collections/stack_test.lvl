@@ -55,7 +55,6 @@ entry
     dec k;
   }
 
-
   echo res;
   echo "end";
 }

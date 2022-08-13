@@ -1,4 +1,5 @@
 import sys
+import time
 import shutil
 
 import argparse
@@ -6,6 +7,8 @@ import argparse
 from level.core.parser.code import *
 from level.core.compiler.x86_64 import *
 from level.core.parser.linker import LinkerException
+from level.core.compiler.subroutines import Subroutine
+from level.core.compiler.type_defs import TypeDef
 from level.core.ast import GrammarTreeError
 from level.execute import cmp, run_listen
 from level.install import *
@@ -30,6 +33,7 @@ def get_args():
     comp.add_argument("-o", "--out", type=str, default=None, help="executable output path")
     comp.add_argument("-r", "--run", action='store_true', help="compile and run redirecting stdout and stderr")
     comp.add_argument("-d", "--dev", action='store_true', help="Level developer mode")
+    comp.add_argument("-s", "--stats", action='store_true', help="printing out stats about compilation")
     comp.set_defaults(func=do_cmp)
 
     install = subparsers.add_parser("install", help="install Level module")
@@ -129,91 +133,118 @@ def do_test(args):
 def do_cmp(args):
     sys.exit(do_cmp_(args))
 
-def do_cmp_(args):
-    stop_if_no_setup()
+global parsing_done_time, compilation_done_time
 
-    if not os.path.isfile(args.source[0]):
-        sys.stderr.write(f"path '{args.source[0]}' doesn't exist\n")
-        return 1
-
+def compile(args, stderr=sys.stderr):
+    global parsing_done_time, compilation_done_time
     with open(args.source[0], "rb", buffering=100000) as f:
         code = str(f.read(), encoding='utf-8')
         if not args.dev:
             try:
                 program = Parser(code).parse()
             except LinkerException as e:
-                sys.stderr.write(str(e))
-                sys.stderr.write('\n')
+                stderr.write(str(e))
+                stderr.write('\n')
                 return 1
             except ParseException as e:
-                sys.stderr.write(str(e))
-                sys.stderr.write('\n')
+                stderr.write(str(e))
+                stderr.write('\n')
                 return 1
             except Exception as e:
-                sys.stderr.write("unrecognised parser error")
-                sys.stderr.write('\n')
+                stderr.write("unrecognised parser error")
+                stderr.write('\n')
                 return 1
         else:
             program = Parser(code).parse()
+
+        parsing_done_time = time.time()
 
         if not args.dev:
             try:
                 comp = Compiler(program, StandardObjManager, CompileDriver_x86_64)
                 comp.compile()
             except CompilerException as e:
-                sys.stderr.write(str(e))
-                sys.stderr.write('\n')
+                stderr.write(str(e))
+                stderr.write('\n')
                 return 1
             except CompilerNotLocatedException as e:
-                sys.stderr.write(str(e))
-                sys.stderr.write(f": compiler error in {comp.meta}")
-                sys.stderr.write('\n')
+                stderr.write(str(e))
+                stderr.write(f": compiler error in {comp.meta}")
+                stderr.write('\n')
                 return 1
             except GrammarTreeError as e:
-                sys.stderr.write(str(e))
-                sys.stderr.write(f": compiler error in {comp.meta}")
-                sys.stderr.write('\n')
+                stderr.write(str(e))
+                stderr.write(f": compiler error in {comp.meta}")
+                stderr.write('\n')
                 return 1
             except Exception as e:
-                sys.stderr.write(str(e))
-                sys.stderr.write(f": unrecognised compiler error in {comp.meta}")
-                sys.stderr.write('\n')
+                stderr.write(str(e))
+                stderr.write(f": unrecognised compiler error in {comp.meta}")
+                stderr.write('\n')
                 return 1
         else:
             try:
                 comp = Compiler(program, StandardObjManager, CompileDriver_x86_64)
                 comp.compile()
             except Exception as e:
-                sys.stderr.write(f"compiler error in {comp.meta}\n")
-                sys.stderr.write('\n')
+                stderr.write(f"compiler error in {comp.meta}\n")
+                stderr.write('\n')
                 raise e
 
-        if args.out is None:
-            filename = Path(args.source[0]).stem
-        else:
-            filename = args.out
+        compilation_done_time = time.time()
 
-        if not args.run:
-            if not args.dev:
-                try:
-                    cmp(filename)
-                except Exception as e:
-                    sys.stderr.write("unrecognised error")
-                    sys.stderr.write('\n')
-                    return 1
-            else:
-                cmp(filename)
+    return 0
 
+def do_cmp_(args):
+    global parsing_done_time, compilation_done_time
+    stop_if_no_setup()
+
+    if not os.path.isfile(args.source[0]):
+        sys.stderr.write(f"path '{args.source[0]}' doesn't exist\n")
+        return 1
+
+    time_start = time.time()
+
+    res = compile(args)
+    if res != 0:
+        return res
+
+    if args.out is None:
+        filename = Path(args.source[0]).stem
+    else:
+        filename = args.out
+
+    if not args.run:
+        if not args.dev:
+            try:
+                machine_code_size = cmp(filename)
+            except Exception as e:
+                sys.stderr.write("unrecognised error")
+                sys.stderr.write('\n')
+                return 1
         else:
-            if not args.dev:
-                try:
-                    run_listen(*args.source[1:])
-                except Exception as e:
-                    sys.stderr.write("unrecognised compile time error")
-                    sys.stderr.write('\n')
-                    return 1
-            else:
-                run_listen(*args.source[1:])
+            machine_code_size = cmp(filename)
+
+        build_done_time = time.time()
+
+    else:
+        if not args.dev:
+            try:
+                build_done_time, machine_code_size = run_listen(*args.source[1:])
+            except Exception as e:
+                sys.stderr.write("unrecognised compile time error")
+                sys.stderr.write('\n')
+                return 1
+        else:
+            build_done_time, machine_code_size = run_listen(*args.source[1:])
+
+    if args.stats:
+        print("types compiled:       %i" % TypeDef.n_compiled)
+        print("subroutines compiled: %i" % Subroutine.n_compiled)
+        print("machine code size:    %.1f KB" % (machine_code_size/(1024)))
+        print("parsing time:         %.3f s" % -(time_start - parsing_done_time))
+        print("compile time:         %.3f s" % -(parsing_done_time - compilation_done_time))
+        print("build time:           %.3f s" % -(compilation_done_time - build_done_time))
 
     return 0
 

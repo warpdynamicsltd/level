@@ -7,6 +7,7 @@ class Buffer:
         self.offset = offset
         self.cursor = self.offset
         self.buffer = {}
+        self.max_index = -1
 
     def set_cursor(self, cursor):
         if cursor < self.offset:
@@ -22,6 +23,8 @@ class Buffer:
 
     def put_byte(self, b):
         self.buffer[self.cursor] = b
+        if self.cursor > self.max_index:
+            self.max_index = self.cursor
         self.cursor += 1
 
     def write(self, bs):
@@ -30,7 +33,7 @@ class Buffer:
 
     def get_bytes(self):
         begin = self.offset
-        end = max(list(self.buffer.keys()))
+        end = self.max_index
         result = bytearray(end - begin + 1)
         for i in range(len(result)):
             k = i + self.offset

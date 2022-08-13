@@ -12,6 +12,9 @@ class CallAddress():
         self.value = value
 
 class Subroutine:
+    # used just for stats
+    n_compiled = 0
+
     def __init__(self,
                  compiler,
                  name,
@@ -43,6 +46,10 @@ class Subroutine:
         if self.compiled:
             return
 
+        h = hash(tuple(self.var_types))
+        if (self.name, h) is self.compiler.subroutines_compiled:
+            return
+
         obj_manager = self.compiler.obj_manager_type(self.compiler.compile_driver)
 
         self.compiler.compile_driver.set_call_address(self.address)
@@ -56,7 +63,9 @@ class Subroutine:
 
         self.compiler.compile_driver.ret()
         obj_manager.close()
+        Subroutine.n_compiled += 1
         self.compiled = True
+        self.compiler.subroutines_compiled.add((self.name, h))
 
     def match(self, var_types):
         if not self.var_types:
@@ -72,6 +81,7 @@ class Subroutines:
     def __init__(self):
         self.subroutines = defaultdict(list)
         self.subroutines_stack = []
+        self.subroutines_map = {}
 
     def add(self, key, sub):
         self.subroutines[key].append(sub)
@@ -89,6 +99,10 @@ class Subroutines:
         if key not in self.subroutines:
             return None
 
+        h = hash(tuple(var_types))
+        if (key, h) in self.subroutines_map:
+            return self.subroutines_map[key, h]
+
         matches = []
         no_args_matches = []
         for sub in self.subroutines[key]:
@@ -105,19 +119,22 @@ class Subroutines:
             raise level.core.compiler.CompilerException(f"{msg}ambiguous function call '{key}' in {calling_meta}")
 
         if len(matches) == 1:
-            return matches[0]
+            res = matches[0]
+        else:
+            if len(no_args_matches) > 1:
+                msg = ""
+                for sub in no_args_matches:
+                    msg += f"matched function {sub.name.key} in {sub.meta}\n"
+                raise level.core.compiler.CompilerException(f"{msg}ambiguous function call '{key}' in {calling_meta}")
+            # if it hasn't found var type match return no var type if exists
 
-        if len(no_args_matches) > 1:
-            msg = ""
-            for sub in no_args_matches:
-                msg += f"matched function {sub.name.key} in {sub.meta}\n"
-            raise level.core.compiler.CompilerException(f"{msg}ambiguous function call '{key}' in {calling_meta}")
-        # if it hasn't found var type match return no var type if exists
+            if len(no_args_matches) == 1:
+                res = no_args_matches[0]
+            else:
+                res = None
 
-        if len(no_args_matches) == 1:
-            return no_args_matches[0]
-
-        return None
+        self.subroutines_map[key, h] = res
+        return res
 
 
 class Template:
@@ -142,6 +159,8 @@ class Template:
         self.general_matcher = GeneralMatcher(TypeVar)
         self.meta = meta
 
+        self.subroutines_map = {}
+
     def substitute_statement(self, statement, substitute):
         args = []
         for i in range(len(statement.args)):
@@ -163,6 +182,10 @@ class Template:
         statement.args = args
 
     def create_subroutine(self, meta, var_types, substitute=None):
+        h = hash(tuple(var_types + self.var_types[len(var_types):]))
+        if h in self.subroutines_map:
+            return self.subroutines_map[h]
+
         if substitute is None:
             substitute = self.general_matcher.match(self.var_types, var_types)
 
@@ -186,7 +209,7 @@ class Template:
         address = self.compiler.compile_driver.get_current_address()
 
 
-        return Subroutine(
+        res = Subroutine(
                         compiler=self.compiler,
                         name=self.name,
 
@@ -202,6 +225,9 @@ class Template:
                         statement_list=ast.StatementList(*substituted_statement_list),
                         meta=self.meta)
 
+        self.subroutines_map[h] = res
+        return res
+
     def match(self, var_types):
         if not self.var_types:
         # we want functions without arguments to be checked at the end if there is no other candidates
@@ -215,6 +241,8 @@ class Template:
 class Templates:
     def __init__(self):
         self.templates = defaultdict(list)
+        self.subroutines_map = {}
+        self.templates_map = {}
 
     def add(self, key, template):
         self.templates[key].append(template)
@@ -232,6 +260,10 @@ class Templates:
         if key not in self.templates:
             return None
 
+        h = hash(tuple(var_types))
+        if (key, h) in self.templates_map:
+            return h, self.templates_map[key, h]
+
         matches = []
         for template in self.templates[key]:
             substitute = template.match(var_types)
@@ -245,15 +277,24 @@ class Templates:
             raise level.core.compiler.CompilerException(f"{msg}ambiguous function call '{key}' in {calling_meta}")
 
         if len(matches) == 1:
-            return matches[0]
+            res = matches[0]
+        else:
+            return None
 
-        return None
+        self.templates_map[key, h] = h, res
+        return h, res
 
     def get_subroutine(self, calling_meta, key, var_types):
         res = self.get(calling_meta, key, var_types)
 
         if res is None:
             return None
-        template, substitute = res
+        #print(res)
+        h, (template, substitute) = res
+        if (h, key) in self.subroutines_map:
+            return self.subroutines_map[h, key]
 
-        return template.create_subroutine(calling_meta, var_types, substitute)
+        res = template.create_subroutine(calling_meta, var_types, substitute)
+        self.subroutines_map[h, key] = res
+        return res
+
