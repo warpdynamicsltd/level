@@ -108,7 +108,10 @@ class ObjManager(ABC):
         pass
 
     def reserve_variable_by_name(self, T, name, value=None, copy=False):
+        if name in self.objs:
+            return False
         self.objs[name] = self.reserve_variable(T, value, copy=copy)
+        return True
 
 class Compiler:
     def __init__(self, program : ast.Program, obj_manager_type: type, compile_driver_type: type, memory: int=0x100000):
@@ -328,7 +331,8 @@ class Compiler:
                 T = self.compile_driver.get_type_by_const(const.val)
             else:
                 T = self.compile_type_expression(type_expression.val)
-            obj_manager.reserve_variable_by_name(T, var.val.name, const.val.name)
+            if not obj_manager.reserve_variable_by_name(T, var.val.name, const.val.name):
+                raise CompilerException(f"variable name '{var.val.name}' already used in this scope, can't initiate in {var.val.meta}")
             return
 
         if ast.istype(s, ast.Identify):
@@ -443,6 +447,36 @@ class Compiler:
             next(gen)
             self.compile_statements(for_statement_list.val, obj_manager)
             self.compile_statement(final_statement.val, obj_manager)
+            next(gen)
+            return
+
+        if ast.istype(s, ast.ForEach):
+            init_var_or_expression = ast.MetaVar()
+            iteration_expression = ast.MetaVar()
+            statement_list = ast.MetaVar()
+            ast.ForEach(init_var_or_expression, iteration_expression, statement_list) << s
+
+            if ast.istype(init_var_or_expression.val, ast.Expression):
+                exp = init_var_or_expression.val
+                obj = self.compile_expression(exp, obj_manager)
+            elif ast.istype(init_var_or_expression.val, ast.InitWithType):
+                var_name = init_var_or_expression.val.args[0].name
+                self.compile_statement(init_var_or_expression.val, obj_manager)
+                obj = obj_manager.objs[var_name]
+            else:
+                raise CompilerException(f"badly formed foreach statement in {s.meta}")
+
+            iteration_obj = self.compile_expression(iteration_expression.val, obj_manager)
+            iterator_method = self.get_defined_for_call(True, iteration_expression.val.meta, 'iterator', iteration_obj)
+            iterator_obj = self.compile_call_execution(True, obj_manager, iterator_method, iteration_obj)
+            ref = self.compile_driver.build_ref(obj_manager, obj)
+            next_method = self.get_defined_for_call(True, iteration_expression.val.meta, 'next', iterator_obj, ref)
+            gen = self.compile_driver.while_acc()
+            next(gen)
+            bool_obj = self.compile_call_execution(True, obj_manager, next_method, iterator_obj, ref)
+            bool_obj.to_acc()
+            next(gen)
+            self.compile_statements(statement_list.val, obj_manager)
             next(gen)
             return
 

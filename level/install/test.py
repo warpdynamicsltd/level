@@ -79,7 +79,8 @@ test_source([test_path(r"types/order.lvl")], b"+00000000:00000007\n+00000000:000
 test_source([test_path(r"types/cast.lvl")], b"+00000000:00000003\n3fff:80000000:00000000\n+00000000:00000003\n")
 test_source([test_path(r"types/sizeof.lvl")], b"+00000000:00000003\n00000001\n+00000000:00000050\n+00000000:00000008\n00000001\n00000001\n00000001\n")
 
-test_source([test_path(r"collections/stack_test.lvl")], b"start pushing\nstart iterating\n00000001\nstart popping\n00000001\nstart pushing\nstart popping\n00000001\nend\n")
+test_source([test_path(r"collections/stack_test.lvl")],
+            b"start pushing\nstart iterating\n00000001\nstart iterating\n00000001\nstart iterating\n00000001\nstart popping\n00000001\nstart pushing\nstart popping\n00000001\nend\n")
 
 test_source([test_path(r"globals/simple.lvl")], b"00000001\n+00000000:00000002\n-00000000:00000002\n+00000000:00000006\n-00000000:00000002\n+00000000:00000006\nhello\n")
 

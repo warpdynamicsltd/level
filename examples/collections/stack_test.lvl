@@ -7,9 +7,9 @@ entry
 
   var payload as u64;
 
-  stack = new (Stack(u64, Allocator), ref(allocator), 11);
+  stack = new (Stack(u64, Allocator), ref allocator, 113);
 
-  N = 113;
+  N = 5138;
 
   echo "start pushing";
 
@@ -25,17 +25,39 @@ entry
 
   echo "start iterating";
 
+  res = true;
+  k = 1;
+  foreach (payload in stack)
+  {
+    #echo p;
+    res = res and (payload == k);
+    inc k;
+  }
+  echo res;
+
+  echo "start iterating";
+
+  res = true;
+  k = 1;
+  foreach (var p as u64 in stack)
+  {
+    #echo p;
+    res = res and (p == k);
+    inc k;
+  }
+  echo res;
+
+  echo "start iterating";
+
   iter = stack.iterator();
 
   res = true;
   k = 1;
-
   while (iter.next(ref payload))
   {
     res = res and (payload == k);
     inc k;
   }
-
   echo res;
 
   k = N - 1;
