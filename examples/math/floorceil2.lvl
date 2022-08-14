@@ -2,14 +2,14 @@ entry{
   var x = 1 as float;
   echo floor(x);
   echo ceil(x);
-  var x = 7 as float;
-  echo floor(x);
-  echo ceil(x);
+  var x1 = 7 as float;
+  echo floor(x1);
+  echo ceil(x1);
   var z = -2 as float;
   echo floor(z);
   echo ceil(z);
-  var z = -2.13232234 as float;
-  echo ceil(z) - floor(z);
-  var z = 9.999133232234 as float;
-  echo ceil(z) - floor(z);
+  var z1 = -2.13232234 as float;
+  echo ceil(z1) - floor(z1);
+  var z2 = 9.999133232234 as float;
+  echo ceil(z2) - floor(z2);
 }

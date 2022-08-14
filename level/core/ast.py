@@ -283,6 +283,16 @@ class For(Statement):
             raise GrammarTreeError()
         Statement.__init__(self, 'For', init_statement, condition_expression, final_statement, for_statement_list)
 
+class ForEach(Statement):
+    def __init__(self, exp_or_var_init, iteration_expression, statement_list):
+        if not((istype(exp_or_var_init, InitWithType) or istype(exp_or_var_init, Expression))):
+            raise GrammarTreeError()
+        if not(istype(iteration_expression, Expression)):
+            raise GrammarTreeError()
+        if not(istype(statement_list, StatementList)):
+            raise GrammarTreeError()
+        Statement.__init__(self, 'ForEach', exp_or_var_init, iteration_expression, statement_list)
+
 class Return(Statement):
     def __init__(self, *expression):
         Statement.__init__(self, 'Return', *expression)

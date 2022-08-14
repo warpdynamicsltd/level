@@ -697,6 +697,19 @@ class Parser:
 
         raise ParseException(f"either var statement or type expected in {meta(stream)}")
 
+    def parse_expression_or_var_statement(self, stream):
+        try:
+            return self.parse_var_statement(stream)
+        except ParseException:
+            pass
+
+        try:
+            return self.parse_expression(stream)
+        except ParseException:
+            pass
+
+        raise ParseException(f"either var statement or expression expected in {meta(stream)}")
+
     def parse_type_function(self, stream):
         if not(type(stream) is list and stream):
             raise ParseException()
@@ -1020,6 +1033,9 @@ class Parser:
             if terminal == 'for':
                 return self.parse_for_statement(stream, limit)
 
+            if terminal == 'foreach':
+                return self.parse_for_each_statement(stream, limit)
+
         if stream and type(stream[0]) is TerminalSymb and self.is_var_token(stream[0]):
             if len(stream) > 2 and type(stream[1]) is TerminalSymb and stream[1].visual() == '$=':
                 var_name = stream[0].visual()
@@ -1091,6 +1107,23 @@ class Parser:
                 statement_list = self.parse_statement_list(stream[2].value)
                 return 2 if (limit is None or limit > 3) else limit, ast.For(init_statement, condition, final_statement,
                                                                              statement_list).add_meta(stream[0].meta)
+            else:
+                raise ParseException(f"'{{'expected after 'for' in {stream[1].meta}")
+        else:
+            raise ParseException(f"'(' expected after 'for' in {stream[0].meta}")
+
+    def parse_for_each_statement(self, stream, limit):
+        if not (type(stream) is list and stream):
+            raise ParseException()
+        if len(stream) > 0 and type(stream[1]) is BracketSymb:
+            args = self.parse_list(stream[1].value, 'in')
+            if len(args) != 2:
+                raise ParseException(f"badly formed foreach statement in {stream[1].meta}")
+            expression_or_var = self.parse_expression_or_var_statement(args[0].value)
+            iteration_expression = self.parse_expression(args[1].value)
+            if len(stream) > 1 and type(stream[2]) is BracketSymb:
+                statement_list = self.parse_statement_list(stream[2].value)
+                return 2 if (limit is None or limit > 3) else limit, ast.ForEach(expression_or_var, iteration_expression, statement_list).add_meta(stream[0].meta)
             else:
                 raise ParseException(f"'{{'expected after 'for' in {stream[1].meta}")
         else:

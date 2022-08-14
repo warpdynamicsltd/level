@@ -15,23 +15,22 @@ entry{
   b = false;
   echo f(b);
 
-  var b as bool;
   b = false;
   echo f(b, 3);
 
   var a as u32;
-  var b as u32;
+  var b1 as u32;
   a = 3;
-  b = 2;
-  echo f(a, b);
+  b1 = 2;
+  echo f(a, b1);
 
-  echo f(b, u);
-  echo f(b, u, 3);
+  echo f(b1, u);
+  echo f(b1, u, 3);
 
   var j as natural;
   j = 7;
   echo f(j);
 
-  var u = 1 as int;
-  echo f(u);
+  var u1 = 1 as int;
+  echo f(u1);
 }

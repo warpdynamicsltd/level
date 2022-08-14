@@ -52,9 +52,9 @@ entry{
   y.b = 1.0;
   exec e(y);
 
-  var z as rec(var a as int, var b as u32);
-  z.b = 3;
-  res = e(z);
+  var z1 as rec(var a as int, var b as u32);
+  z1.b = 3;
+  res = e(z1);
   echo res[0];
   echo res[1];
   echo f(3);
