@@ -564,7 +564,7 @@ class Compiler:
             if exp.calling_name in self.globals.globals_dict:
                 return self.globals.get_obj(exp.calling_name, obj_manager)
 
-            if obj_manager is None or exp.name not in obj_manager.objs:
+            if obj_manager is None or not(exp.name in obj_manager.objs):
                 if exp.name in translate_simple_types:
                     calling_name = exp.name
                 else:
@@ -730,7 +730,7 @@ class Compiler:
                                                  with_type_var=with_type_var)
             else:
                 T = self.compile_expression(exp, None)
-            n = const.val.name
+            n = int(const.val.name)
             return Type(main_type=self.compile_driver.get_array_type(), length=n, sub_types=[T])
 
         if ast.istype(s, ast.RefType):

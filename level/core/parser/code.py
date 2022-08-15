@@ -727,10 +727,8 @@ class Parser:
 
         if fun_name == 'array' and len(args) == 2:
             exp = self.parse_type_expression(args[0].value)
-            if type(args[1].value[0]) is TerminalSymb and args[1].value[0].visual().isdigit():
-                return ast.ArrayType(exp, ast.Const(int(args[1].value[0].visual())).add_meta(args[1].value[0].meta)).add_meta(stream[0].meta)
-            else:
-                raise ParseException(f"badly formed array type in {stream[1].meta}")
+            const = self.parse_const(args[1].value)
+            return ast.ArrayType(exp, const)
 
         if fun_name == 'ref':
             if args:

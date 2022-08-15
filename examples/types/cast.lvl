@@ -1,3 +1,5 @@
+import test:type_calls;
+
 type C(A, B) as rec(
   var a as A,
   var b as B
@@ -16,4 +18,5 @@ entry
   echo float(1);
   c = C(int, int)(3);
   echo c.a;
+  echo test:type_calls:f() == u64(13);
 }

@@ -4,22 +4,144 @@ import stdlib:sys:brk_allocator;
 
 type Allocator as rec(
   var brk_allocator as stdlib:sys:brk_allocator:Allocator,
-  var map as array(stdlib:collections:stack:Stack(ref(byte), stdlib:sys:brk_allocator:Allocator), 63)
+  var map as array(stdlib:collections:stack:Stack(ref(byte), stdlib:sys:brk_allocator:Allocator), 0x1000)
 )
 
 sub ()(Allocator) as Allocator
 {
   var res as Allocator;
-  for (i=0; i < 63; inc i)
+  for (i = 0; i < 0x1000; inc i)
   {
-    res.map[i] = stdlib:collections:stack:Stack(ref(byte), stdlib:sys:brk_allocator:Allocator)(ref res.brk_allocator, 128);
+    res.map[i] = stdlib:collections:stack:Stack(ref(byte), stdlib:sys:brk_allocator:Allocator)(ref res.brk_allocator, 32);
   }
   return res;
 }
 
+sub real_addr_and_size(var ptr as ref(byte), var addr as ref(ref(byte))) as int
+{
+  if ([ptr - 1] != 0xff)
+  {
+    val addr = ptr - 1;
+    # one additional byte with size
+    return int([ptr - 1] + 1);
+  }
+  else
+  {
+    var r as ref(int);
+    r = ptr - 9;
+    val addr = r;
+    # 8 additional bytes for size and one 0xff
+    return [r] + 9;
+  }
+}
+
+sub set_size_and_get_ptr(var addr as ref(byte), var size as int) as ref(byte)
+{
+  if (size < 0xff)
+  {
+    addr[0] = size;
+    return addr + 1;
+  }
+  else
+  {
+    var r as ref(u64);
+    r = addr;
+    [r] = size;
+    addr[8] = 0xff;
+    return addr + 9;
+  }
+}
+
+sub get_real_size(var size as int) as int
+{
+  if (size < 0xff)
+  {
+    return size + 1;
+  }
+  else
+  {
+    return size + 9;
+  }
+}
+
+sub get_size(var real_size as int) as int
+{
+  if (real_size <= 0xff)
+  {
+    return real_size - 1;
+  }
+  else
+  {
+    return real_size - 9;
+  }
+}
+
+
+sub get_size(var ptr as ref(byte)) as int
+{
+  if ([ptr - 1] != 0xff)
+  {
+    return int([ptr - 1]);
+  }
+  else
+  {
+    var r as ref(int);
+    r = ptr - 9;
+    return [r];
+  }
+}
+
 method allocate(var this as ref(Allocator), var size as int) as ref(byte)
 {
-  var res as ref(byte);
-  index = log2(size);
-  #if (this.map)
+  var ptr = null as ref(byte);
+  var addr as ref(byte);
+
+  needed_real_size = get_real_size(size);
+
+  if (needed_real_size < 0x1000)
+  {
+    index = needed_real_size;
+
+    exec this.map[index].pop(ref ptr);
+
+    if (ptr == null)
+    {
+      # allocate new memory
+      addr = stdlib:sys:calls:sbrk(needed_real_size);
+      ptr = set_size_and_get_ptr(addr, size);
+      return ptr;
+    }
+    else
+    {
+      return ptr;
+    }
+  }
+  else
+  {
+    n = (needed_real_size - 1)/0x1000 + 1;
+    addr = stdlib:sys:calls:alloc_blocks(n);
+    if (addr == -1)
+    {
+      return null;
+    }
+    ptr = set_size_and_get_ptr(addr, size);
+    return ptr;
+  }
+}
+
+method free(var this as ref(Allocator), var ptr as ref(byte)) as bool
+{
+  var addr as ref(byte);
+  real_size = real_addr_and_size(ptr, ref addr);
+  if (real_size < 0x1000)
+  {
+    index = real_size;
+    exec this.map[index].push(ptr);
+    return true;
+  }
+  else
+  {
+    n = (real_size - 1)/0x1000 + 1;
+    return stdlib:sys:calls:delete_blocks(addr, n);
+  }
 }
