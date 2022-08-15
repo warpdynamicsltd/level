@@ -1,0 +1,4 @@
+sub f() as u64
+{
+  return u64(13);
+}

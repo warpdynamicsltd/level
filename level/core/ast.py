@@ -521,6 +521,10 @@ class Ceil(UnaryExpression):
     def __init__(self, a):
         UnaryExpression.__init__(self, 'Ceil', a)
 
+class Log2(UnaryExpression):
+    def __init__(self, a):
+        UnaryExpression.__init__(self, 'Log2', a)
+
 
 
 

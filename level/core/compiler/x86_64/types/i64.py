@@ -332,6 +332,13 @@ class I64(Obj):
         res.MC_put_to_storage(rax)
         return res
 
+    def log2(self):
+        res = I64(self.object_manager, value=None)
+        self.MC_get_from_storage(rax)
+        bsr_(rax, rax)
+        res.MC_put_to_storage(rax)
+        return res
+
     def set_from_const(self, value):
         mov_(rax, value)
         self.MC_put_to_storage(rax)

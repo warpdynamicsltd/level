@@ -467,31 +467,35 @@ def op_mr_immr(op, d_reg, target, imm=[], prefixes=[], operand_bits=32):
     raise MachineException('Unexpected end')
 
 
-def op_combo(op_rm_r8,
-             op_rm_r32,
-             op_r_rm8,
-             op_r_rm32,
-             op_r_imm8,
-             op_r_imm32,
-             a, b):
+def op_combo(a, b,
+             op_rm_r8=[],
+             op_rm_r32=[],
+             op_r_rm8=[],
+             op_r_rm32=[],
+             op_r_imm8=[],
+             op_r_imm32=[]):
 
     if (type(a) is list and type(b) is Register) or (type(a) is Register and type(b) is Register):
-        if b.bits == 64:
+        if op_rm_r32 and b.bits == 64:
             op_mr_immr(op=op_rm_r32, d_reg=b.reg, target=a, prefixes=[0x48], operand_bits=64)
-        if b.bits == 32:
+            return
+        if op_rm_r32 and b.bits == 32:
             op_mr_immr(op=op_rm_r32, d_reg=b.reg, target=a)
-        if b.bits == 8:
+            return
+        if op_rm_r8 and b.bits == 8:
             op_mr_immr(op=op_rm_r8, d_reg=b.reg, target=a)
-        return
+            return
 
-    if type(a) is Register and type(b) is list:
-        if a.bits == 64:
+    if (type(a) is Register and type(b) is Register) or (type(a) is Register and type(b) is list):
+        if op_r_rm32 and a.bits == 64:
             op_mr_immr(op=op_r_rm32, d_reg=a.reg, target=b, prefixes=[0x48], operand_bits=64)
-        if a.bits == 32:
+            return
+        if op_r_rm32 and a.bits == 32:
             op_mr_immr(op=op_r_rm32, d_reg=a.reg, target=b)
-        if a.bits == 8:
+            return
+        if op_r_rm8 and a.bits == 8:
             op_mr_immr(op=op_r_rm8, d_reg=a.reg, target=b)
-        return
+            return
 
     # print(a, b, is_u64(b))
 
@@ -886,6 +890,10 @@ def xorl_(a, b):
 def xorb_(a, b):
     op_mr_immr(op=[0x80], d_reg=6, target=a, imm=u32(b))
 
+def bsr_(a, b):
+    op_combo(op_r_rm32=[0x0f, 0xbd],
+             a=a,
+             b=b)
 
 def ror_(a, b):
     if type(a) is Register and is_u8(b):

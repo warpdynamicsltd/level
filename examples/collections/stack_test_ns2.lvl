@@ -1,13 +1,13 @@
-import stdlib:sys:brk_allocator as *;
-import stdlib:collections:stack as *;
+import stdlib:sys:brk_allocator;
+import stdlib:collections:stack;
 
 entry
 {
-  var allocator as Allocator;
+  var allocator as stdlib:sys:brk_allocator:Allocator;
 
   var payload as u64;
 
-  stack = Stack(u64, Allocator)(ref allocator, 113);
+  stack = stdlib:collections:stack:Stack(u64, stdlib:sys:brk_allocator:Allocator)(ref allocator, 113);
 
   N = 5138;
 

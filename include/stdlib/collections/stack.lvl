@@ -4,7 +4,7 @@ type DataBlock(T:main) as rec(
   var data as ref(T:main)
 )
 
-sub new(DataBlock(T:main), var size as int, var allocator as ref(T:allocator)) as ref(DataBlock(T:main))
+sub ()(DataBlock(T:main), var size as int, var allocator as ref(T:allocator)) as ref(DataBlock(T:main))
 {
   var res as ref(DataBlock(T:main));
   res = allocator.allocate(sizeof(DataBlock(T:main)));
@@ -19,11 +19,11 @@ type Stack(T:main, T:allocator) as rec(
   var data_block as ref(DataBlock(T:main)),
   var allocator as ref(T:allocator));
 
-sub new(Stack(T:main, T:allocator), var allocator as ref(T:allocator), var buff_length as int) as Stack(T:main, T:allocator)
+sub ()(Stack(T:main, T:allocator), var allocator as ref(T:allocator), var buff_length as int) as Stack(T:main, T:allocator)
 {
   var this as Stack(T:main, T:allocator);
   this.allocator = allocator;
-  this.data_block = new (DataBlock(T:main), buff_length, allocator);
+  this.data_block = DataBlock(T:main)(buff_length, allocator);
   this.start = this.data_block;
   this.buff_length = buff_length;
   this.data_block.prev_addr = null;
@@ -45,7 +45,7 @@ method push(var this as ref(Stack(T:main, T:allocator)), var v as T:main)
   {
     if (this.data_block.next_addr == null)
     {
-      next_data_block = new (DataBlock(T:main), this.buff_length, this.allocator);
+      next_data_block = DataBlock(T:main)(this.buff_length, this.allocator);
       this.data_block.next_addr = next_data_block;
       next_data_block.prev_addr = this.data_block;
     }

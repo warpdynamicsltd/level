@@ -200,6 +200,9 @@ class CompileDriver_x86_64(CompileDriver):
         if op_T is ast.Ceil:
             return obj.ceil()
 
+        if op_T is ast.Log2:
+            return obj.log2()
+
         if op_T is ast.TypeId:
             return self.get_typeid(obj_manager, obj)
 
