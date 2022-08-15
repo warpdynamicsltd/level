@@ -1,0 +1,17 @@
+import stdlib:sys:bin_allocator as *;
+import stdlib:collections:stack as *;
+
+entry
+{
+  allocator = Allocator();
+  ptr1 = allocator.allocate(8000);
+  echo get_size(ptr1);
+  ptr2 = allocator.allocate(8);
+  echo get_size(ptr2);
+  exec allocator.free(ptr1);
+  exec allocator.free(ptr2);
+  ptr3 = allocator.allocate(8000);
+  ptr4 = allocator.allocate(8);
+  echo ptr1 == ptr3;
+  echo ptr2 == ptr4;
+}

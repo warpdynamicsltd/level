@@ -1,0 +1,68 @@
+import stdlib:sys:bin_allocator as *;
+import stdlib:collections:stack as *;
+
+sub test(var addr as ref(byte), var size as int) as int
+{
+  real_size = get_real_size(size);
+
+  if (get_size(real_size) != size)
+  {
+    return 1;
+  }
+
+  addr[real_size - 1] = 13;
+  ptr = set_size_and_get_ptr(addr, size);
+  if (ptr[size - 1] != addr[real_size - 1])
+  {
+    return 2;
+  }
+  var calculated_addr as ref(byte);
+  calculated_real_size = real_addr_and_size(ptr, ref calculated_addr);
+
+  if (real_size > 0 and calculated_real_size != real_size)
+  {
+    return 3;
+  }
+
+  if (calculated_addr != addr)
+  {
+    return 4;
+  }
+
+  return 0;
+}
+
+entry
+{
+  allocator = Allocator();
+
+  var a as array(byte, 1000);
+  var addr as ref(byte);
+  addr = ref a[0];
+
+  var ptr as ref(byte);
+
+  res = true;
+
+  for (size = 1; size < 100; inc size)
+  {
+    tmp = test(addr, size);
+    res = (tmp == 0) and res;
+
+    if (not res)
+    {
+      echo size;
+      echo tmp;
+      return;
+    }
+
+    ptr = allocator.allocate(size);
+    res = (get_size(ptr) == size) and res;
+    if (not res)
+    {
+      echo size;
+    }
+  }
+
+  echo res;
+}

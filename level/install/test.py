@@ -75,7 +75,7 @@ test_source([test_path(r"templates/nesting_arg_type2.lvl")], b"+00000000:0000000
 test_source([test_path(r"templates/compound2.lvl")], b"+00000000:00000004\n+00000000:00000005\n")
 
 test_source([test_path(r"types/order.lvl")], b"+00000000:00000007\n+00000000:0000000c\n")
-test_source([test_path(r"types/cast.lvl")], b"+00000000:00000003\n3fff:80000000:00000000\n+00000000:00000003\n")
+test_source([test_path(r"types/cast.lvl")], b"+00000000:00000003\n3fff:80000000:00000000\n+00000000:00000003\n00000001\n")
 test_source([test_path(r"types/sizeof.lvl")], b"+00000000:00000003\n00000001\n+00000000:00000050\n+00000000:00000008\n00000001\n00000001\n00000001\n")
 
 test_source([test_path(r"collections/stack_test.lvl")],
@@ -91,6 +91,8 @@ test_source([test_path(r"rec/defaults.lvl")], b"+00000000:00000003\n+00000000:00
 test_source([test_path(r"rec/nested.lvl")], b"+00000000:00000003\n+00000000:00000007\n+00000000:00000003\n+00000000:00000008\n+00000000:00000006\n+00000000:0000000a\nend\n")
 test_source([test_path(r"ref/arithmetic.lvl")],  b"00000002\n00000003\n00000004\n00000002\n00000003\n00000004\n00000001\n00000001\n00000001\n00000001\n00000001\n00000001\n")
 
+test_source([test_path(r"allocator/describe.lvl")], b"00000001\n");
+test_source([test_path(r"allocator/allocfree.lvl")], b"+00000000:00001f40\n+00000000:00000008\n00000001\n00000001\n");
 # ERRORS
 
 test_source([test_path(r"errors/nesting/nesting1.lvl")], b"", b"test:error : line 5[12]", script=True)
