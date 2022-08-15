@@ -1,0 +1,25 @@
+import stdlib:sys:calls;
+import stdlib:collections:stack;
+import stdlib:sys:brk_allocator;
+
+type Allocator as rec(
+  var brk_allocator as stdlib:sys:brk_allocator:Allocator,
+  var map as array(stdlib:collections:stack:Stack(ref(byte), stdlib:sys:brk_allocator:Allocator), 63)
+)
+
+sub ()(Allocator) as Allocator
+{
+  var res as Allocator;
+  for (i=0; i < 63; inc i)
+  {
+    res.map[i] = stdlib:collections:stack:Stack(ref(byte), stdlib:sys:brk_allocator:Allocator)(ref res.brk_allocator, 128);
+  }
+  return res;
+}
+
+method allocate(var this as ref(Allocator), var size as int) as ref(byte)
+{
+  var res as ref(byte);
+  index = log2(size);
+  #if (this.map)
+}

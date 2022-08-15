@@ -485,12 +485,12 @@ class Compiler:
 
         raise CompilerException(f"wrong statement type: {type(s)}")
 
-    def compile_object_call(self, obj_manager, obj, exps):
+    def compile_object_call(self, calling_meta, obj_manager, obj, *exps):
         objs = []
         for exp in exps:
             objs.append(self.compile_expression(exp, obj_manager))
 
-        subroutine = self.get_defined_for_call(True, exp.meta, '()', obj, *objs)
+        subroutine = self.get_defined_for_call(True, calling_meta, '()', obj, *objs)
         if subroutine is not None:
             return self.compile_call_execution(True, obj_manager, subroutine, obj, *objs)
 
@@ -500,17 +500,23 @@ class Compiler:
         self.update_meta(exp)
 
         if ast.istype(exp, ast.Call):
+
             if ast.istype(exp.args[0], ast.Var):
-                name = exp.calling_name
-                if name in self.calling_keys:
+                calling_name = exp.args[0].calling_name
+                name = exp.args[0].name
+                if calling_name in self.calling_keys:
                     return self.compile_call(ast.SubroutineCall(exp.calling_name, *exp.args[1:]).add_meta(exp.meta), obj_manager)
                 elif name in translate_simple_types:
                     T = self.compile_type_expression(ast.Type(name))
-                    return self.compile_object_call(obj_manager, T, exp.args[1:])
+                    return self.compile_object_call(exp.meta, obj_manager, T, *exp.args[1:])
                 elif name == 'array':
                     return self.compile_type_expression(ast.ArrayType(*exp.args[1:]))
                 else:
-                    return self.compile_type_expression(ast.TypeFunctor(exp.calling_name, *exp.args[1:]).add_meta(exp.meta))
+                    d = self.type_defs.get_type_def(ast.TypeFunctor(calling_name))
+                    if d is not None and len(d.type_vars) == 0:
+                        T = self.compile_type_expression(ast.Type(name).add_calling_name(calling_name))
+                        return self.compile_object_call(exp.meta, obj_manager, T)
+                    return self.compile_type_expression(ast.TypeFunctor(calling_name, *exp.args[1:]).add_meta(exp.meta))
 
             if ast.istype(exp.args[0], ast.ValueAtName):
                 expression = ast.MetaVar()
@@ -519,7 +525,7 @@ class Compiler:
                 return self.compile_call(ast.SubroutineCall(const.val.name, expression.val, *exp.args[1:]).add_meta(exp.meta), obj_manager, method=True)
 
             obj = self.compile_expression(exp.args[0], obj_manager)
-            return self.compile_object_call(obj_manager, obj, exp.args[1:])
+            return self.compile_object_call(exp.meta, obj_manager, obj, *exp.args[1:])
 
         if ast.istype(exp, ast.ApiCall):
             name_var = exp.args[0]
@@ -560,10 +566,10 @@ class Compiler:
 
             if obj_manager is None or exp.name not in obj_manager.objs:
                 if exp.name in translate_simple_types:
-                    name = exp.name
+                    calling_name = exp.name
                 else:
-                    name = exp.calling_name
-                T = self.compile_type_expression(ast.Type(name).add_meta(exp.meta))
+                    calling_name = exp.calling_name
+                T = self.compile_type_expression(ast.Type(calling_name).add_meta(exp.meta))
                 return T
 
             return obj_manager.objs[exp.name]

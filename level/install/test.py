@@ -6,7 +6,6 @@ start = time.time()
 import level.tests.addressing_test
 import level.tests.hello_test
 import level.tests.logic_gates
-import level.tests.compiler_test
 import level.tests.language_test
 
 from level.tests import test_source
@@ -80,6 +79,10 @@ test_source([test_path(r"types/cast.lvl")], b"+00000000:00000003\n3fff:80000000:
 test_source([test_path(r"types/sizeof.lvl")], b"+00000000:00000003\n00000001\n+00000000:00000050\n+00000000:00000008\n00000001\n00000001\n00000001\n")
 
 test_source([test_path(r"collections/stack_test.lvl")],
+            b"start pushing\nstart iterating\n00000001\nstart iterating\n00000001\nstart iterating\n00000001\nstart popping\n00000001\nstart pushing\nstart popping\n00000001\nend\n")
+test_source([test_path(r"collections/stack_test_ns.lvl")],
+            b"start pushing\nstart iterating\n00000001\nstart iterating\n00000001\nstart iterating\n00000001\nstart popping\n00000001\nstart pushing\nstart popping\n00000001\nend\n")
+test_source([test_path(r"collections/stack_test_ns2.lvl")],
             b"start pushing\nstart iterating\n00000001\nstart iterating\n00000001\nstart iterating\n00000001\nstart popping\n00000001\nstart pushing\nstart popping\n00000001\nend\n")
 
 test_source([test_path(r"globals/simple.lvl")], b"00000001\n+00000000:00000002\n-00000000:00000002\n+00000000:00000006\n-00000000:00000002\n+00000000:00000006\nhello\n")
