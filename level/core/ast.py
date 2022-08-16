@@ -28,6 +28,14 @@ class MetaVar:
         return repr(self.val)
 
 class Element:
+    """
+    the resulting name in ast element is the one element
+    is called and recognised by compiler. Normally in case of subroutines and types and type variables this is calling name as build by
+    parser.build_calling_name() but elements might transform from parsed vars to types or types variables or subroutine names and
+    then calling_name (as returned by parser.build_calling_name()) attached to vars is used to put it as name in resulting ast element.
+
+    Exceptions are methods, built-in subroutines and built-in types when name is used as it is visible for user.
+    """
     def __init__(self, name, *args):
         """
         Parameters
