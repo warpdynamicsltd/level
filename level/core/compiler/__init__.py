@@ -614,6 +614,7 @@ class Compiler:
     def compile_binary(self, op_exp, exp1, exp2, obj_manager):
         op_T = type(op_exp)
         obj1 = self.compile_expression(exp1, obj_manager)
+        jump_address = self.compile_driver.logic_operator_compile_begin(op_T, obj1)
         obj2 = self.compile_expression(exp2, obj_manager)
 
         subroutine = self.get_defined_for_call(True, op_exp.meta, op_exp.raw_str, obj1, obj2)
@@ -621,6 +622,7 @@ class Compiler:
             return self.compile_call_execution(True, obj_manager, subroutine, obj1, obj2)
 
         res = self.compile_driver.operator(op_T, obj1, obj2)
+        self.compile_driver.logic_operator_compile_end(jump_address, res)
         return res
 
     def compile_unary(self, op_exp, exp, obj_manager):

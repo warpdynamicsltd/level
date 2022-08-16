@@ -286,6 +286,24 @@ class CompileDriver_x86_64(CompileDriver):
         else:
             return res
 
+    def logic_operator_compile_begin(self, op_T, obj):
+        if op_T in {ast.And, ast.Or}:
+            jump_address = SymBits()
+            obj.to_acc()
+            if op_T is ast.And:
+                jz_(jump_address)
+            if op_T is ast.Or:
+                jnz_(jump_address)
+
+            return jump_address
+        else:
+            return None
+
+    def logic_operator_compile_end(self, jump_address, res):
+        if jump_address is not None:
+            set_symbol(jump_address)
+            res.set_by_acc()
+
     def allocate_brk(self, reg):
         mov_(rdi, 0)
         mov_(rax, 12)
