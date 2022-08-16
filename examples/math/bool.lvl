@@ -1,0 +1,36 @@
+sub f() as bool
+{
+  echo "hello";
+  return false;
+}
+
+sub true_sub() as bool
+{
+  return true;
+}
+
+sub false_sub() as bool
+{
+  return false;
+}
+
+entry
+{
+  echo (true and true) == true;
+  echo (false and true) == false;
+  echo (true and false) == false;
+  echo (false and false) == false;
+
+  echo (true or true) == true;
+  echo (false or true) == true;
+  echo (true or false) == true;
+  echo (false or false) == false;
+
+  echo "dynamic or";
+  echo (true_sub() or f()) == true;
+  echo (false_sub() or f()) == false;
+
+  echo "dynamic and";
+  echo (true_sub() and f()) == false;
+  echo (false_sub() and f()) == false;
+}
