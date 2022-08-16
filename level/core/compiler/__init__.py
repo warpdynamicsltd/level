@@ -505,7 +505,7 @@ class Compiler:
                 calling_name = exp.args[0].calling_name
                 name = exp.args[0].name
                 if calling_name in self.calling_keys:
-                    return self.compile_call(ast.SubroutineCall(exp.calling_name, *exp.args[1:]).add_meta(exp.meta), obj_manager)
+                    return self.compile_call(ast.SubroutineCall(calling_name, *exp.args[1:]).add_meta(exp.meta), obj_manager)
                 elif name in translate_simple_types:
                     T = self.compile_type_expression(ast.Type(name))
                     return self.compile_object_call(exp.meta, obj_manager, T, *exp.args[1:])
