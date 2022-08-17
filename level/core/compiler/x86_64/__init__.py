@@ -290,7 +290,8 @@ class CompileDriver_x86_64(CompileDriver):
         if op_T in {ast.And, ast.Or}:
             jump_address = SymBits()
             obj.to_acc()
-            or_(rax, rax)
+            if obj.type != Bool:
+                or_(rax, rax)
             if op_T is ast.And:
                 jz_(jump_address)
             if op_T is ast.Or:
