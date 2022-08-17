@@ -290,7 +290,7 @@ class CompileDriver_x86_64(CompileDriver):
         if op_T in {ast.And, ast.Or}:
             jump_address = SymBits()
             obj.to_acc()
-            or_(eax, eax)
+            or_(rax, rax)
             if op_T is ast.And:
                 jz_(jump_address)
             if op_T is ast.Or:
@@ -477,7 +477,7 @@ class CompileDriver_x86_64(CompileDriver):
         end_if_block = SymBits()
         if else_:
             end_else_block = SymBits()
-        or_(eax, eax)
+        or_(rax, rax)
         jz_(end_if_block)
         yield None
 
@@ -496,7 +496,7 @@ class CompileDriver_x86_64(CompileDriver):
         self.while_stack.append(end_while_block)
         begin_while_block = address()
         yield None
-        or_(eax, eax)
+        or_(rax, rax)
         jz_(end_while_block)
         yield None
         jmp_(begin_while_block)
