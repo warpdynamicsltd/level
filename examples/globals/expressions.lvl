@@ -1,0 +1,14 @@
+sub f(var z as int)
+{
+  return z + y;
+}
+
+global x = f(y) as int;
+
+global y = 2 + 2 as int;
+
+entry
+{
+  echo x;
+  echo y;
+}

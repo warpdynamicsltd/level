@@ -44,7 +44,7 @@ def cmp(filename):
                 n_segments=begin.n_segments,
                 segment_size = 0x1000 + len(machine_code))
 
-    with open(filename, 'wb', buffering=0x1000) as fout:
+    with open(filename, 'wb', buffering=0x100000) as fout:
         fout.write(buffer[:elf.size])
 
     os.chmod(filename, 0o700)

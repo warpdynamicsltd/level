@@ -337,16 +337,16 @@ class Init(Statement):
         Statement.__init__(self, 'Init', var)
 
 class InitWithType(Statement):
-    def __init__(self, var, type_expression, const):
-        if not(istype(var, Var) and istype(type_expression, TypeExpression) and istype(const, Const)):
+    def __init__(self, var, type_expression, init_expression):
+        if not(istype(var, Var) and istype(type_expression, TypeExpression) and istype(init_expression, Expression)):
             raise GrammarTreeError()
-        Statement.__init__(self, 'InitWithType', var, type_expression, const)
+        Statement.__init__(self, 'InitWithType', var, type_expression, init_expression)
 
 class InitGlobalWithType(Statement):
-    def __init__(self, var, type_expression, const):
-        if not(istype(var, Var) and istype(type_expression, TypeExpression) and istype(const, Const)):
+    def __init__(self, var, type_expression, init_expression):
+        if not(istype(var, Var) and istype(type_expression, TypeExpression) and istype(init_expression, Expression)):
             raise GrammarTreeError()
-        Statement.__init__(self, 'InitGlobalWithType', var, type_expression, const)
+        Statement.__init__(self, 'InitGlobalWithType', var, type_expression, init_expression)
 
 class InitRef(Statement):
     def __init__(self, var):

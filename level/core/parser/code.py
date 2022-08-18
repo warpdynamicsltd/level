@@ -978,13 +978,14 @@ class Parser:
 
         if type(stream[0]) is TerminalSymb and stream[0] == key:
             if len(stream) > 3 and type(stream[1]) is TerminalSymb and self.is_var_token(stream[1]):
-                const = ast.ConstVoid()
+                init_expression = ast.ConstVoid()
                 type_expression_index = 3
                 as_index = 2
                 calling_name = self.build_calling_name(stream[1])
                 if type(stream[2]) is TerminalSymb and stream[2] == '=':
                     as_index = self.find(stream, "as")
-                    const = self.parse_const(stream[3:as_index])
+                    #const = self.parse_const(stream[3:as_index])
+                    init_expression = self.parse_expression(stream[3:as_index])
                     type_expression_index = as_index + 1
                     # as_index = 4
 
@@ -994,11 +995,11 @@ class Parser:
                     else:
                         raise ParseException(f"expected type expression in {meta(stream)}")
                     return init_type(ast.Var(stream[1].visual()).add_meta(stream[1].meta).add_calling_name(calling_name)
-                                            , exp_type, const).add_meta(stream[0].meta)
+                                            , exp_type, init_expression).add_meta(stream[0].meta)
                 else:
                     if len(stream) == as_index:
                         return init_type(ast.Var(stream[1].visual()).add_meta(stream[1].meta).add_calling_name(calling_name)
-                                                , ast.TypeVoid(), const).add_meta(stream[0].meta)
+                                                , ast.TypeVoid(), init_expression).add_meta(stream[0].meta)
                     else:
                         raise ParseException(f"badly formed type in 'var' statement in {stream[-1].meta}")
             else:

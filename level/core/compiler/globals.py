@@ -6,20 +6,28 @@ class Global:
                  definition,
                  compiler,
                  ):
+        self.initiated = False
         self.definition = definition
         self.compiler = compiler
         var = ast.MetaVar()
         type_expression = ast.MetaVar()
-        const = ast.MetaVar()
-        ast.InitGlobalWithType(var, type_expression, const) << self.definition
+        init_expression = ast.MetaVar()
+        ast.InitGlobalWithType(var, type_expression, init_expression) << self.definition
         compiler.var_name_raise_not_available(var.val)
         if type(type_expression.val) is ast.TypeVoid:
-            self.T = compiler.compile_driver.get_type_by_const(const.val)
+            self.T = compiler.compile_driver.get_type_by_const(init_expression.val)
         else:
             self.T = compiler.compile_type_expression(type_expression.val)
 
         self.calling_name = var.val.calling_name
-        self.const = const.val.name
+
+        # print(type(init_expression.val))
+        if type(init_expression.val) is ast.Const or type(init_expression.val) is ast.ConstVoid:
+            self.const = init_expression.val.name
+            self.init_expression = None
+        else:
+            self.const = None
+            self.init_expression = init_expression.val
 
     def compile(self, obj_manager):
         obj_manager.reserve_variable_by_name(self.T, self.calling_name, self.const)
@@ -41,6 +49,12 @@ class Globals:
     def add(self, g):
         self.globals_dict[g.calling_name] = g
 
+    def init(self, obj_manager):
+        for key in self.globals_dict:
+            g = self.globals_dict[key]
+            if g.init_expression is not None:
+                self.get_obj(key, obj_manager)
+
     def compile(self):
         if len(self.globals_dict) == 0:
             return
@@ -53,9 +67,20 @@ class Globals:
         if key not in self.obj_manager.objs:
             return None
         obj = self.obj_manager.objs[key]
+        g = self.globals_dict[key]
+
+
+
         obj.ptr.reg = ESI
         mov_(rsi, self.address)
         ref_T = self.compiler.compile_driver.get_ref_type_for_obj(obj)
         ref_obj = obj_manager.reserve_variable(ref_T)
         ref_obj.bind(obj)
-        return ref_obj.get_obj()
+        res = ref_obj.get_obj()
+        if g.init_expression is not None and not g.initiated:
+            # print(g.init_expression)
+            init_obj = self.compiler.compile_expression(g.init_expression, obj_manager)
+            res.set(init_obj)
+            g.initiated = True
+
+        return res

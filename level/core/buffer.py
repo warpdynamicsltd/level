@@ -17,6 +17,8 @@ class Buffer:
 
     def move_cursor(self, shift):
         self.cursor += shift
+        if self.cursor > self.max_index:
+            self.max_index = self.cursor
 
         if self.cursor < self.offset:
             raise BufferException("Cursor can't be less then offset")
@@ -35,9 +37,10 @@ class Buffer:
         begin = self.offset
         end = self.max_index
         result = bytearray(end - begin + 1)
-        for i in range(len(result)):
-            k = i + self.offset
-            if k in self.buffer:
-                result[i] = self.buffer[k]
+
+        items = self.buffer.items()
+
+        for i, b in items:
+            result[i - self.offset] = b
 
         return result
