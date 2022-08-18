@@ -82,6 +82,7 @@ class TypeDefs:
         if type_def is None:
             if from_subroutine_header:
                 with_type_var.add(True)
+                print(TypeVar(t.name))
                 return TypeVar(t.name)
             else:
                 raise level.core.compiler.CompilerException(f"can't resolve type '{t.name}' in {t.meta}")

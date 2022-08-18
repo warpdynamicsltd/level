@@ -1,0 +1,20 @@
+sub f(var z as int) as int
+{
+  y = y + 1;
+  return z + y;
+}
+
+global y = 2 as int;
+
+sub g(var a as int, var b as int, var k = f(y) as int) as int
+{
+  echo a;
+  echo b;
+  echo k;
+  return a + k + b;
+}
+
+entry
+{
+  echo g(1, 2);
+}

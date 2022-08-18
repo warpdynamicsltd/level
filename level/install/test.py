@@ -86,6 +86,8 @@ test_source([test_path(r"collections/stack_test_ns2.lvl")],
             b"start pushing\nstart iterating\n00000001\nstart iterating\n00000001\nstart iterating\n00000001\nstart popping\n00000001\nstart pushing\nstart popping\n00000001\nend\n")
 
 test_source([test_path(r"globals/simple.lvl")], b"00000001\n+00000000:00000002\n-00000000:00000002\n+00000000:00000006\n-00000000:00000002\n+00000000:00000006\nhello\n")
+test_source([test_path(r"globals/expressions.lvl")], b"+00000000:00000008\n+00000000:00000004\n");
+test_source([test_path(r"globals/expressions2.lvl")], b"+00000000:00000009\n+00000000:00000009\n+00000000:00000009\n+00000000:00000006\n");
 
 test_source([test_path(r"rec/defaults.lvl")], b"+00000000:00000003\n+00000000:00000004\nend\n")
 test_source([test_path(r"rec/nested.lvl")], b"+00000000:00000003\n+00000000:00000007\n+00000000:00000003\n+00000000:00000008\n+00000000:00000006\n+00000000:0000000a\nend\n")
@@ -93,6 +95,9 @@ test_source([test_path(r"ref/arithmetic.lvl")],  b"00000002\n00000003\n00000004\
 
 test_source([test_path(r"allocator/describe.lvl")], b"00000001\n");
 test_source([test_path(r"allocator/allocfree.lvl")], b"+00000000:00001f40\n+00000000:00000008\n00000001\n00000001\n");
+
+test_source([test_path(r"inits/init1.lvl")], b"+00000000:00000001\n+00000000:00000002\n+00000000:00000005\n+00000000:00000008\n");
+test_source([test_path(r"inits/init2.lvl")], b"+00000000:00000002\n+00000000:00000004\n+00000000:00000007\n");
 # ERRORS
 
 test_source([test_path(r"errors/nesting/nesting1.lvl")], b"", b"test:error : line 5[12]", script=True)

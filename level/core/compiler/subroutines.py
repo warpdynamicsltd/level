@@ -206,6 +206,17 @@ class Template:
             self.substitute_statement(s_clone, substitute)
             substituted_statement_list.append(s_clone)
 
+        substituted_var_inits = []
+        for v in self.var_inits:
+            if v is not None:
+                v_clone = v.clone()
+                self.substitute_statement(v_clone, substitute)
+                substituted_var_inits.append(v_clone)
+            else:
+                substituted_var_inits.append(None)
+
+        # print(substituted_var_inits)
+
         return_type = self.return_type
         for var in substitute:
             try:
@@ -225,7 +236,7 @@ class Template:
                         # thus we can easily add the reminder of var types to var_types
                         var_types=var_types + self.var_types[len(var_types):],
                         first_default=self.first_default,
-                        var_inits=self.var_inits,
+                        var_inits=substituted_var_inits,
                         var_names=self.var_names,
                         address=address,
                         return_type=return_type,
