@@ -1166,8 +1166,18 @@ class Parser:
             else:
                 raise ParseException(f"badly formed function definition in {stream[0].meta}")
 
+        ref = False
+
         if len(stream) >= 3 and type(stream[1]) is BracketSymb:
             type_index = 3;
+            if len(stream) > type_index + 1 and \
+                    type(stream[type_index]) is TerminalSymb and \
+                    type(stream[type_index + 1]) is not BracketSymb and \
+                    stream[type_index].visual() == 'val' and \
+                    code_bracket_index > type_index + 1:
+                ref = True
+                type_index = 4;
+
             args = self.parse_list(stream[1].value, ',')
             variables = []
             for arg in args:
@@ -1178,7 +1188,11 @@ class Parser:
 
         if stream and type(stream[code_bracket_index]) is BracketSymb:
             statements = self.parse_statement_list(stream[code_bracket_index].value)
-            return ast.SubroutineDef(func_name, ast.VarList(*variables).add_meta(stream[0].meta), statements, return_type).add_meta(stream[0].meta)
+            if not ref:
+                return ast.SubroutineDef(func_name, ast.VarList(*variables).add_meta(stream[0].meta), statements, return_type).add_meta(stream[0].meta)
+            else:
+                return ast.RefSubroutineDef(func_name, ast.VarList(*variables).add_meta(stream[0].meta), statements,
+                                         return_type).add_meta(stream[0].meta)
 
         raise ParseException(f"badly formed function definition in {stream[0].meta}")
 

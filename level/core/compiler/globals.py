@@ -67,9 +67,6 @@ class Globals:
             return None
         obj = self.obj_manager.objs[key]
         g = self.globals_dict[key]
-
-
-
         obj.ptr.reg = ESI
         mov_(rsi, self.address)
         ref_T = self.compiler.compile_driver.get_ref_type_for_obj(obj)

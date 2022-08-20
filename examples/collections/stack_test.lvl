@@ -11,6 +11,9 @@ entry
 
   N = 5138;
 
+  echo "stack length";
+  echo stack.length() == 0;
+
   echo "start pushing";
 
   var k as u64;
@@ -22,6 +25,9 @@ entry
     payload = k;
     exec stack.push(payload);
   }
+
+  echo "stack length";
+  echo stack.length() == N - 1;
 
   echo "start iterating";
 
@@ -72,6 +78,9 @@ entry
     dec k;
   }
 
+  echo "stack length";
+  echo stack.length() == 0;
+
   echo res;
 
   echo "start pushing";
@@ -81,6 +90,9 @@ entry
     payload = k;
     exec stack.push(payload);
   }
+
+  echo "stack length";
+  echo stack.length() == N - 1;
 
   k = N - 1;
   res = true;
@@ -93,6 +105,8 @@ entry
     dec k;
   }
 
+  echo "stack length";
+  echo stack.length() == 0;
 
   echo res;
   echo "end";
