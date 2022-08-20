@@ -1394,7 +1394,6 @@ def add_bytes(bs):
 
 def add_block(size):
     addr = begin.buffer.cursor
-    #begin.buffer.write(bytes(size))
     begin.buffer.move_cursor(size)
     return addr
 

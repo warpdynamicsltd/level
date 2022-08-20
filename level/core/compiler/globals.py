@@ -21,7 +21,6 @@ class Global:
 
         self.calling_name = var.val.calling_name
 
-        # print(type(init_expression.val))
         if type(init_expression.val) is ast.Const or type(init_expression.val) is ast.ConstVoid:
             self.const = init_expression.val.name
             self.init_expression = None
@@ -38,7 +37,7 @@ class Globals:
                  compiler):
 
         self.compiler = compiler
-        self.obj_manager = self.compiler.obj_manager_type(compiler.compile_driver)
+        self.obj_manager = self.compiler.obj_manager_type(compiler)
         self.globals_dict = {}
         self.address = SymBits(bits=64)
 

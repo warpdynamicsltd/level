@@ -50,7 +50,7 @@ class Subroutine:
         if (self.name, h) is self.compiler.subroutines_compiled:
             return
 
-        obj_manager = self.compiler.obj_manager_type(self.compiler.compile_driver)
+        obj_manager = self.compiler.obj_manager_type(self.compiler)
 
         self.compiler.compile_driver.set_call_address(self.address)
 
@@ -161,33 +161,6 @@ class Template:
 
         self.subroutines_map = {}
 
-    def substitute_statement(self, statement, substitute):
-        args = []
-        for i in range(len(statement.args)):
-            e = statement.args[i]
-
-            # we need to add ast.Var because some ast.Call are supposed to be translated int ast.TypeFunctor
-            # and then all ast.Var in that ast.Call will be transformed to ast.Type
-            # hence the need to replace all template variables in ast.Var
-            key = None
-
-            if type(e) is ast.Type:
-                key = e.name
-
-            if type(e) is ast.Var:
-                key = e.calling_name
-
-            if key is not None:
-
-                v = TypeVar(key)
-                if v in substitute:
-                    e = ast.Type(substitute[v])
-            else:
-                self.substitute_statement(e, substitute)
-            args.append(e)
-
-        statement.args = args
-
     def create_subroutine(self, meta, var_types, substitute=None):
         h = hash(tuple(var_types + self.var_types[len(var_types):]))
         if h in self.subroutines_map:
@@ -203,26 +176,25 @@ class Template:
 
         for s in self.statement_list.args:
             s_clone = s.clone()
-            self.substitute_statement(s_clone, substitute)
+            s_clone = TypeVar.substitute_ast_element(s_clone, substitute)
             substituted_statement_list.append(s_clone)
 
         substituted_var_inits = []
         for v in self.var_inits:
             if v is not None:
                 v_clone = v.clone()
-                self.substitute_statement(v_clone, substitute)
+                v_clone = TypeVar.substitute_ast_element(v_clone, substitute)
                 substituted_var_inits.append(v_clone)
             else:
                 substituted_var_inits.append(None)
 
-        # print(substituted_var_inits)
-
-        return_type = self.return_type
-        for var in substitute:
-            try:
-                return_type = var.substitute(return_type, substitute[var])
-            except TypeVarException:
-                raise level.core.compiler.CompilerException(f"can't resolve template {self.name.key} defined in {self.meta} called from {meta}")
+        return_type_clone = self.return_type.clone()
+        return_type_clone = TypeVar.substitute_ast_element(return_type_clone, substitute)
+        with_type_var = set()
+        return_type = self.compiler.compile_type_expression(return_type_clone, from_subroutine_header=True, with_type_var=with_type_var)
+        if len(with_type_var) > 0:
+            raise level.core.compiler.CompilerException(
+                f"can't resolve template {self.name} defined in {self.meta} called from {meta}")
 
         address = self.compiler.compile_driver.get_current_address()
 

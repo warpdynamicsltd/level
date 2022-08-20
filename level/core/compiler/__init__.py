@@ -83,9 +83,9 @@ class CompileDriver(ABC):
         pass
 
 class ObjManager(ABC):
-    def __init__(self, compile_driver : CompileDriver):
+    def __init__(self, compiler):
         self.objs = {}
-        self.compile_driver = compile_driver
+        self.compiler = compiler
 
     @abstractmethod
     def set_main_frame(self):
@@ -107,10 +107,10 @@ class ObjManager(ABC):
     def reserve_variable_for_child_obj_manager(self, T, handle):
         pass
 
-    def reserve_variable_by_name(self, T, name, value=None, copy=False):
+    def reserve_variable_by_name(self, T, name, value=None, copy=False, obj=None):
         if name in self.objs:
             return False
-        self.objs[name] = self.reserve_variable(T, value, copy=copy)
+        self.objs[name] = self.reserve_variable(T, value, copy=copy, obj=obj)
         return True
 
 class Compiler:
@@ -155,7 +155,7 @@ class Compiler:
 
         self.main_program = True
 
-        object_manager = self.obj_manager_type(self.compile_driver, memory=self.memory)
+        object_manager = self.obj_manager_type(self, memory=self.memory)
 
         object_manager.set_main_frame()
         self.globals.init(object_manager)
@@ -240,15 +240,10 @@ class Compiler:
             if ast.istype(v, ast.InitWithType):
                 ast.InitWithType(var, type_expression, init_expression) << v
 
-                # if there is no init value const.val is None
-                # if type(type_expression.val) is ast.TypeVoid:
-                #     T = self.compile_driver.get_type_by_const(const.val)
-                # else:
                 if type(type_expression.val) is ast.TypeVoid:
-                    raise CompilerException(f'type required in {v.meta}')
+                    raise CompilerException(f'type required in subroutine definition {v.meta}')
 
                 T = self.compile_type_expression(type_expression.val, from_subroutine_header=True, with_type_var=with_type_var)
-                # print(T)
 
                 if with_type_var:
                     template = True
@@ -303,8 +298,7 @@ class Compiler:
                                                                     first_default=first_default,
                                                                     var_inits=var_inits,
                                                                     var_names=var_names,
-                                                                    #return_type=return_type.val,
-                                                                    return_type=return_type_computed,
+                                                                    return_type=return_type.val,
                                                                     statement_list=statement_list.val,
                                                                     meta=d.meta))
 
@@ -324,6 +318,19 @@ class Compiler:
                 calling_name in self.globals.globals_dict:
             raise CompilerException(f"global name '{name}' can't be used as variable name in {var_exp.meta}")
 
+    def compile_init(self, init_expression, obj_manager):
+        if type(init_expression) is ast.Const:
+            const = init_expression.name
+            init_obj = None
+        else:
+            const = None
+            if type(init_expression) is not ast.ConstVoid:
+                init_obj = self.compile_expression(init_expression, obj_manager)
+            else:
+                init_obj = None
+
+        return init_obj, const
+
     def compile_statement(self, s, obj_manager):
         self.update_meta(s)
 
@@ -334,28 +341,24 @@ class Compiler:
             ast.InitWithType(var, type_expression, init_expression) << s
             self.var_name_raise_not_available(var.val)
 
-            if type(init_expression.val) is ast.Const:
-                const = init_expression.val.name
-                init_obj = None
-            else:
-                const = None
-                if type(init_expression.val) is not ast.ConstVoid:
-                    init_obj = self.compile_expression(init_expression.val, obj_manager)
-                else:
-                    init_obj = None
+            init_obj, const = self.compile_init(init_expression.val, obj_manager)
 
             if type(type_expression.val) is ast.TypeVoid:
-                T = init_obj.type #self.compile_driver.get_type_by_const(init_expression.val)
+                T = init_obj.type  # self.compile_driver.get_type_by_const(init_expression.val)
             else:
                 T = self.compile_type_expression(type_expression.val)
-
 
             if not obj_manager.reserve_variable_by_name(T, var.val.name, const):
                 raise CompilerException(f"variable name '{var.val.name}' already used in this scope, can't initiate in {var.val.meta}")
 
+            obj = obj_manager.objs[var.val.name]
+
+            if obj.type.main_type.__name__ == 'Rec':
+                obj.init()
+
             if const is None and init_obj is not None:
-                obj = obj_manager.objs[var.val.name]
                 obj.set(init_obj)
+
             return
 
         if ast.istype(s, ast.Identify):
@@ -377,7 +380,8 @@ class Compiler:
             if type(var_exp.val) is ast.Var:
                 if not (var_exp.val.name in obj_manager.objs or var_exp.val.calling_name in self.globals.globals_dict):
                     self.var_name_raise_not_available(var_exp.val)
-                    obj_manager.reserve_variable_by_name(obj.type, var_exp.val.name)
+                    obj_manager.reserve_variable_by_name(obj.type, var_exp.val.name, obj=obj)
+                    return
 
             var_obj = self.compile_expression(var_exp.val, obj_manager)
 
@@ -537,7 +541,7 @@ class Compiler:
                     d = self.type_defs.get_type_def(ast.TypeFunctor(calling_name))
                     if d is not None and len(d.type_vars) == 0:
                         T = self.compile_type_expression(ast.Type(name).add_calling_name(calling_name))
-                        return self.compile_object_call(exp.meta, obj_manager, T)
+                        return self.compile_object_call(exp.meta, obj_manager, T, *exp.args[1:])
                     return self.compile_type_expression(ast.TypeFunctor(calling_name, *exp.args[1:]).add_meta(exp.meta))
 
             if ast.istype(exp.args[0], ast.ValueAtName):
@@ -546,7 +550,6 @@ class Compiler:
                 ast.ValueAtName(expression, const) << exp.args[0]
                 return self.compile_call(ast.SubroutineCall(const.val.name, expression.val, *exp.args[1:]).add_meta(exp.meta), obj_manager, method=True)
 
-            # print(exp)
             if ast.istype(exp.args[0], ast.TypeExpression):
                 obj = self.compile_type_expression(exp.args[0])
             else:
@@ -681,7 +684,7 @@ class Compiler:
                         value = init_expression.name
                     else:
                         init_obj = self.compile_expression(init_expression, obj_manager)
-                inits.append((init_obj, value))
+                inits.append((T, init_obj, value))
 
         for i, obj in enumerate(objs):
             if type(obj) is Type:
@@ -694,10 +697,7 @@ class Compiler:
                 obj_manager.reserve_variable_for_child_obj_manager(obj.type, obj)
 
 
-
-
-
-        for init_obj, value in inits:
+        for T, init_obj, value in inits:
             obj_manager.reserve_variable_for_child_obj_manager(T, init_obj, value)
 
 
@@ -751,7 +751,9 @@ class Compiler:
         return self.compile_call_execution(method, obj_manager, subroutine, *objs)
 
 
-    def compile_type_expression(self, s, from_subroutine_header=False, with_type_var=set()):
+    def compile_type_expression(self, s, from_subroutine_header=False, with_type_var=None):
+        if with_type_var is None:
+            with_type_var = set()
         self.update_meta(s)
 
         if ast.istype(s, ast.Type):
@@ -767,15 +769,15 @@ class Compiler:
 
         if ast.istype(s, ast.ArrayType):
             type_expression = ast.MetaVar()
-            const = ast.MetaVar()
-            ast.ArrayType(type_expression, const) << s
+            init_expression = ast.MetaVar()
+            ast.ArrayType(type_expression, init_expression) << s
             exp = type_expression.val
             if ast.istype(exp, ast.TypeExpression):
                 T = self.compile_type_expression(exp, from_subroutine_header=from_subroutine_header,
                                                  with_type_var=with_type_var)
             else:
                 T = self.compile_expression(exp, None)
-            n = int(const.val.name)
+            n = int(init_expression.val.name)
             return Type(main_type=self.compile_driver.get_array_type(), length=n, sub_types=[T])
 
         if ast.istype(s, ast.RefType):
@@ -790,13 +792,14 @@ class Compiler:
             for arg in s.args:
                 var = ast.MetaVar()
                 type_expression = ast.MetaVar()
-                const = ast.MetaVar()
-                ast.InitWithType(var, type_expression, const) << arg
+                init_expression = ast.MetaVar()
+                ast.InitWithType(var, type_expression, init_expression) << arg
+
                 if type(type_expression.val) is ast.TypeVoid:
-                    T = self.compile_driver.get_type_by_const(const.val)
-                else:
-                    T = self.compile_type_expression(type_expression.val, from_subroutine_header=from_subroutine_header, with_type_var=with_type_var)
-                names.append((var.val.name, const.val.name))
+                    raise CompilerException(f'type required in rec type definition in {arg.meta}')
+
+                T = self.compile_type_expression(type_expression.val, from_subroutine_header=from_subroutine_header, with_type_var=with_type_var)
+                names.append((var.val.name, init_expression.val))
                 types.append(T)
             return Type(main_type=self.compile_driver.get_rec_type(), sub_types=types, meta_data=names)
 

@@ -1,0 +1,25 @@
+sub f(C, var k as C)
+{
+  return k;
+}
+
+type A(B) as rec(
+  var x = f(B, 1) as int,
+  var y = f(B, 2) as int
+);
+
+type D(B) as rec(
+  var x = B(3) as float,
+  var y = B(4) as float
+);
+
+entry
+{
+  var a as A(int);
+  echo a.x;
+  echo a.y;
+
+  var d as D(float);
+  echo d.x;
+  echo d.y;
+}

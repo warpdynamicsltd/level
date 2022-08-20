@@ -268,7 +268,7 @@ class Float(Obj):
         mov_(rax, addr)
         self.MC_put_to_storage(rax)
         if self.object_manager is not None:
-            self.object_manager.compile_driver.float_table.append(
+            self.object_manager.compiler.compile_driver.float_table.append(
                 level.core.compiler.x86_64.FloatInfo(bytes(value), addr))
 
     def set_from_const(self, value):
