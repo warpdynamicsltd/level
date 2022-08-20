@@ -17,6 +17,7 @@ type Stack(T:main, T:allocator) as rec(
   var buff_length as int,
   var start as ref(DataBlock(T:main)),
   var data_block as ref(DataBlock(T:main)),
+  var length as int,
   var allocator as ref(T:allocator));
 
 sub ()(Stack(T:main, T:allocator), var allocator as ref(T:allocator), var buff_length as int) as Stack(T:main, T:allocator)
@@ -29,6 +30,7 @@ sub ()(Stack(T:main, T:allocator), var allocator as ref(T:allocator), var buff_l
   this.data_block.prev_addr = null;
   this.data_block.next_addr = null;
   this.index = 0;
+  this.length = 0;
   return this;
 }
 
@@ -38,6 +40,7 @@ method push(var this as ref(Stack(T:main, T:allocator)), var v as T:main)
   {
     this.data_block.data[this.index] = v;
     inc this.index;
+    inc this.length;
     return;
   }
 
@@ -54,6 +57,7 @@ method push(var this as ref(Stack(T:main, T:allocator)), var v as T:main)
     this.index = 0;
     this.data_block.data[this.index] = v;
     inc this.index;
+    inc this.length;
     return;
   }
 }
@@ -65,6 +69,7 @@ method pop(var this as ref(Stack(T:main, T:allocator)), var out as ref(T:main)) 
   if (this.index >= 0)
   {
     val out = this.data_block.data[this.index];
+    dec this.length;
     return true;
   }
 
@@ -76,11 +81,17 @@ method pop(var this as ref(Stack(T:main, T:allocator)), var out as ref(T:main)) 
     this.data_block = prev_data_block;
     this.index = this.buff_length - 1;
     val out = this.data_block.data[this.index];
+    dec this.length;
     return true;
   }
 
   this.index = 0;
   return false;
+}
+
+method length(var this as ref(Stack(T:main, T:allocator))) as int
+{
+  return this.length;
 }
 
 method iterator(var this as ref(Stack(T:main, T:allocator))) as StackIterator(T:main)

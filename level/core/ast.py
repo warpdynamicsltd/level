@@ -175,7 +175,7 @@ class Program(Element):
 class DefBlock(Element):
     def __init__(self, *defs):
         for d in defs:
-            if not istype(d, SubroutineDef):
+            if not(istype(d, SubroutineDef) or istype(d, RefSubroutineDef)):
                 raise GrammarTreeError()
 
         Element.__init__(self, 'DefBlock', *defs)
@@ -197,6 +197,12 @@ class VarList(Element):
         Element.__init__(self, 'VarList', *vars)
 
 class SubroutineDef(Element):
+    def __init__(self, name, var_list, statement_list, return_type_exp):
+        if not (istype(var_list, VarList) and istype(statement_list, StatementList) and istype(return_type_exp, TypeExpression)):
+            raise GrammarTreeError()
+        Element.__init__(self, name, var_list, statement_list, return_type_exp)
+
+class RefSubroutineDef(Element):
     def __init__(self, name, var_list, statement_list, return_type_exp):
         if not (istype(var_list, VarList) and istype(statement_list, StatementList) and istype(return_type_exp, TypeExpression)):
             raise GrammarTreeError()

@@ -127,6 +127,7 @@ class Compiler:
         self.memory = memory
 
         self.meta = None
+        self.subroutines_stack = []
 
         # for internal cache use
         self.subroutines_compiled = set()
@@ -212,7 +213,14 @@ class Compiler:
         var_list = ast.MetaVar()
         statement_list = ast.MetaVar()
         return_type = ast.MetaVar()
-        ast.SubroutineDef(name, var_list, statement_list, return_type) << d
+        ref_return = False
+        if ast.istype(d, ast.SubroutineDef):
+            ast.SubroutineDef(name, var_list, statement_list, return_type) << d
+        elif ast.istype(d, ast.RefSubroutineDef):
+            ref_return = True
+            ast.RefSubroutineDef(name, var_list, statement_list, return_type) << d
+        else:
+            raise CompilerException(f"expected subroutine or template definition {d.meta}")
 
         return_type_computed = self.compile_type_expression(return_type.val, from_subroutine_header=True)
 
@@ -282,6 +290,7 @@ class Compiler:
                                                                 var_inits=var_inits,
                                                                 var_names=var_names,
                                                                 address=address,
+                                                                ref_return=ref_return,
                                                                 return_type=return_type_computed,
                                                                 statement_list=statement_list.val,
                                                                 meta=d.meta))
@@ -298,6 +307,7 @@ class Compiler:
                                                                     first_default=first_default,
                                                                     var_inits=var_inits,
                                                                     var_names=var_names,
+                                                                    ref_return=ref_return,
                                                                     return_type=return_type.val,
                                                                     statement_list=statement_list.val,
                                                                     meta=d.meta))
@@ -330,6 +340,27 @@ class Compiler:
                 init_obj = None
 
         return init_obj, const
+
+    def compile_return_statement(self, s, obj_manager):
+        subroutine = None
+        if self.subroutines_stack:
+            subroutine = self.subroutines_stack[-1]
+
+        if subroutine is not None:
+            if s.args:
+                obj = self.compile_expression(s.args[0], obj_manager)
+
+
+
+                obj.to_acc()
+            self.compile_driver.ret()
+        else:
+            if s.args:
+                obj = self.compile_expression(s.args[0], obj_manager)
+                obj.to_acc()
+            else:
+                self.compile_driver.set_acc(0)
+            self.compile_driver.exit()
 
     def compile_statement(self, s, obj_manager):
         self.update_meta(s)
@@ -396,15 +427,7 @@ class Compiler:
             return
 
         if ast.istype(s, ast.Return):
-            if s.args:
-                obj = self.compile_expression(s.args[0], obj_manager)
-                obj.to_acc()
-
-            if self.main_program:
-                self.compile_driver.exit()
-            else:
-                self.compile_driver.ret()
-
+            self.compile_return_statement(s, obj_manager)
             return
 
         if ast.istype(s, ast.Exec):
@@ -540,7 +563,7 @@ class Compiler:
                 else:
                     d = self.type_defs.get_type_def(ast.TypeFunctor(calling_name))
                     if d is not None and len(d.type_vars) == 0:
-                        T = self.compile_type_expression(ast.Type(name).add_calling_name(calling_name))
+                        T = self.compile_type_expression(ast.Type(calling_name).add_calling_name(calling_name))
                         return self.compile_object_call(exp.meta, obj_manager, T, *exp.args[1:])
                     return self.compile_type_expression(ast.TypeFunctor(calling_name, *exp.args[1:]).add_meta(exp.meta))
 
@@ -705,11 +728,18 @@ class Compiler:
         self.compile_driver.call(subroutine.address)
         child_obj_manager.close()
         T = subroutine.return_type
+
         obj = obj_manager.reserve_variable(T, copy=True)
         obj.set_by_acc()
 
         self.subroutines.subroutines_stack.append(subroutine)
-        return obj
+
+        if not subroutine.ref_return:
+            return obj
+        else:
+            if obj.type.main_type.__name__ != 'Ref':
+                raise CompilerNotLocatedException("ref type expected")
+            return obj.get_obj()
 
     def get_defined_for_call(self, method, calling_meta, fun_key, *objs):
         var_types = []

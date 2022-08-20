@@ -343,7 +343,7 @@ sub lcm(var a as int, var b as int) as int
     
 }
 
-sub test(var a as int, var b as int) as int
+sub test(var a as int, var b as int) as bool
 {
     return gcd(a, b) * lcm(a, b) == a * b
 }

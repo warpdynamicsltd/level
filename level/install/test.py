@@ -79,11 +79,12 @@ test_source([test_path(r"types/cast.lvl")], b"+00000000:00000003\n3fff:80000000:
 test_source([test_path(r"types/sizeof.lvl")], b"+00000000:00000003\n00000001\n+00000000:00000050\n+00000000:00000008\n00000001\n00000001\n00000001\n")
 
 test_source([test_path(r"collections/stack_test.lvl")],
-            b"start pushing\nstart iterating\n00000001\nstart iterating\n00000001\nstart iterating\n00000001\nstart popping\n00000001\nstart pushing\nstart popping\n00000001\nend\n")
+            b"stack length\n00000001\nstart pushing\nstack length\n00000001\nstart iterating\n00000001\nstart iterating\n00000001\nstart iterating\n00000001\nstart popping\nstack length\n00000001\n00000001\nstart pushing\nstack length\n00000001\nstart popping\nstack length\n00000001\n00000001\nend\n")
 test_source([test_path(r"collections/stack_test_ns.lvl")],
             b"start pushing\nstart iterating\n00000001\nstart iterating\n00000001\nstart iterating\n00000001\nstart popping\n00000001\nstart pushing\nstart popping\n00000001\nend\n")
 test_source([test_path(r"collections/stack_test_ns2.lvl")],
             b"start pushing\nstart iterating\n00000001\nstart iterating\n00000001\nstart iterating\n00000001\nstart popping\n00000001\nstart pushing\nstart popping\n00000001\nend\n")
+test_source([test_path(r"collections/vector.lvl")], b"+00000000:00000000\n+00000000:00000001\n+00000000:00000002\n+00000000:00000003\n+00000000:00000004\n+00000000:00000005\n+00000000:00000006\n")
 
 test_source([test_path(r"globals/simple.lvl")], b"00000001\n+00000000:00000002\n-00000000:00000002\n+00000000:00000006\n-00000000:00000002\n+00000000:00000006\nhello\n")
 test_source([test_path(r"globals/expressions.lvl")], b"+00000000:00000008\n+00000000:00000004\n")

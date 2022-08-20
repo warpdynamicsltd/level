@@ -23,6 +23,7 @@ class Subroutine:
                  var_inits,
                  var_names,
                  address : CallAddress,
+                 ref_return : bool,
                  return_type: Type,
                  statement_list,
                  meta):
@@ -38,6 +39,7 @@ class Subroutine:
         self.used = False
         self.compiled = False
         self.meta = meta
+        self.ref_return = ref_return
 
     def use(self):
         self.used = True
@@ -49,6 +51,8 @@ class Subroutine:
         h = hash(tuple(self.var_types))
         if (self.name, h) is self.compiler.subroutines_compiled:
             return
+
+        self.compiler.subroutines_stack.append(self)
 
         obj_manager = self.compiler.obj_manager_type(self.compiler)
 
@@ -62,6 +66,7 @@ class Subroutine:
             self.compiler.compile_statement(s, obj_manager)
 
         self.compiler.compile_driver.ret()
+        self.compiler.subroutines_stack.pop()
         obj_manager.close()
         Subroutine.n_compiled += 1
         self.compiled = True
@@ -80,6 +85,7 @@ class Subroutine:
 class Subroutines:
     def __init__(self):
         self.subroutines = defaultdict(list)
+        # used to stack all subroutines for compilation
         self.subroutines_stack = []
         self.subroutines_map = {}
 
@@ -145,6 +151,7 @@ class Template:
                  first_default,
                  var_inits,
                  var_names,
+                 ref_return,
                  return_type : Type,
                  statement_list,
                  meta):
@@ -158,6 +165,7 @@ class Template:
         self.var_names = var_names
         self.general_matcher = GeneralMatcher(TypeVar)
         self.meta = meta
+        self.ref_return = ref_return
 
         self.subroutines_map = {}
 
@@ -211,6 +219,7 @@ class Template:
                         var_inits=substituted_var_inits,
                         var_names=self.var_names,
                         address=address,
+                        ref_return=self.ref_return,
                         return_type=return_type,
                         statement_list=ast.StatementList(*substituted_statement_list),
                         meta=self.meta)

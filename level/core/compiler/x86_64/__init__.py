@@ -53,10 +53,13 @@ class CompileDriver_x86_64(CompileDriver):
         begin()
         self.set_args_addr()
 
+    def set_acc(self, i):
+        mov_(rax, i)
+
     def end(self):
         set_symbol(self.exit_addr)
+        mov_(rdi, rax)
         mov_(rax, 60)
-        mov_(rdi, 0)
         syscall_()
 
     def get_current_address(self):
