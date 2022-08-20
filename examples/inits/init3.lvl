@@ -1,0 +1,29 @@
+type T(A) as rec(
+  var a as A
+);
+
+sub ()(T(A)) as T(A)
+{
+  var res as T(A);
+  return res;
+}
+
+type D as T(int);
+
+sub ()(D, var u = 5 as int) as D
+{
+  var res as D;
+  res.a = u;
+  return res;
+}
+
+sub f(var k as int, var d1 = D(3) as D, var d2 = D() as D)
+{
+  return k + d1.a + d2.a;
+}
+
+entry{
+  var d as D;
+  echo f(1);
+  echo "end";
+}

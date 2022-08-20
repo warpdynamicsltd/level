@@ -33,7 +33,7 @@ class Ref(Obj):
             mov_(rax, addr)
             self.MC_put_to_storage(rax)
             if self.object_manager is not None:
-                self.object_manager.compile_driver.string_table.append(level.core.compiler.x86_64.StringInfo(value, addr))
+                self.object_manager.compiler.compile_driver.string_table.append(level.core.compiler.x86_64.StringInfo(value, addr))
             return
         if type(value) is BuiltinRef and value.value == 'null':
             mov_(rax, 0)

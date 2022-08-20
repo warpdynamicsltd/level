@@ -577,16 +577,16 @@ class StandardObjManager(ObjManager):
         ObjManager.__init__(self, compile_driver)
 
     def set_main_frame(self):
-        self.compile_driver.set_frame(self.memory)
+        self.compiler.compile_driver.set_frame(self.memory)
 
     def get_current_heap_end_ptr(self):
         return ebp + self.cursor
 
     def create_child_obj_manager(self):
         self.on_top_cursor = 0
-        object_manager = StandardObjManager(self.compile_driver)
+        object_manager = StandardObjManager(self.compiler)
         object_manager.parent = self
-        self.compile_driver.frame_up(self.size)
+        self.compiler.compile_driver.frame_up(self.size)
         return object_manager
 
     def close(self):
@@ -594,7 +594,7 @@ class StandardObjManager(ObjManager):
             set_symbol(self.size, self.cursor)
         else:
             self.parent.on_top_cursor = 0
-            self.compile_driver.frame_down(self.parent.size)
+            self.compiler.compile_driver.frame_down(self.parent.size)
 
     def reserve_variable_ptr(self, size, for_child_manager=False):
         if for_child_manager:
@@ -605,16 +605,17 @@ class StandardObjManager(ObjManager):
             self.cursor = self.cursor + size
         return res
 
-    def reserve_variable(self, T, value=None, for_child_manager=False, copy=False):
-        return T.main_type(self, T=T, value=value, for_child_manager=for_child_manager, copy=copy)
-
-    def reserve_variable_for_child_obj_manager(self, T, obj=None, value=None):
+    def reserve_variable(self, T, value=None, for_child_manager=False, copy=False, obj=None):
         if obj is not None:
             T = obj.type
 
-        res = self.reserve_variable(T, value=value, for_child_manager=True)
+        res = T.main_type(self, T=T, value=value, for_child_manager=for_child_manager, copy=copy)
 
         if obj is not None:
             res.set(obj)
 
+        return res
+
+    def reserve_variable_for_child_obj_manager(self, T, obj=None, value=None):
+        res = self.reserve_variable(T, value=value, for_child_manager=True, obj=obj)
         return res

@@ -984,7 +984,6 @@ class Parser:
                 calling_name = self.build_calling_name(stream[1])
                 if type(stream[2]) is TerminalSymb and stream[2] == '=':
                     as_index = self.find(stream, "as")
-                    #const = self.parse_const(stream[3:as_index])
                     init_expression = self.parse_expression(stream[3:as_index])
                     type_expression_index = as_index + 1
                     # as_index = 4
@@ -1008,7 +1007,6 @@ class Parser:
             raise ParseException(f"expected 'var' statement in {stream[0].meta}")
 
     def parse_statement(self, stream):
-        # print(stream)
         if not(type(stream) is list and stream):
             raise ParseException()
 

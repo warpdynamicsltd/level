@@ -1,6 +1,8 @@
 from copy import copy
 from abc import ABC, abstractmethod
 
+import level.core.ast as ast
+
 class Type:
     def __init__(self, main_type, length=1, sub_types=[], meta_data=None, user_name=None):
         self.main_type = main_type
@@ -62,22 +64,41 @@ class TypeVar:
     def __name__(self):
         return "TypeVar"
 
-    def substitute(self, T_exp, T_val):
-        if T_exp == self:
-            return T_val
+    @classmethod
+    def substitute_ast_element(cls, element, substitute):
+        args = []
+        key = None
 
-        if type(T_exp) is Type:
-            res = copy(T_exp)
-            res.sub_types = []
-            for t in T_exp.sub_types:
-                res.sub_types.append(self.substitute(t, T_val))
+        if type(element) is ast.Type:
+            key = element.name
 
-            return res
+        # we need to add ast.Var because some ast.Call are supposed to be translated int ast.TypeFunctor
+        # and then all ast.Var in that ast.Call will be transformed to ast.Type
+        # hence the need to replace all template variables in ast.Var
+        if type(element) is ast.Var:
+            key = element.calling_name
 
-        if type(T_exp) is TypeVar:
-            return T_exp
+        if key is not None:
+            v = TypeVar(key)
+            if v in substitute:
+                s = substitute[v]
 
-        raise TypeVarException()
+                if type(s) is TypeVar:
+                    return ast.Type(substitute[v].name)
+
+                # when types are resolved they might be put in ast element as Type object
+                if type(s) is Type:
+                    return ast.Type(substitute[v])
+            else:
+                return element
+
+        for i in range(len(element.args)):
+            e = TypeVar.substitute_ast_element(element.args[i], substitute)
+            args.append(e)
+
+        element.args = args
+
+        return element
 
 class Obj:
     @abstractmethod

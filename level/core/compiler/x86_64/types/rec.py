@@ -1,5 +1,5 @@
 import copy as COPY
-
+import level.core.ast as ast
 from level.core.compiler.types import Obj, Type
 from level.core.compiler.x86_64.types.u32 import U32
 from level.core.compiler.x86_64.types.ref import Ref
@@ -11,16 +11,21 @@ class Rec(Obj):
         self.object_manager = object_manager
         self.length = 1
         self.type = T
+        self.objs = []
         if ptr is None:
-            objs = []
             for i, t in enumerate(self.type.sub_types):
-                name, value = self.type.meta_data[i]
+                name, init_expression = self.type.meta_data[i]
+                if type(init_expression) is ast.Const:
+                    const = init_expression.name
+                else:
+                    const = None
+
                 if not copy:
-                    obj = object_manager.reserve_variable(t, value=value, for_child_manager=for_child_manager)
+                    obj = object_manager.reserve_variable(t, value=const, for_child_manager=for_child_manager)
                 else:
                     obj = object_manager.reserve_variable(t, value=None, for_child_manager=for_child_manager, copy=copy)
-                objs.append(obj)
-            self.ptr = objs[0].ptr
+                self.objs.append(obj)
+            self.ptr = self.objs[0].ptr
 
         else:
             self.ptr = ptr
@@ -50,6 +55,17 @@ class Rec(Obj):
         else:
             raise Exception('You should be here')
             mov_(self.ptr, reg)
+
+    def init(self):
+        for i, t in enumerate(self.type.sub_types):
+            name, init_expression = self.type.meta_data[i]
+            init_obj, const = self.object_manager.compiler.compile_init(init_expression, self.object_manager)
+
+            if self.objs[i].type.main_type is Rec:
+                self.objs[i].init()
+
+            if init_obj is not None:
+                self.objs[i].set(init_obj)
 
     def get_element(self, name : str):
         index = self.index_map[name]

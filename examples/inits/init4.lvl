@@ -1,0 +1,51 @@
+sub f(var k as int) as int
+{
+  return k + 1;
+}
+
+type A as rec(
+  var x = f(1) as int,
+  var y = f(2) as int
+);
+
+sub ()(A) as A
+{
+  var res as A;
+  res.x = -1;
+  res.y = -1;
+  return res;
+}
+
+type B as rec(
+  var a = g(7) as A;
+)
+
+type C as rec(
+  var a = A() as A;
+)
+
+sub g(var k as int) as A
+{
+  var res as A;
+  res.x = k;
+  return res;
+}
+
+entry
+{
+  var a as A;
+  echo a.x;
+  echo a.y;
+
+  var b as B;
+  echo b.a.x;
+  echo b.a.y;
+
+  var u = g(5) as A;
+  echo u.x;
+  echo u.y;
+
+  var c as C;
+  echo c.a.x;
+  echo c.a.y;
+}
