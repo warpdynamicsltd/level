@@ -1,5 +1,5 @@
 from level.utils.binparse import *
-
+import time
 
 class ELF64(BinParse):
     """
@@ -132,14 +132,18 @@ class ELF64(BinParse):
                 p_offset += int(self.program_header_table[i].p_filesz)
                 mem_offset += int(self.program_header_table[i].p_memsz)
 
-            self.add_array('text', BYTE, len(self.meta.text_payload))
-            self.text = self.meta.text_payload
+
+            self.add_byte_data_fast('text', self.meta.text_payload)
+            #self.add_array('text', BYTE, len(self.meta.text_payload))
+            #self.text = self.meta.text_payload
+
             payload = b"\x00.text\x00.shstrtab\x00"
             self.align(0x10)
             self.add_array('shstrtab', BYTE, len(payload))
             self.shstrtab = payload
             self.header.e_shoff = self.cursor
-        #
+
+
         if self.mode == BinParse.ACTIVE:
             self.add_array('section_header_table', ELF64.ELFSectionHeader, self.header.e_shnum)
         else:
@@ -173,20 +177,21 @@ class ELF64(BinParse):
             shstrtab_header.sh_addralign = 0x1
             shstrtab_header.sh_entsize = 0x0
 
-        for i in range(0, int(self.header.e_shnum)):
-            sh_header = self.section_header_table[i]
-            sh_header.reg(
-                'sh_name',
-                SZ,
-                offset=self.section_header_table[self.header.e_shstrndx].sh_offset + sh_header.sh_rel_name
-            )
+        if self.mode == BinParse.PASSIVE:
+            for i in range(0, int(self.header.e_shnum)):
+                sh_header = self.section_header_table[i]
+                sh_header.reg(
+                    'sh_name',
+                    SZ,
+                    offset=self.section_header_table[self.header.e_shstrndx].sh_offset + sh_header.sh_rel_name
+                )
 
-            sh_header.reg_array(
-                'sh_bytes',
-                BYTE,
-                length=self.section_header_table[i].sh_size,
-                offset=self.section_header_table[i].sh_offset
-            )
+                sh_header.reg_array(
+                    'sh_bytes',
+                    BYTE,
+                    length=self.section_header_table[i].sh_size,
+                    offset=self.section_header_table[i].sh_offset
+                )
 
         if self.mode == BinParse.ACTIVE:
             text_header.sh_name = ".text"

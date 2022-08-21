@@ -33,8 +33,11 @@ def run_listen(*args):
 
 
 def cmp(filename):
+    cmp.start = time.time()
     resolve_symbols()
+    cmp.resolve_symbols = time.time()
     machine_code = begin.buffer.get_bytes()
+    cmp.built_mc = time.time()
     buffer = bytearray(0x1000 + len(machine_code))
     elf = ELF64(buffer,
                 mode=BinParse.ACTIVE,
@@ -43,10 +46,11 @@ def cmp(filename):
                 entry=begin.entry,
                 n_segments=begin.n_segments,
                 segment_size = 0x1000 + len(machine_code))
+    cmp.built_elf = time.time()
 
     with open(filename, 'wb', buffering=0x100000) as fout:
         fout.write(buffer[:elf.size])
-
+    cmp.saved_elf = time.time()
     os.chmod(filename, 0o700)
 
     return len(machine_code)

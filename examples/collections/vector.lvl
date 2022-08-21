@@ -9,7 +9,7 @@ entry{
     v[i] = v[i - 1] + 1;
   }
 
-  foreach(var x as int in v)
+  foreach (var x as int in v)
   {
     echo x;
   }

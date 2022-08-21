@@ -139,4 +139,3 @@ method next(var this as ref(StackIterator(T:main)), var out as ref(T:main)) as b
     return true;
   }
 }
-

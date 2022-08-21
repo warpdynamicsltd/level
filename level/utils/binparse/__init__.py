@@ -1,3 +1,4 @@
+from types import SimpleNamespace
 import struct
 
 
@@ -102,11 +103,18 @@ class BinParse:
                       endianness=endianness,
                       mode=self.mode,
                       meta=self.meta)
+
         self._reg(name, array)
         return array.size
 
     def add_array(self, name, cls, length, endianness='inherit'):
         size = self.reg_array(name, cls, length, self.offset + self.cursor, endianness)
+        self.update_cursor(size)
+
+    def add_byte_data_fast(self, name, payload):
+        size = len(payload)
+        self.block[self.cursor:self.cursor + size] = payload
+        setattr(self, name, SimpleNamespace(offset=self.cursor, size=size))
         self.update_cursor(size)
 
     def update_cursor(self, size):
