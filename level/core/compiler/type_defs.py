@@ -35,13 +35,12 @@ class TypeDef:
 
         T = self.compiler.compile_type_expression(type_def, from_subroutine_header=from_subroutine_header, with_type_var=with_type_var)
         T.user_name = self.t.name
+        T.reset_hash()
         self.T = T
         TypeDef.n_compiled += 1
         wtv = True if len(with_type_var) > 0 else False
         self.compiler.type_defs_compiled[self.t.name, from_subroutine_header, h] = wtv, T
         return T
-
-
 
 class TypeDefs:
     def __init__(self):

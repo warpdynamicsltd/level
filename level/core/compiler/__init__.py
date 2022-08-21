@@ -818,6 +818,7 @@ class Compiler:
 
         if ast.istype(s, ast.RecType):
             names = []
+            init_expressions = []
             types = []
             for arg in s.args:
                 var = ast.MetaVar()
@@ -829,9 +830,10 @@ class Compiler:
                     raise CompilerException(f'type required in rec type definition in {arg.meta}')
 
                 T = self.compile_type_expression(type_expression.val, from_subroutine_header=from_subroutine_header, with_type_var=with_type_var)
-                names.append((var.val.name, init_expression.val))
+                names.append(var.val.name)
+                init_expressions.append(init_expression.val)
                 types.append(T)
-            return Type(main_type=self.compile_driver.get_rec_type(), sub_types=types, meta_data=names)
+            return Type(main_type=self.compile_driver.get_rec_type(), sub_types=types, sub_names=names, meta_data=init_expressions)
 
         if ast.istype(s, ast.TypeFunctor):
             Ts = []

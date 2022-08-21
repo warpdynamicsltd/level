@@ -1,16 +1,19 @@
 from copy import copy
+from collections import defaultdict
 from abc import ABC, abstractmethod
 
 import level.core.ast as ast
 
 class Type:
-    def __init__(self, main_type, length=1, sub_types=[], meta_data=None, user_name=None):
+    def __init__(self, main_type, length=1, sub_types=[], sub_names=[], meta_data=None, user_name=None):
         self.main_type = main_type
         self.length = length
         self.sub_types = sub_types
+        self.sub_names = sub_names
         self.meta_data = meta_data
         self.user_name = user_name
         self.override_size = None
+        self._hash = None
 
     def size(self):
         if self.main_type.size is None:
@@ -21,9 +24,11 @@ class Type:
         else:
             return self.main_type.size
 
-    def __str__(self):
-        meta_data_repr = [k[0] for k in self.meta_data] if self.meta_data is not None else None
-        return f"Type(main_type={self.main_type.__name__}, length={self.length}, sub_types={[str(t) for t in self.sub_types]}, meta_data={meta_data_repr}, user_name={self.user_name})"
+    def list_repr(self, types):
+        return "[" + ", ".join(map(repr, types)) + "]"
+
+    def __repr__(self):
+        return f"Type(main_type={self.main_type.__name__}, length={self.length}, sub_types={self.list_repr(self.sub_types)}, sub_names={self.list_repr(self.sub_names)}, user_name={self.user_name})"
 
     def __eq__(self, other):
         if type(other) is Type:
@@ -31,16 +36,74 @@ class Type:
         else:
             return False
 
-    def __hash__(self):
-        return hash((hash(self.main_type.__name__), self.length, tuple(hash(t) for t in self.sub_types), hash(self.user_name)))
+    def reset_hash(self):
+        self._hash = None
 
-    def substitute(self, a, T):
-        pass
+    def __hash__(self):
+        if self._hash is None:
+            self._hash = hash((hash(self.main_type.__name__), self.length, tuple(hash(t) for t in self.sub_types), tuple(hash(name) for name in self.sub_names), hash(self.user_name)))
+        return self._hash
 
     def __call__(self, obj):
         res = obj.object_manager.reserve_variable(self)
         res.set(obj)
         return res
+
+    @classmethod
+    def _match(cls, a, b, substitution):
+        if type(a) == list and type(b) == list:
+            if len(a) != len(b):
+                return False
+
+            return all([Type._match(e, b[i], substitution) for i, e in enumerate(a)])
+
+        if type(a) is TypeVar:
+            substitution.append((a, b))
+            return True
+
+        if not (type(a) is type(b)):
+            return False
+
+        if a.main_type != b.main_type or a.user_name != b.user_name or a.length != b.length or a.sub_names != b.sub_names:
+            return False
+
+        if len(a.sub_types) != len(b.sub_types):
+            return False
+
+        return all([Type._match(T, b.sub_types[i], substitution) for i, T in enumerate(a.sub_types)])
+
+    @classmethod
+    def validate(cls, substitution):
+        res = {}
+        substitute_map = defaultdict(list)
+        for var, value in substitution:
+            substitute_map[var].append(value)
+
+        for var in substitute_map:
+            values = substitute_map[var]
+            for i, v in enumerate(values):
+                res[var] = v
+                if i > 0 and Type.match(values[0], v) is None:
+                    return None
+
+        return res
+
+    @classmethod
+    def match(cls, a, b):
+        substitution = []
+        res = Type._match(a, b, substitution)
+        if not res:
+            return None
+
+        if not substitution:
+            return []
+
+        m = Type.validate(substitution)
+        if m is None:
+            return None
+
+        return m
+
 
 class TypeVarException(Exception):
     pass
