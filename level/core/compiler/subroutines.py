@@ -71,6 +71,7 @@ class Subroutine:
         Subroutine.n_compiled += 1
         self.compiled = True
         self.compiler.subroutines_compiled.add((self.name, h))
+        # print(self.name)
 
     def match(self, var_types):
         if not self.var_types:
@@ -235,7 +236,7 @@ class Template:
         if len(var_types) < len(self.var_types[:self.first_default]):
             return None
         limit = len(var_types)
-        return self.general_matcher.match(self.var_types[:limit], var_types)
+        return Type.match(self.var_types[:limit], var_types)
 
 class Templates:
     def __init__(self):

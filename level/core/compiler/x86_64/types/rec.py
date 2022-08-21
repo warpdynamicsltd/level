@@ -14,7 +14,7 @@ class Rec(Obj):
         self.objs = []
         if ptr is None:
             for i, t in enumerate(self.type.sub_types):
-                name, init_expression = self.type.meta_data[i]
+                init_expression = self.type.meta_data[i]
                 if type(init_expression) is ast.Const:
                     const = init_expression.name
                 else:
@@ -37,7 +37,7 @@ class Rec(Obj):
 
         s = 0
         for i, t in enumerate(self.type.sub_types):
-            name, value = self.type.meta_data[i]
+            name = self.type.sub_names[i]
             self.index_map[name] = s
             self.type_map[name] = t
             s += t.size()
@@ -58,7 +58,7 @@ class Rec(Obj):
 
     def init(self):
         for i, t in enumerate(self.type.sub_types):
-            name, init_expression = self.type.meta_data[i]
+            init_expression = self.type.meta_data[i]
             init_obj, const = self.object_manager.compiler.compile_init(init_expression, self.object_manager)
 
             if self.objs[i].type.main_type is Rec:
