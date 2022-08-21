@@ -6,11 +6,12 @@ class TypeDef:
     # used just for stats
     n_compiled = 0
 
-    def __init__(self, compiler, t, type_vars, type_def):
+    def __init__(self, compiler, t, type_vars, parent_type_defs, type_def):
         self.compiler = compiler
         self.t = t
         self.type_vars = type_vars
         self.type_def = type_def
+        self.parent_type_defs = parent_type_defs
         self.T = None
 
     def compile(self, from_subroutine_header, with_type_var, types=[]):
@@ -33,12 +34,27 @@ class TypeDef:
 
         type_def = TypeVar.substitute_ast_element(type_def, substitute)
 
+        parent_types = []
+        wtv = False
+        for parent_type_def in self.parent_type_defs:
+            parent_type_def = TypeVar.substitute_ast_element(parent_type_def, substitute)
+            _with_type_var = set()
+            t = self.compiler.compile_type_expression(parent_type_def, from_subroutine_header=from_subroutine_header,
+                                                  with_type_var=_with_type_var)
+            if _with_type_var:
+                wtv = True
+            parent_types.append(t)
+
         T = self.compiler.compile_type_expression(type_def, from_subroutine_header=from_subroutine_header, with_type_var=with_type_var)
+
+        for t in parent_types:
+            T = T + t
+
         T.user_name = self.t.name
         T.reset_hash()
         self.T = T
         TypeDef.n_compiled += 1
-        wtv = True if len(with_type_var) > 0 else False
+        wtv = (True if len(with_type_var) > 0 else False) or wtv
         self.compiler.type_defs_compiled[self.t.name, from_subroutine_header, h] = wtv, T
         return T
 

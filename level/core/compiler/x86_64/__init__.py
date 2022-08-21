@@ -134,6 +134,9 @@ class CompileDriver_x86_64(CompileDriver):
     def get_rec_type(self):
         return Rec
 
+    def get_empty_type(self):
+        return Type(main_type=Rec, length=0)
+
     def get_type_by_call_address(self, addr: CallAddress):
         return Type(U32)
 

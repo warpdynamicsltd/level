@@ -646,7 +646,6 @@ class Parser:
             return lead.name + ":" + term.visual()
 
     def parse_type_expression(self, stream):
-        # print(stream)
         if not stream:
             raise ParseException()
 
@@ -946,7 +945,7 @@ class Parser:
             stream = stream[:-1]
 
         if type(stream[0]) is TerminalSymb and stream[0] == key:
-            if 6 >= len(stream) > 1 and type(stream[1]) is TerminalSymb and self.is_var_token(stream[1]):
+            if len(stream) > 1 and type(stream[1]) is TerminalSymb and self.is_var_token(stream[1]):
                 var_types = []
                 if type(stream[2]) is BracketSymb and stream[2].opening == '(':
                     args = self.parse_list(stream[2].value, ',')
@@ -959,11 +958,23 @@ class Parser:
                 else:
                     type_index = 3
 
+                extends_type_expressions = []
+
+                if stream[type_index - 1].visual() == 'extends':
+                    new_type_index = self.find(stream, 'with') + 1
+                    args = self.parse_list(stream[type_index:new_type_index - 1], ',')
+                    for arg in args:
+                        extends_type_expressions.append(self.parse_type_expression(arg))
+                    type_index = new_type_index
+
                 if len(stream) > type_index:
                     exp_type = self.parse_type_expression(stream[type_index:])
                 else:
                     raise ParseException(f"expected type expression in {meta(stream)}")
-                return grammar_type(ast.TypeTemplate(var_type(self.build_calling_name(stream[1])).add_meta(stream[1].meta), *var_types), exp_type).add_meta(stream[0].meta)
+                return grammar_type(
+                            ast.TypeTemplate(var_type(self.build_calling_name(stream[1])).add_meta(stream[1].meta), *var_types),
+                            exp_type,
+                            ast.ExtendsList(*extends_type_expressions)).add_meta(stream[0].meta)
             else:
                 raise ParseException(f"badly formed type in '{key}' statement in {stream[0].meta}")
         else:

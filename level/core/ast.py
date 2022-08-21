@@ -539,9 +539,6 @@ class Log2(UnaryExpression):
     def __init__(self, a):
         UnaryExpression.__init__(self, 'Log2', a)
 
-
-
-
 """
 Type Expressions
 """
@@ -574,12 +571,19 @@ class TypeFunctor(TypeExpression):
         TypeExpression.__init__(self, name, *type_expressions)
 
 
+class ExtendsList(Element):
+    def __init__(self, *type_expressions):
+        for e in type_expressions:
+            if not(istype(e, TypeExpression) or istype(e, Expression)):
+                raise GrammarTreeError()
+        Element.__init__(self, 'ExtendsList', *type_expressions)
 
 class AssignType(Statement):
-    def __init__(self, t_var, type_expression):
-        if not(istype(t_var, TypeTemplateExpression) and istype(type_expression, TypeExpression)):
+    def __init__(self, t_var, type_expression, extends_list):
+        if not(istype(t_var, TypeTemplateExpression) and
+               istype(type_expression, TypeExpression) and istype(extends_list, ExtendsList)):
             raise GrammarTreeError()
-        Statement.__init__(self, 'AssignType', t_var, type_expression)
+        Statement.__init__(self, 'AssignType', t_var, type_expression, extends_list)
 
 class TypeTemplate(TypeTemplateExpression):
     def __init__(self, t_var_name, *t_vars):
