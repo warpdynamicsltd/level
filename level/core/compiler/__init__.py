@@ -178,7 +178,8 @@ class Compiler:
             self.update_meta(arg)
             template_var = ast.MetaVar()
             type_expression = ast.MetaVar()
-            ast.AssignType(template_var, type_expression) << arg
+            extend_list = ast.MetaVar()
+            ast.AssignType(template_var, type_expression, extend_list) << arg
 
             type_vars = []
             for v in template_var.val.args[1:]:
@@ -189,6 +190,7 @@ class Compiler:
                     compiler=self,
                     t=template_var.val.args[0],
                     type_vars=type_vars,
+                    parent_type_defs=extend_list.val.args,
                     type_def=type_expression.val))
 
     def compile_global_inits(self, global_inits):
@@ -836,6 +838,9 @@ class Compiler:
             return Type(main_type=self.compile_driver.get_rec_type(), sub_types=types, sub_names=names, meta_data=init_expressions)
 
         if ast.istype(s, ast.TypeFunctor):
+            if s.name == 'rec':
+                return self.compile_driver.get_empty_type()
+
             Ts = []
             for exp in s.args:
                 if ast.istype(exp, ast.TypeExpression):

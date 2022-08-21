@@ -49,6 +49,35 @@ class Type:
         res.set(obj)
         return res
 
+    def __add__(self, other):
+        if type(other) is not Type:
+            return self
+
+        if self.main_type.__name__ != 'Rec':
+            return self
+
+        if other.main_type.__name__ != 'Rec':
+            return self
+
+        types = {}
+        for i, name in enumerate(other.sub_names):
+            types[name] = other.sub_types[i], other.meta_data[i]
+
+        for i, name in enumerate(self.sub_names):
+            types[name] = self.sub_types[i], self.meta_data[i]
+
+        sub_types = []
+        meta_data = []
+        sub_names = []
+        for name in types:
+            T, data = types[name]
+            sub_types.append(T)
+            meta_data.append(data)
+            sub_names.append(name)
+
+        return Type(main_type=self.main_type, length=1, sub_types=sub_types, sub_names=sub_names, meta_data=meta_data)
+
+
     @classmethod
     def _match(cls, a, b, substitution):
         if type(a) == list and type(b) == list:

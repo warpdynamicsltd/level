@@ -1,0 +1,66 @@
+type pair1(A) as rec(
+  var x = 1 as A,
+  var y = 2 as A
+);
+
+type pair2(B) as rec(
+  var a = 3 as B,
+  var b = 4 as B
+)
+
+type normed as rec(
+  var length = 1 as float
+)
+
+type point(A) extends pair1(A), pair2(A), normed
+with rec(
+  var z = 5 as A
+);
+
+type _spacetime_point(A) extends point(A)
+with rec(
+  var t = 6 as A
+)
+
+type spacetime_point(A) extends _spacetime_point(A)
+with rec();
+
+sub ()(point(A)) as point(A)
+{
+  var res as point(A);
+  res.x = 17;
+  res.y = 18;
+  res.a = 19;
+  res.b = 20;
+  res.z = 21;
+  res.length = 2.0;
+  return res;
+}
+
+entry{
+  var p as point(int);
+  echo p.x;
+  echo p.y;
+  echo p.a;
+  echo p.b;
+  echo p.z;
+  echo p.length;
+
+  var q = point(int)() as point(int);
+  echo q.x;
+  echo q.y;
+  echo q.a;
+  echo q.b;
+  echo q.z;
+  echo q.length;
+
+  var u as spacetime_point(int);
+  echo u.x;
+  echo u.y;
+  echo u.a;
+  echo u.b;
+  echo u.z;
+  echo u.t;
+  echo u.length;
+  echo "end";
+}
