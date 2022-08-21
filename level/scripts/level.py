@@ -245,6 +245,11 @@ def do_cmp_(args):
         print("parsing time:         %.3f s" % -(time_start - parsing_done_time))
         print("compile time:         %.3f s" % -(parsing_done_time - compilation_done_time))
         print("build time:           %.3f s" % -(compilation_done_time - build_done_time))
+        print("|-resolve symbols:    %.3f s" % -(cmp.start - cmp.resolve_symbols))
+        print("|-build machine code: %.3f s" % -(cmp.resolve_symbols - cmp.built_mc))
+        print("|-build ELF:          %.3f s" % -(cmp.built_mc - cmp.built_elf))
+        print("|-save ELF:           %.3f s" % -(cmp.built_elf - cmp.saved_elf ))
+
 
     return 0
 
