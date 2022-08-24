@@ -79,6 +79,11 @@ class Rec(Obj):
         return obj
 
     def set(self, obj):
+        if obj.type.main_type is Rec and self.object_manager.compiler.inheritance.is_1st_derived_from_2nd(hash(obj.type), hash(self.type)):
+            for name in self.index_map:
+                self.get_element(name).set(obj.get_element(name))
+            return
+
         if obj.type.main_type in {Rec, Ref}:
             self.MC_get_from_storage(rdi)
             obj.MC_get_from_storage(rsi)
@@ -88,8 +93,9 @@ class Rec(Obj):
             mov_([rdi + ecx - 1], al)
             dec_(ecx)
             jnz_(loop)
-        else:
-            raise CompilerNotLocatedException(f"no cast from {obj.type} to {self.type}")
+            return
+
+        raise CompilerNotLocatedException(f"no cast from {obj.type} to {self.type}")
 
     def to_acc(self):
         self.MC_get_from_storage(r15)
