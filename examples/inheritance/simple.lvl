@@ -38,6 +38,14 @@ sub ()(point(A)) as point(A)
 }
 
 entry{
+  echo (point(float) < pair1(int)) == false;
+  echo (point(int) < pair1(int)) == true;
+  echo (point(int) < pair2(int)) == true;
+  echo (spacetime_point(float) < point(float)) == true;
+  echo (spacetime_point(u32) < pair1(u32)) == true;
+  echo (spacetime_point(i32) < pair2(i32)) == true;
+  echo (pair1(bool) < pair2(bool)) == false;
+
   var p as point(int);
   echo p.x;
   echo p.y;

@@ -13,6 +13,7 @@ class Type:
         self.meta_data = meta_data
         self.user_name = user_name
         self.override_size = None
+        self.type = Type
         self._hash = None
 
     def size(self):
@@ -76,7 +77,6 @@ class Type:
             sub_names.append(name)
 
         return Type(main_type=self.main_type, length=1, sub_types=sub_types, sub_names=sub_names, meta_data=meta_data)
-
 
     @classmethod
     def _match(cls, a, b, substitution):

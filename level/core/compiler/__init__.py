@@ -3,10 +3,10 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 
 import level.core.ast as ast
-#from level.core.compiler import CallAddress
 from level.core.compiler.subroutines import Subroutine, Subroutines, CallAddress, Template, Templates
 from level.core.compiler.type_defs import TypeDefs, TypeDef
 from level.core.compiler.globals import Globals, Global
+from level.core.compiler.inheritance import Inheritance
 from level.core.compiler.types import Obj, Type, TypeVar
 from level.core.parser.builtin import translate_simple_types
 
@@ -120,6 +120,7 @@ class Compiler:
         self.obj_manager_type = obj_manager_type
         self.subroutines = Subroutines()
         self.templates = Templates()
+        self.inheritance = Inheritance()
         self.calling_keys = set()
         self.type_defs = TypeDefs()
         self.globals = Globals(self)
@@ -674,6 +675,9 @@ class Compiler:
         subroutine = self.get_defined_for_call(True, op_exp.meta, op_exp.raw_str, obj1, obj2)
         if subroutine is not None:
             return self.compile_call_execution(True, obj_manager, subroutine, obj1, obj2)
+
+        if op_T is ast.Lt and type(obj1) is Type and type(obj2) is Type:
+            return self.compile_driver.get_bool(self.inheritance.is_1st_derived_from_2nd(hash(obj1), hash(obj2)), obj_manager)
 
         res = self.compile_driver.operator(op_T, obj1, obj2)
         self.compile_driver.logic_operator_compile_end(jump_address, res)

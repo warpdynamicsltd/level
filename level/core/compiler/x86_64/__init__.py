@@ -140,6 +140,10 @@ class CompileDriver_x86_64(CompileDriver):
     def get_type_by_call_address(self, addr: CallAddress):
         return Type(U32)
 
+    def get_bool(self, b, obj_manager):
+        res = obj_manager.reserve_variable(Type(Bool), value=b)
+        return res
+
     def bind(self, ref, obj):
         ref.bind(obj)
 
