@@ -837,7 +837,11 @@ class Parser:
             if res is not None:
                 return res
 
-            res = self.try_binary_parse(stream, ['!=', '==', '<', '>', '<=', '>='])
+            res = self.try_binary_parse(stream, ['!=', '=='])
+            if res is not None:
+                return res
+
+            res = self.try_binary_parse(stream, ['<', '>', '<=', '>='])
             if res is not None:
                 return res
 

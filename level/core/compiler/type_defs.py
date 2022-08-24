@@ -32,29 +32,40 @@ class TypeDef:
 
         type_def = self.type_def.clone()
 
-        type_def = TypeVar.substitute_ast_element(type_def, substitute)
-
         parent_types = []
+        parent_novar_types = []
         wtv = False
         for parent_type_def in self.parent_type_defs:
-            parent_type_def = TypeVar.substitute_ast_element(parent_type_def, substitute)
+            parent_type_def = TypeVar.substitute_ast_element(parent_type_def.clone(), substitute)
             _with_type_var = set()
-            t = self.compiler.compile_type_expression(parent_type_def, from_subroutine_header=from_subroutine_header,
-                                                  with_type_var=_with_type_var)
+            t = self.compiler.compile_type_expression(parent_type_def, from_subroutine_header=from_subroutine_header, with_type_var=_with_type_var)
             if _with_type_var:
                 wtv = True
+            else:
+                parent_novar_types.append(t)
+
             parent_types.append(t)
 
-        T = self.compiler.compile_type_expression(type_def, from_subroutine_header=from_subroutine_header, with_type_var=with_type_var)
+        type_def = TypeVar.substitute_ast_element(type_def, substitute)
+        T = self.compiler.compile_type_expression(type_def, from_subroutine_header=from_subroutine_header,
+                                                  with_type_var=with_type_var)
+
 
         for t in parent_types:
             T = T + t
 
         T.user_name = self.t.name
         T.reset_hash()
+
+        if not with_type_var:
+            for t in parent_novar_types:
+                self.compiler.inheritance.add_inheritance(hash(T), hash(t))
+
         self.T = T
         TypeDef.n_compiled += 1
         wtv = (True if len(with_type_var) > 0 else False) or wtv
+        if wtv:
+            with_type_var.add(True)
         self.compiler.type_defs_compiled[self.t.name, from_subroutine_header, h] = wtv, T
         return T
 
