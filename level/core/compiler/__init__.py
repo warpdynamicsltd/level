@@ -352,9 +352,6 @@ class Compiler:
         if subroutine is not None:
             if s.args:
                 obj = self.compile_expression(s.args[0], obj_manager)
-
-
-
                 obj.to_acc()
             self.compile_driver.ret()
         else:

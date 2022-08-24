@@ -1,0 +1,24 @@
+type N(A) as rec(
+  var a as array(A, 10)
+)
+
+type M(A) extends N(A) with
+rec(
+  var m as int
+)
+
+sub f(var r as N(A)) as N(A)
+{
+  r.a[0] = 3;
+  return r;
+}
+
+entry
+{
+  var z as M(u64);
+  z.m = 5;
+  echo z.m;
+  p = f(N(u64)(z));
+
+  echo p.a[0];
+}

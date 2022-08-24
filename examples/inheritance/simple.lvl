@@ -25,7 +25,7 @@ with rec(
 type spacetime_point(A) extends _spacetime_point(A)
 with rec();
 
-sub ()(point(A)) as point(A)
+sub ()(point(A), var l = 2.0 as float) as point(A)
 {
   var res as point(A);
   res.x = 17;
@@ -33,7 +33,7 @@ sub ()(point(A)) as point(A)
   res.a = 19;
   res.b = 20;
   res.z = 21;
-  res.length = 2.0;
+  res.length = l;
   return res;
 }
 
@@ -70,5 +70,22 @@ entry{
   echo u.z;
   echo u.t;
   echo u.length;
+
+  var a as pair1(int);
+  a = p;
+  echo a.x;
+  echo a.y;
+
+  var b as pair2(int);
+  b = q;
+  echo b.a;
+  echo b.b;
+
+  c = pair1(int)(p);
+  echo c.x;
+  echo c.y;
+
+  z = point(int)(u);
+  echo z.length;
   echo "end";
 }

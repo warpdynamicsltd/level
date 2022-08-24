@@ -176,7 +176,7 @@ class Template:
             return self.subroutines_map[h]
 
         if substitute is None:
-            substitute = self.general_matcher.match(self.var_types, var_types)
+            substitute = Type.match(self.var_types, var_types)
 
         if substitute is None:
             raise level.core.compiler.CompilerException(f"can't resolve template {self.name.key} defined in {self.meta} called from {meta}")
