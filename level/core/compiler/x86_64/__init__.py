@@ -62,7 +62,7 @@ class CompileDriver_x86_64(CompileDriver):
         mov_(rax, 60)
         syscall_()
 
-    def get_current_address(self):
+    def get_new_address(self):
         addr = SymBits(bits=32)
         # return CallAddress(address())
         return CallAddress(addr)

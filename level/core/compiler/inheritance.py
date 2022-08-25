@@ -4,6 +4,7 @@ class Inheritance:
     def __init__(self):
         self.parents = defaultdict(set)
         self.ancestors = defaultdict(set)
+        self.map = {}
 
     def add_inheritance(self, a, b):
         self.parents[a].add(b)

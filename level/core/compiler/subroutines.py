@@ -44,6 +44,29 @@ class Subroutine:
     def use(self):
         self.used = True
 
+    def create_child_subroutine(self, ancestor_T, original_T, var_types):
+        return_type = self.return_type
+        if self.return_type == ancestor_T:
+            return_type = original_T
+        if self.return_type.main_type.__name__ == 'Ref' and self.return_type.sub_types and self.return_type.sub_types[0] == ancestor_T:
+            return_type = self.compiler.compile_driver.get_ref_type_for_type(original_T)
+
+        address = self.compiler.compile_driver.get_new_address()
+
+        return Subroutine(
+                        compiler=self.compiler,
+                        name=self.name,
+                        var_types=var_types,
+                        first_default=self.first_default,
+                        var_inits=self.var_inits,
+                        var_names=self.var_names,
+                        address=address,
+                        ref_return=self.ref_return,
+                        return_type=return_type,
+                        statement_list=self.statement_list,
+                        meta=self.meta)
+
+
     def compile(self):
         if self.compiled:
             return
@@ -71,7 +94,6 @@ class Subroutine:
         Subroutine.n_compiled += 1
         self.compiled = True
         self.compiler.subroutines_compiled.add((self.name, h))
-        # print(self.name)
 
     def match(self, var_types):
         if not self.var_types:
@@ -205,7 +227,7 @@ class Template:
             raise level.core.compiler.CompilerException(
                 f"can't resolve template {self.name} defined in {self.meta} called from {meta}")
 
-        address = self.compiler.compile_driver.get_current_address()
+        address = self.compiler.compile_driver.get_new_address()
 
 
         res = Subroutine(

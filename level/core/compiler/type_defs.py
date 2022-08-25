@@ -58,8 +58,10 @@ class TypeDef:
         T.reset_hash()
 
         if not with_type_var:
+            self.compiler.inheritance.map[hash(T)] = T
             for t in parent_novar_types:
                 self.compiler.inheritance.add_inheritance(hash(T), hash(t))
+                self.compiler.inheritance.map[hash(t)] = t
 
         self.T = T
         TypeDef.n_compiled += 1

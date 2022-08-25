@@ -1,0 +1,35 @@
+type N(A) as rec(
+  var a as array(A, 10)
+)
+
+type M(A) extends N(A) with
+rec(
+  var m as int
+)
+
+method action1(var r as ref(N(A)), var a as A) val ref(N(A))
+{
+  r.a[0] = a;
+  r.a[9] = a + 1;
+  return r;
+}
+
+method action2(var r as ref(M(A)), var a as int)
+{
+  r.m = a;
+}
+
+entry
+{
+  var z as M(u64);
+  k = u64(ref z);
+  z.m = 3;
+  echo z.m;
+  z = z.action1(u64(5));
+  echo u64(ref z) == k;
+  echo z.m;
+  exec z.action2(9);
+  echo z.a[0];
+  echo z.a[9];
+  echo z.m;
+}

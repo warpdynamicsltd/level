@@ -27,7 +27,7 @@ class CompileDriver(ABC):
         pass
 
     @abstractmethod
-    def get_current_address(self):
+    def get_new_address(self):
         return None
 
     @abstractmethod
@@ -234,7 +234,7 @@ class Compiler:
 
         self.calling_keys.add(fun_name)
 
-        address = self.compile_driver.get_current_address()
+        address = self.compile_driver.get_new_address()
 
         var_types = []
         var_inits = []
@@ -517,10 +517,10 @@ class Compiler:
                 raise CompilerException(f"badly formed foreach statement in {s.meta}")
 
             iteration_obj = self.compile_expression(iteration_expression.val, obj_manager)
-            iterator_method = self.get_defined_for_call(True, iteration_expression.val.meta, 'iterator', iteration_obj)
+            iterator_method = self.get_subroutine_for_call(True, iteration_expression.val.meta, 'iterator', iteration_obj)
             iterator_obj = self.compile_call_execution(True, obj_manager, iterator_method, iteration_obj)
             ref = self.compile_driver.build_ref(obj_manager, obj)
-            next_method = self.get_defined_for_call(True, iteration_expression.val.meta, 'next', iterator_obj, ref)
+            next_method = self.get_subroutine_for_call(True, iteration_expression.val.meta, 'next', iterator_obj, ref)
             gen = self.compile_driver.while_acc()
             next(gen)
             bool_obj = self.compile_call_execution(True, obj_manager, next_method, iterator_obj, ref)
@@ -540,7 +540,7 @@ class Compiler:
         for exp in exps:
             objs.append(self.compile_expression(exp, obj_manager))
 
-        subroutine = self.get_defined_for_call(True, calling_meta, '()', obj, *objs)
+        subroutine = self.get_subroutine_for_call(True, calling_meta, '()', obj, *objs)
         if subroutine is not None:
             return self.compile_call_execution(True, obj_manager, subroutine, obj, *objs)
 
@@ -635,7 +635,7 @@ class Compiler:
             for index_expression in index_expressions:
                 index_objs.append(self.compile_expression(index_expression, obj_manager))
 
-            subroutine = self.get_defined_for_call(True, exp.meta, '[]', obj, *index_objs)
+            subroutine = self.get_subroutine_for_call(True, exp.meta, '[]', obj, *index_objs)
             if subroutine is not None:
                 return self.compile_call_execution(True, obj_manager, subroutine, obj, *index_objs)
 
@@ -669,7 +669,7 @@ class Compiler:
         jump_address = self.compile_driver.logic_operator_compile_begin(op_T, obj1)
         obj2 = self.compile_expression(exp2, obj_manager)
 
-        subroutine = self.get_defined_for_call(True, op_exp.meta, op_exp.raw_str, obj1, obj2)
+        subroutine = self.get_subroutine_for_call(True, op_exp.meta, op_exp.raw_str, obj1, obj2)
         if subroutine is not None:
             return self.compile_call_execution(True, obj_manager, subroutine, obj1, obj2)
 
@@ -687,7 +687,7 @@ class Compiler:
         else:
             obj = self.compile_expression(exp, obj_manager)
 
-        subroutine = self.get_defined_for_call(True, op_exp.meta, op_exp.raw_str, obj)
+        subroutine = self.get_subroutine_for_call(True, op_exp.meta, op_exp.raw_str, obj)
         if subroutine is not None:
             return self.compile_call_execution(True, obj_manager, subroutine, obj)
 
@@ -744,7 +744,42 @@ class Compiler:
                 raise CompilerNotLocatedException("ref type expected")
             return obj.get_obj()
 
-    def get_defined_for_call(self, method, calling_meta, fun_key, *objs):
+    def get_subroutine_by_types_with_inheritance(self, calling_meta, fun_key, var_types):
+        sub = self.get_direct_subroutine_by_types(calling_meta, fun_key, var_types)
+        if sub is None:
+            if var_types:
+                t = var_types[0]
+                if t.main_type.__name__ == "Ref" and t.sub_types:
+                    T = t.sub_types[0]
+                else:
+                    T = t
+                h = hash(T)
+                for a in self.inheritance.ancestors[h]:
+                    ancestor_T = self.inheritance.map[a]
+                    _var_types = []
+                    for t in var_types:
+                        if t.main_type.__name__ == "Ref" and t.sub_types[0] == T:
+                            _var_types.append(self.compile_driver.get_ref_type_for_type(ancestor_T))
+                            continue
+                        if t == T:
+                            _var_types.append(ancestor_T)
+                            continue
+                        _var_types.append(t)
+                    sub = self.get_direct_subroutine_by_types(calling_meta, fun_key, _var_types)
+                    if sub is not None:
+                        return sub.create_child_subroutine(ancestor_T, T, var_types)
+
+
+        return sub
+
+    def get_direct_subroutine_by_types(self, calling_meta, fun_key, var_types):
+        sub = self.subroutines.get(calling_meta, fun_key, var_types)
+        if sub is None:
+            sub = self.templates.get_subroutine(calling_meta, fun_key, var_types)
+
+        return sub
+
+    def get_subroutine_for_call(self, method, calling_meta, fun_key, *objs):
         var_types = []
         first_T = None
         for i, obj in enumerate(objs):
@@ -759,11 +794,8 @@ class Compiler:
 
             var_types.append(T)
 
-        sub = self.subroutines.get(calling_meta, fun_key, var_types)
-        if sub is None:
-            sub = self.templates.get_subroutine(calling_meta, fun_key, var_types)
-
-        return sub
+        #return self.get_direct_subroutine_by_types(calling_meta, fun_key, var_types)
+        return self.get_subroutine_by_types_with_inheritance(calling_meta, fun_key, var_types)
 
     def compile_call(self, sub, obj_manager, method=False):
         self.update_meta(sub)
@@ -776,7 +808,7 @@ class Compiler:
                 T = self.compile_type_expression(exp)
                 objs.append(T)
 
-        subroutine = self.get_defined_for_call(method, sub.meta, sub.name, *objs)
+        subroutine = self.get_subroutine_for_call(method, sub.meta, sub.name, *objs)
 
         if subroutine is None:
             raise CompilerException(f"can't resolve subroutine name '{sub.name}' in {sub.meta}")
