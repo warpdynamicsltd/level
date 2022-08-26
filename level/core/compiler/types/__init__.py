@@ -1,4 +1,4 @@
-from copy import copy
+from copy import copy, deepcopy
 from collections import defaultdict
 from abc import ABC, abstractmethod
 
@@ -52,13 +52,13 @@ class Type:
 
     def __add__(self, other):
         if type(other) is not Type:
-            return self
+            return deepcopy(self)
 
         if self.main_type.__name__ != 'Rec':
-            return self
+            return deepcopy(self)
 
         if other.main_type.__name__ != 'Rec':
-            return self
+            return deepcopy(self)
 
         types = {}
         for i, name in enumerate(other.sub_names):

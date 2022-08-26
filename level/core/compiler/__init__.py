@@ -754,7 +754,12 @@ class Compiler:
                 else:
                     T = t
                 h = hash(T)
-                for a in self.inheritance.ancestors[h]:
+                ancestors = list(self.inheritance.parents[h])
+                while ancestors:
+                    a = ancestors.pop(0)
+                    if a in self.inheritance.parents:
+                        ancestors += self.inheritance.parents[a]
+
                     ancestor_T = self.inheritance.map[a]
                     _var_types = []
                     for t in var_types:
@@ -768,7 +773,6 @@ class Compiler:
                     sub = self.get_direct_subroutine_by_types(calling_meta, fun_key, _var_types)
                     if sub is not None:
                         return sub.create_child_subroutine(ancestor_T, T, var_types)
-
 
         return sub
 

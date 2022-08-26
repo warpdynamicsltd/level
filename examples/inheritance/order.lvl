@@ -1,0 +1,40 @@
+type A as int;
+type B as int;
+type C as int;
+
+type D extends A, B with rec();
+type E extends B, A with rec();
+type F extends C, A with rec();
+type G extends C, D with rec();
+type H extends C, E with rec();
+type I extends A, E with rec();
+
+sub fun(var a as A)
+{
+  echo 1;
+}
+
+sub fun(var b as B)
+{
+  echo 2;
+}
+
+entry
+{
+  var a as A;
+  var b as B;
+  var c as C;
+  var d as D;
+  var e as E;
+  var f as F;
+  var g as G;
+  var h as H;
+  var i as I;
+
+  exec fun(d);
+  exec fun(e);
+  exec fun(f);
+  exec fun(g);
+  exec fun(h);
+  exec fun(i);
+}
