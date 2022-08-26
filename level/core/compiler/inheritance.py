@@ -2,12 +2,12 @@ from collections import defaultdict
 
 class Inheritance:
     def __init__(self):
-        self.parents = defaultdict(set)
+        self.parents = defaultdict(list)
         self.ancestors = defaultdict(set)
         self.map = {}
 
     def add_inheritance(self, a, b):
-        self.parents[a].add(b)
+        self.parents[a].append(b)
         self.ancestors[a].add(b)
 
     def is_1st_derived_from_2nd(self, a, b):

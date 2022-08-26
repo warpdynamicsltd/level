@@ -52,7 +52,7 @@ class TypeDef:
 
 
         for t in parent_types:
-            T = T + t
+            T = t + T
 
         T.user_name = self.t.name
         T.reset_hash()
