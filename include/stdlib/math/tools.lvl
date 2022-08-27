@@ -1,0 +1,11 @@
+sub max(var a as T, var b as T) as T
+{
+  if (a > b) {return a}
+  return b;
+}
+
+sub min(var a as T, var b as T) as T
+{
+  if (a < b) {return a}
+  return b;
+}

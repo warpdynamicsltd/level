@@ -1,15 +1,15 @@
-import stdlib:sys:brk_allocator;
-import stdlib:collections:sysstack;
+import stdlib:collections:stack as *;
 
 entry
 {
-  var allocator as stdlib:sys:brk_allocator:Allocator;
-
   var payload as u64;
 
-  stack = stdlib:collections:sysstack:Stack(u64, stdlib:sys:brk_allocator:Allocator)(ref allocator, 113);
+  stack = Stack(u64)();
 
   N = 5138;
+
+  echo "stack length";
+  echo stack.length() == 0;
 
   echo "start pushing";
 
@@ -22,6 +22,9 @@ entry
     payload = k;
     exec stack.push(payload);
   }
+
+  echo "stack length";
+  echo stack.length() == N - 1;
 
   echo "start iterating";
 
@@ -72,6 +75,9 @@ entry
     dec k;
   }
 
+  echo "stack length";
+  echo stack.length() == 0;
+
   echo res;
 
   echo "start pushing";
@@ -81,6 +87,9 @@ entry
     payload = k;
     exec stack.push(payload);
   }
+
+  echo "stack length";
+  echo stack.length() == N - 1;
 
   k = N - 1;
   res = true;
@@ -93,6 +102,8 @@ entry
     dec k;
   }
 
+  echo "stack length";
+  echo stack.length() == 0;
 
   echo res;
   echo "end";

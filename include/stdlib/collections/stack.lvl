@@ -1,141 +1,19 @@
-type DataBlock(T:main) as rec(
-  var prev_addr as ref(byte),
-  var next_addr as ref(byte),
-  var data as ref(T:main)
-)
+import stdlib:collections:sysstack;
+import stdlib:sys:bin_allocator;
+import stdlib:sys:app;
 
-sub ()(DataBlock(T:main), var size as int, var allocator as ref(T:allocator)) as ref(DataBlock(T:main))
+type Stack(T) extends stdlib:collections:sysstack:Stack(T, stdlib:sys:bin_allocator:Allocator) with rec();
+
+sub ()(Stack(T)) as Stack(T)
 {
-  var res as ref(DataBlock(T:main));
-  res = allocator.allocate(sizeof(DataBlock(T:main)));
-  res.data = allocator.allocate(sizeof(T:main)*size);
-  return res;
-}
-
-type Stack(T:main, T:allocator) as rec(
-  var index as int,
-  var buff_length as int,
-  var start as ref(DataBlock(T:main)),
-  var data_block as ref(DataBlock(T:main)),
-  var length as int,
-  var allocator as ref(T:allocator));
-
-sub ()(Stack(T:main, T:allocator), var allocator as ref(T:allocator), var buff_length as int) as Stack(T:main, T:allocator)
-{
-  var this as Stack(T:main, T:allocator);
-  this.allocator = allocator;
-  this.data_block = DataBlock(T:main)(buff_length, allocator);
+  var this as Stack(T);
+  this.allocator = stdlib:sys:app:app.allocator;
+  this.data_block = stdlib:collections:sysstack:DataBlock(T)(32, this.allocator);
   this.start = this.data_block;
-  this.buff_length = buff_length;
+  this.buff_length = 32;
   this.data_block.prev_addr = null;
   this.data_block.next_addr = null;
   this.index = 0;
   this.length = 0;
   return this;
-}
-
-method push(var this as ref(Stack(T:main, T:allocator)), var v as T:main)
-{
-  if (this.index < this.buff_length)
-  {
-    this.data_block.data[this.index] = v;
-    inc this.index;
-    inc this.length;
-    return;
-  }
-
-  if (this.index == this.buff_length)
-  {
-    if (this.data_block.next_addr == null)
-    {
-      next_data_block = DataBlock(T:main)(this.buff_length, this.allocator);
-      this.data_block.next_addr = next_data_block;
-      next_data_block.prev_addr = this.data_block;
-    }
-
-    this.data_block = this.data_block.next_addr;
-    this.index = 0;
-    this.data_block.data[this.index] = v;
-    inc this.index;
-    inc this.length;
-    return;
-  }
-}
-
-method pop(var this as ref(Stack(T:main, T:allocator)), var out as ref(T:main)) as bool
-{
-  dec this.index;
-
-  if (this.index >= 0)
-  {
-    val out = this.data_block.data[this.index];
-    dec this.length;
-    return true;
-  }
-
-  if (this.index < 0 and this.data_block.prev_addr != null)
-  {
-    var prev_data_block as DataBlock(T:main);
-    prev_data_block = this.data_block.prev_addr;
-
-    this.data_block = prev_data_block;
-    this.index = this.buff_length - 1;
-    val out = this.data_block.data[this.index];
-    dec this.length;
-    return true;
-  }
-
-  this.index = 0;
-  return false;
-}
-
-method length(var this as ref(Stack(T:main, T:allocator))) as int
-{
-  return this.length;
-}
-
-method iterator(var this as ref(Stack(T:main, T:allocator))) as StackIterator(T:main)
-{
-  var res as StackIterator(T:main);
-  res.index = 0;
-  res.end_index = this.index;
-  res.data_block = this.start;
-  res.buff_length = this.buff_length;
-  return res
-}
-
-type StackIterator(T:main) as rec(
-  var index as int,
-  var buff_length as int,
-  var end_index as int,
-  var data_block as ref(DataBlock(T:main)),
-)
-
-method next(var this as ref(StackIterator(T:main)), var out as ref(T:main)) as bool
-{
-  if (this.index < this.buff_length)
-  {
-    # echo u64(this.data_block.next_addr);
-    if (this.data_block.next_addr == null and this.index == this.end_index)
-    {
-      return false;
-    }
-    val out = this.data_block.data[this.index];
-    inc this.index;
-    return true;
-  }
-
-  if (this.index == this.buff_length)
-  {
-    if (this.data_block.next_addr == null)
-    {
-      return false
-    }
-
-    this.data_block = this.data_block.next_addr;
-    this.index = 0;
-    val out = this.data_block.data[this.index];
-    inc this.index;
-    return true;
-  }
 }
