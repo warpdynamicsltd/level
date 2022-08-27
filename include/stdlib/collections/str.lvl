@@ -1,0 +1,12 @@
+import stdlib:sys:app;
+import stdlib:collections:vector;
+
+type char as u32;
+type str extends stdlib:collections:vector:Vector(char) with rec();
+
+#type str_iterator extends stdlib:collections:vector:VectorIterator(u32) with rec();
+#
+#method iterator(var this as ref(str)) as str_iterator
+#{
+#
+#}

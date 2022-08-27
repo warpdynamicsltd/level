@@ -1,5 +1,5 @@
 import stdlib:sys:bin_allocator as *;
-import stdlib:collections:stack as *;
+import stdlib:collections:sysstack as *;
 
 entry
 {
