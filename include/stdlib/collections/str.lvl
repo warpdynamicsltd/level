@@ -1,12 +1,127 @@
 import stdlib:sys:app;
 import stdlib:collections:vector;
+import stdlib:collections:stack;
 
 type char as u32;
 type str extends stdlib:collections:vector:Vector(char) with rec();
 
-#type str_iterator extends stdlib:collections:vector:VectorIterator(u32) with rec();
-#
-#method iterator(var this as ref(str)) as str_iterator
-#{
-#
-#}
+sub ()(str)
+{
+  var this as str;
+  exec this.init(0);
+  return this;
+}
+
+sub process_char_utf8(var stack as ref(stdlib:collections:stack:Stack(byte)), var c as char) as bool
+{
+  if (0 <= c and c <= 0x7f)
+  {
+    exec stack.push(byte(c));
+    return true;
+  }
+  if (0x80 <= c and c <= 0x7ff)
+  {
+    exec stack.push(byte(0xc0 | ((c >> 6) & 0x1f)));
+    exec stack.push(byte(0x80 | (c & 0x3f)));
+    return true;
+  }
+  if (0x0800 <= c and c <= 0xffff)
+  {
+    exec stack.push(byte(0xe0 | ((c >> 12) & 0xf)));
+    exec stack.push(byte(0x80 | ((c >> 6) & 0x3f)));
+    exec stack.push(byte(0x80 | (c & 0x3f)));
+    return true;
+  }
+  if (0x10000 <= c and c <= 0x10ffff)
+  {
+    exec stack.push(byte(0xf0 | ((c >> 18) & 0x7)));
+    exec stack.push(byte(0x80 | ((c >> 12) & 0x3f)));
+    exec stack.push(byte(0x80 | ((c >> 6) & 0x3f)));
+    exec stack.push(byte(0x80 | (c & 0x3f)));
+    return true;
+  }
+
+  return false;
+}
+
+method utf8(var this as ref(str)) as stdlib:collections:vector:Vector(byte)
+{
+  stack = stdlib:collections:stack:Stack(byte)();
+  foreach (var c as char in this)
+  {
+    if (not process_char_utf8(ref stack, c))
+    {
+      return stdlib:collections:vector:Vector(byte)(0);
+    }
+  }
+  exec stack.push(byte(0));
+
+  res = stdlib:collections:vector:Vector(byte)(stack.length());
+  k = 0;
+
+  foreach (var b as byte in stack)
+  {
+    res[k] = b;
+    inc k;
+  }
+
+  return res;
+}
+
+sub ()(str, var a as ref(stdlib:collections:vector:Vector(byte))) as str
+{
+  var res as str;
+  stack = stdlib:collections:stack:Stack(u32)();
+  var c = 0 as u32;
+  var remainder = 0 as int;
+  foreach (var b as byte in a)
+  {
+    if (0x1 & (b >> 8) == 0)
+    {
+      c = b;
+      exec stack.push(c);
+    }
+    else
+    {
+
+    }
+  }
+
+  exec res.init(stack.length());
+  k = 0;
+  foreach (c in stack)
+  {
+    res[k] = c;
+    inc k;
+  }
+
+  return res;
+}
+
+sub prepare_vector(var r as ref(byte)) as stdlib:collections:vector:Vector(byte)
+{
+  var res as stdlib:collections:vector:Vector(byte);
+  stack = stdlib:collections:stack:Stack(byte)();
+  var i = 0 as int;
+  while(r[i] != 0)
+  {
+    exec stack.push(r[i]);
+    inc i;
+  }
+
+  exec res.init(stack.length());
+
+  i = 0;
+  foreach (var b as byte in stack)
+  {
+    res[i] = b;
+    inc i;
+  }
+
+  return res;
+}
+
+sub ()(str, var a as ref(byte)) as str
+{
+  return str(ref prepare_vector(a));
+}

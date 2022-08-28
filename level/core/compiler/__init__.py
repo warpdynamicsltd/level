@@ -408,6 +408,9 @@ class Compiler:
 
             obj = self.compile_expression(exp.val, obj_manager)
 
+            if type(obj) is Type:
+                raise CompilerException(f"can't assign type to variable in {exp.val.meta}")
+
             if type(var_exp.val) is ast.Var:
                 if not (var_exp.val.name in obj_manager.objs or var_exp.val.calling_name in self.globals.globals_dict):
                     self.var_name_raise_not_available(var_exp.val)

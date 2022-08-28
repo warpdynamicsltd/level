@@ -735,11 +735,11 @@ class Parser:
             return ast.RefType(*expressions).add_meta(stream[0].meta)
 
         if fun_name == "rec":
-            if args:
-                statements = []
-                for arg in args:
-                    statements.append(self.parse_var_statement(arg.value))
-                return ast.RecType(*statements).add_meta(stream[0].meta)
+            # if args:
+            statements = []
+            for arg in args:
+                statements.append(self.parse_var_statement(arg.value))
+            return ast.RecType(*statements).add_meta(stream[0].meta)
 
         for arg in args:
             expressions.append(self.parse_type_expression(arg.value))

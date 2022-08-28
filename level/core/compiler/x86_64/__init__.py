@@ -85,7 +85,8 @@ class CompileDriver_x86_64(CompileDriver):
             return Type(Bool)
 
         if type(c.name) is bytes:
-            return Type(Ref, sub_types=[Type(Array, sub_types=[Type(Byte)])])
+            #return Type(Ref, sub_types=[Type(Array, sub_types=[Type(Byte)])])
+            return Type(Ref, sub_types=[Type(Byte)])
 
         if type(c.name) is ast.U64ConstType:
             return Type(U64)

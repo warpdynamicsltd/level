@@ -8,9 +8,9 @@ sub ()(Stack(T)) as Stack(T)
 {
   var this as Stack(T);
   this.allocator = stdlib:sys:app:app.allocator;
-  this.data_block = stdlib:collections:sysstack:DataBlock(T)(32, this.allocator);
+  this.data_block = stdlib:collections:sysstack:DataBlock(T)(256, this.allocator);
   this.start = this.data_block;
-  this.buff_length = 32;
+  this.buff_length = 256;
   this.data_block.prev_addr = null;
   this.data_block.next_addr = null;
   this.index = 0;

@@ -11,11 +11,16 @@ type VectorIterator(A) as rec(
   var index = 0 as int
 )
 
+method init(var this as ref(Vector(A)), var length as int)
+{
+  this.length = length;
+  this.data = stdlib:sys:app:app.allocator.allocate(length*sizeof(A));
+}
+
 sub ()(Vector(A), var length as int) as Vector(A)
 {
   var this as Vector(A);
-  this.length = length;
-  this.data = stdlib:sys:app:app.allocator.allocate(length*sizeof(A));
+  exec this.init(length);
   return this;
 }
 
