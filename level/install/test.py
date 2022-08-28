@@ -19,6 +19,7 @@ if test_include_path() not in modules():
 test_source([test_path("helloworld.lvl")], b"Hello, world!\n", b"", script=True)
 test_source([test_path("helloworld2.lvl")], b"Hello, world!\n")
 test_source([test_path("helloworld3.lvl")], b"Hello, world!\n")
+test_source([test_path("helloworld4.lvl")], b"Hello, world!\n")
 test_source([test_path("primes.lvl")], b'00000002\n00000003\n00000005\n00000007\n0000000b\n0000000d\n00000011\n00000013\n00000017\n0000001d\n0000001f\n00000025\n00000029\n0000002b\n0000002f\n00000035\n0000003b\n0000003d\n00000043\n00000047\n00000049\n0000004f\n00000053\n00000059\n00000061\n')
 test_source([test_path("args.lvl"), "A", "B"], b'A\nB\n')
 test_source([test_path("args2.lvl"), "A", "B"], b'A\nB\n')
@@ -110,6 +111,7 @@ test_source([test_path(r"inheritance/fun.lvl")], b"+00000000:00000005\n00000000:
 test_source([test_path(r"inheritance/methods.lvl")], b"+00000000:00000005\n+00000000:00000005\n00000000:00000003\n00000000:00000007\n+00000000:00000009\n")
 test_source([test_path(r"inheritance/order.lvl")], b"+00000000:00000001\n+00000000:00000002\n+00000000:00000001\n+00000000:00000001\n+00000000:00000002\n+00000000:00000001\n")
 
+test_source([test_path(r"str/basic_utf8.lvl")], b"\xc2\xa3\n\xe0\xa4\xb9\n\xe2\x82\xac\n\xed\x95\x9c\n\xf0\x90\x8d\x88\n")
 # ERRORS
 
 test_source([test_path(r"errors/nesting/nesting1.lvl")], b"", b"test:error : line 5[12]", script=True)

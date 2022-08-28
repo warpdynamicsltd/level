@@ -1,0 +1,26 @@
+import stdlib:collections:str as *;
+
+entry
+{
+  var s as str;
+  exec s.init(1);
+  s[0] = 0xa3;
+  r = s.utf8().data;
+  echo r;
+
+  s[0] = 0x939;
+  r = s.utf8().data;
+  echo r;
+
+  s[0] = 0x20ac;
+  r = s.utf8().data;
+  echo r;
+
+  s[0] = 0xd55c;
+  r = s.utf8().data;
+  echo r;
+
+  s[0] = 0x10348;
+  r = s.utf8().data;
+  echo r;
+}

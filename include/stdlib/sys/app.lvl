@@ -12,7 +12,7 @@ sub ()(App) as App
   var res as App;
   var brk_allocator as stdlib:sys:brk_allocator:Allocator;
   res.allocator = brk_allocator.allocate(sizeof(stdlib:sys:bin_allocator:Allocator));
-  res.allocator = ref stdlib:sys:bin_allocator:Allocator();
+  val res.allocator = stdlib:sys:bin_allocator:Allocator();
   return res;
 }
 

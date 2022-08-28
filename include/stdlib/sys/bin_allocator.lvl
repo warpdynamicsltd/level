@@ -98,11 +98,12 @@ method allocate(var this as ref(Allocator), var size as int) as ref(byte)
 
   needed_real_size = get_real_size(size);
 
+
   if (needed_real_size < 0x1000)
   {
     index = needed_real_size;
-
     exec this.map[index].pop(ref ptr);
+
 
     if (ptr == null)
     {
