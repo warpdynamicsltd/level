@@ -426,7 +426,11 @@ class Compiler:
             exp = ast.MetaVar()
             ast.Echo(exp) << s
             obj = self.compile_expression(exp.val, obj_manager)
-            self.compile_driver.echo_obj(obj)
+            subroutine = self.get_subroutine_for_call(True, s.meta, 'echo', obj)
+            if subroutine is not None:
+                return self.compile_call_execution(True, obj_manager, subroutine, obj)
+            else:
+                self.compile_driver.echo_obj(obj)
             return
 
         if ast.istype(s, ast.Return):
@@ -480,10 +484,15 @@ class Compiler:
             next(gen)
             self.compile_statements(statements.val, obj_manager)
             next(gen)
+            next(gen)
             return
 
         if ast.istype(s, ast.Break):
             self.compile_driver.compile_break()
+            return
+
+        if ast.istype(s, ast.Continue):
+            self.compile_driver.compile_continue()
             return
 
         if ast.istype(s, ast.For):
@@ -499,6 +508,7 @@ class Compiler:
             obj.to_acc()
             next(gen)
             self.compile_statements(for_statement_list.val, obj_manager)
+            next(gen)
             self.compile_statement(final_statement.val, obj_manager)
             next(gen)
             return
@@ -530,6 +540,7 @@ class Compiler:
             bool_obj.to_acc()
             next(gen)
             self.compile_statements(statement_list.val, obj_manager)
+            next(gen)
             next(gen)
             return
 

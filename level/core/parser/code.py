@@ -1,4 +1,5 @@
 import struct
+import string
 import re
 
 from level.mathtools.float import  float80
@@ -231,20 +232,21 @@ class Parser:
         hex_value = str()
         for i, c in enumerate(s):
             if hex_mode:
-                if len(hex_value) < 2:
+                if c.c in string.hexdigits and len(hex_value) < 6:
                     hex_value += c
                     continue
                 else:
                     res.append(Char(chr(int(hex_value, base=16)), meta=c.meta))
+                    hex_value = str()
                     hex_mode = False
                     escape_mode = False
-                    continue
+                    #continue
 
 
             if escape_mode:
                 if c in self.string_escape_map:
                     res.append(Char(self.string_escape_map[c], meta=c.meta))
-                if c == 'x':
+                if c == 'u':
                     hex_mode = True
                     continue
                 else:
@@ -258,6 +260,9 @@ class Parser:
             else:
                 if c != '\\':
                     res.append(c)
+
+        if hex_mode:
+            res.append(Char(chr(int(hex_value, base=16)), meta=c.meta))
 
         return res
 
@@ -735,7 +740,6 @@ class Parser:
             return ast.RefType(*expressions).add_meta(stream[0].meta)
 
         if fun_name == "rec":
-            # if args:
             statements = []
             for arg in args:
                 statements.append(self.parse_var_statement(arg.value))

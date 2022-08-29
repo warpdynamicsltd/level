@@ -1,0 +1,12 @@
+import stdlib:collections:str as *;
+
+entry
+{
+  echo str("Hello, world!");
+  echo str("Hello, ") + str("world!");
+  echo str("{") + str("Hello, world! Level.").sub(14, 5) + str("}");
+  echo str("012345").sub(4, 7);
+  echo str("012345").sub(3, 2) == str("34");
+  echo str("012345").sub(3, 2) != str("34");
+  echo str("012345").sub(3, 2) != str("Level");
+}
