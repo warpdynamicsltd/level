@@ -72,7 +72,8 @@ class Subroutine:
             return
 
         h = hash(tuple(self.var_types))
-        if (self.name, h) is self.compiler.subroutines_compiled:
+        if (self.name, h) in self.compiler.subroutine_compiled_addresses:
+            self.address.value.set(self.compiler.subroutine_compiled_addresses[self.name, h].value)
             return
 
         self.compiler.subroutines_stack.append(self)
@@ -93,7 +94,7 @@ class Subroutine:
         obj_manager.close()
         Subroutine.n_compiled += 1
         self.compiled = True
-        self.compiler.subroutines_compiled.add((self.name, h))
+        self.compiler.subroutine_compiled_addresses[self.name, h] = self.address
 
     def match(self, var_types):
         if not self.var_types:

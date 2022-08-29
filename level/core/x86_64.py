@@ -66,6 +66,18 @@ class SymBits(Symbol):
             else:
                 return u64(self.resolved_value)
 
+    def set(self, other):
+        if type(other) is int:
+            self.resolved_value = other
+            return
+
+        if type(other) is SymBits:
+            self.left = None
+            self.right = (1, other)
+            return
+
+        raise MachineException('Unexpected end')
+
     def add(self, factor, other):
         if type(other) is int:
             other_sym = SymBits(self.bits)
@@ -100,11 +112,17 @@ class SymBits(Symbol):
     def resolve(self):
         if self.resolved_value is not None:
             return
+        left = 0
+        right = 0
+        if self.left is not None:
+            self.left[1].resolve()
+            left = self.left[0]*self.left[1].resolved_value
 
-        self.left[1].resolve()
-        self.right[1].resolve()
+        if self.right is not None:
+            self.right[1].resolve()
+            right = self.right[0]*self.right[1].resolved_value
 
-        self.resolved_value = self.left[0]*self.left[1].resolved_value + self.right[0]*self.right[1].resolved_value
+        self.resolved_value = left + right
 
 
 class Register:

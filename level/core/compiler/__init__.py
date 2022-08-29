@@ -131,7 +131,7 @@ class Compiler:
         self.subroutines_stack = []
 
         # for internal cache use
-        self.subroutines_compiled = set()
+        self.subroutine_compiled_addresses = {}
         self.type_defs_compiled = {}
 
     def update_meta(self, exp):
