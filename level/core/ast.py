@@ -380,6 +380,10 @@ class Break(Statement):
     def __init__(self):
         Statement.__init__(self, 'Break')
 
+class Continue(Statement):
+    def __init__(self):
+        Statement.__init__(self, 'Continue')
+
 class Inc(Statement):
     def __init__(self, a):
         if not(istype(a, Expression)):

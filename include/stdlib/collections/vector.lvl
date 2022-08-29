@@ -65,7 +65,7 @@ method sub(var this as ref(Vector(A)), var i as int, var length as int) as Vecto
 {
   if (i < 0) {i = 0}
   computed_length = min(this.length - i, length);
-  if (i < computed_length)
+  if (i < this.length)
   {
     res = Vector(A)(computed_length);
     for (j = 0; j < computed_length; inc j)
@@ -75,4 +75,22 @@ method sub(var this as ref(Vector(A)), var i as int, var length as int) as Vecto
     return res;
   }
   return Vector(A)(0);
+}
+
+method ==(var a as ref(Vector(A)), var b as ref(Vector(A))) as bool
+{
+  if (a.length() != b.length()) {return false}
+  var e as A;
+  k = 0;
+  foreach (e in a)
+  {
+    if (e != b[k]) {return false}
+    inc k;
+  }
+  return true;
+}
+
+method !=(var a as ref(Vector(A)), var b as ref(Vector(A))) as bool
+{
+  return not(a == b);
 }

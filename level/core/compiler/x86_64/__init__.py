@@ -85,7 +85,6 @@ class CompileDriver_x86_64(CompileDriver):
             return Type(Bool)
 
         if type(c.name) is bytes:
-            #return Type(Ref, sub_types=[Type(Array, sub_types=[Type(Byte)])])
             return Type(Ref, sub_types=[Type(Byte)])
 
         if type(c.name) is ast.U64ConstType:
@@ -116,9 +115,6 @@ class CompileDriver_x86_64(CompileDriver):
 
     def get_type_by_var(self, c):
         return Type(U32)
-
-    def set_type_by_name(self, name, T):
-        self.types_dict[name] = T
 
     def get_simple_type_by_name(self, t):
         if t.name in translate_simple_types:
@@ -505,11 +501,14 @@ class CompileDriver_x86_64(CompileDriver):
 
     def while_acc(self):
         end_while_block = SymBits()
-        self.while_stack.append(end_while_block)
+        continue_addr = SymBits()
         begin_while_block = address()
+        self.while_stack.append((continue_addr, end_while_block))
         yield None
         or_(rax, rax)
         jz_(end_while_block)
+        yield None
+        set_symbol(continue_addr)
         yield None
         jmp_(begin_while_block)
         set_symbol(end_while_block)
@@ -518,7 +517,11 @@ class CompileDriver_x86_64(CompileDriver):
 
     def compile_break(self):
         if self.while_stack:
-            jmp_(self.while_stack[-1])
+            jmp_(self.while_stack[-1][1])
+
+    def compile_continue(self):
+        if self.while_stack:
+            jmp_(self.while_stack[-1][0])
 
     def exit(self):
         jmp_(self.exit_addr)

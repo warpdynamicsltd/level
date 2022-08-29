@@ -73,18 +73,59 @@ sub ()(str, var a as ref(stdlib:collections:vector:Vector(byte))) as str
   var res as str;
   stack = stdlib:collections:stack:Stack(u32)();
   var c = 0 as u32;
-  var remainder = 0 as int;
+  var remainder = -1 as int;
   foreach (var b as byte in a)
   {
-    if (0x1 & (b >> 8) == 0)
+    if (remainder > 0)
+    {
+      c = c << 6;
+      c = c | (b & 0x3f);
+      dec remainder;
+      continue;
+    }
+
+    if (remainder == 0)
+    {
+      exec stack.push(c);
+      c = 0;
+      remainder = -1;
+    }
+
+    if (0x1 & (b >> 7) == 0)
     {
       c = b;
       exec stack.push(c);
+      c = 0;
+      continue;
     }
-    else
-    {
 
+    if (0x7 & (b >> 5) == 0x6)
+    {
+      c = (b & 0x1f);
+      remainder = 1;
+      continue;
     }
+
+    if (0xf & (b >> 4) == 0xe)
+    {
+      c = (b & 0xf);
+      remainder = 2;
+      continue;
+    }
+
+    if (0x1f & (b >> 3) == 0x1e)
+    {
+      c = (b & 0x7);
+      remainder = 3;
+      continue;
+    }
+
+  }
+
+  if (remainder == 0)
+  {
+    exec stack.push(c);
+    continue;
   }
 
   exec res.init(stack.length());
@@ -124,4 +165,29 @@ sub prepare_vector(var r as ref(byte)) as stdlib:collections:vector:Vector(byte)
 sub ()(str, var a as ref(byte)) as str
 {
   return str(ref prepare_vector(a));
+}
+
+method +(var a as ref(str), var b as ref(str)) as str
+{
+  var res as str;
+  exec res.init(a.length() + b.length());
+  var c as char;
+  k = 0;
+  foreach (c in a)
+  {
+    res[k] = c;
+    inc k;
+  }
+  foreach (c in b)
+  {
+    res[k] = c;
+    inc k;
+  }
+
+  return res;
+}
+
+method echo(var s as ref(str))
+{
+  echo s.utf8().data;
 }

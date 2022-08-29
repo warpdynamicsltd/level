@@ -56,6 +56,7 @@ statement_functions = {
     'return': (ast.Return, None),
     'echo' : (ast.Echo, 1),
     'break': (ast.Break, 0),
+    'continue': (ast.Continue, 0),
     'exec': (ast.Exec, 1),
     'inc' : (ast.Inc, 1),
     'dec' : (ast.Dec, 1)

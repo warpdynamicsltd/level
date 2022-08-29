@@ -2,5 +2,5 @@ import stdlib:collections:str as *;
 
 entry
 {
-  echo str("Hello, world!").utf8().data;
+  echo str("Hello, world!");
 }
