@@ -30,9 +30,9 @@ class MetaVar:
 class Element:
     """
     the resulting name in ast element is the one element
-    is called and recognised by compiler. Normally in case of subroutines and types and type variables this is calling name as build by
-    parser.build_calling_name() but elements might transform from parsed vars to types or types variables or subroutine names and
-    then calling_name (as returned by parser.build_calling_name()) attached to vars is used to put it as name in resulting ast element.
+    is called for and recognised by compiler. Normally in case of subroutines and types and type variables this is calling name as build by
+    Normalizer but elements might transform from parsed vars to types or types variables or subroutine names and
+    then calling_name (as returned computed by Normalizer) attached to vars is used to put it as name in resulting ast element.
 
     Exceptions are methods, built-in subroutines and built-in types when name is used as it is visible for user.
     """
@@ -49,6 +49,7 @@ class Element:
         self.calling_name = None
         self.raw_str = None
         self.term = None
+        self.normalized = False
 
     def __lshift__(self, element):
         if type(self.name) is MetaVar:
@@ -198,12 +199,14 @@ class VarList(Element):
 
 class SubroutineDef(Element):
     def __init__(self, name, var_list, statement_list, return_type_exp):
+        self.method = False
         if not (istype(var_list, VarList) and istype(statement_list, StatementList) and istype(return_type_exp, TypeExpression)):
             raise GrammarTreeError()
         Element.__init__(self, name, var_list, statement_list, return_type_exp)
 
 class RefSubroutineDef(Element):
     def __init__(self, name, var_list, statement_list, return_type_exp):
+        self.method = False
         if not (istype(var_list, VarList) and istype(statement_list, StatementList) and istype(return_type_exp, TypeExpression)):
             raise GrammarTreeError()
         Element.__init__(self, name, var_list, statement_list, return_type_exp)

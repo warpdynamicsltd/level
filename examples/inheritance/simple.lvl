@@ -25,7 +25,7 @@ with rec(
 type spacetime_point(A) extends _spacetime_point(A)
 with rec();
 
-sub ()(point(A), var l = 2.0 as float) as point(A)
+method ()(point(A), var l = 2.0 as float) as point(A)
 {
   var res as point(A);
   res.x = 17;

@@ -1,8 +1,8 @@
 import test:C as c;
+import test:E;
 
 entry{
   var k as c:c_type;
-  k = c:d:e:h() + c:d:e:h();
-  echo c:d:f(k);
+  k = test:E:h() + test:E:h();
   echo c:g(k);
 }

@@ -1,0 +1,19 @@
+import test:norm1 as A;
+
+entry{
+  var x as A:Container(int);
+  x.a = 3;
+  echo x.a;
+  exec A:f(x);
+  exec A:Container(int)();
+  echo A:N + 1;
+  echo (x + x).a;
+  echo x.value();
+  echo "inheritance";
+  var y as A:Pair(int);
+  y.a = 7;
+  y.b = 9;
+  echo y.b;
+  echo y.value();
+  echo "end";
+}

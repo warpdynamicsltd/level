@@ -5,7 +5,7 @@ type C(A, B) as rec(
   var b as B
 );
 
-sub ()(C(A, B), var a as int) as C(A, B)
+method ()(C(A, B), var a as int) as C(A, B)
 {
   var x as C(A, B);
   x.a = a;

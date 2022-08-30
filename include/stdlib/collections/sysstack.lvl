@@ -4,7 +4,7 @@ type DataBlock(T:main) as rec(
   var data as ref(T:main)
 )
 
-sub ()(DataBlock(T:main), var size as int, var allocator as ref(T:allocator)) as ref(DataBlock(T:main))
+method ()(DataBlock(T:main), var size as int, var allocator as ref(T:allocator)) as ref(DataBlock(T:main))
 {
   var res as ref(DataBlock(T:main));
   res = allocator.allocate(sizeof(DataBlock(T:main)));
@@ -20,7 +20,7 @@ type Stack(T:main, T:allocator) as rec(
   var length as int,
   var allocator as ref(T:allocator));
 
-sub ()(Stack(T:main, T:allocator), var allocator as ref(T:allocator), var buff_length as int) as Stack(T:main, T:allocator)
+method ()(Stack(T:main, T:allocator), var allocator as ref(T:allocator), var buff_length as int) as Stack(T:main, T:allocator)
 {
   var this as Stack(T:main, T:allocator);
   this.allocator = allocator;

@@ -5,7 +5,7 @@ import stdlib:collections:stack;
 type char as u32;
 type str extends stdlib:collections:vector:Vector(char) with rec();
 
-sub ()(str)
+method ()(str)
 {
   var this as str;
   exec this.init(0);
@@ -68,7 +68,7 @@ method utf8(var this as ref(str)) as stdlib:collections:vector:Vector(byte)
   return res;
 }
 
-sub ()(str, var a as ref(stdlib:collections:vector:Vector(byte))) as str
+method ()(str, var a as ref(stdlib:collections:vector:Vector(byte))) as str
 {
   var res as str;
   stack = stdlib:collections:stack:Stack(u32)();
@@ -162,7 +162,7 @@ sub prepare_vector(var r as ref(byte)) as stdlib:collections:vector:Vector(byte)
   return res;
 }
 
-sub ()(str, var a as ref(byte)) as str
+method ()(str, var a as ref(byte)) as str
 {
   return str(ref prepare_vector(a));
 }

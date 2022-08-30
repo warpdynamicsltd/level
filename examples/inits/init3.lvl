@@ -2,7 +2,7 @@ type T(A) as rec(
   var a as A
 );
 
-sub ()(T(A)) as T(A)
+method ()(T(A)) as T(A)
 {
   var res as T(A);
   return res;
@@ -10,7 +10,7 @@ sub ()(T(A)) as T(A)
 
 type D as T(int);
 
-sub ()(D, var u = 5 as int) as D
+method ()(D, var u = 5 as int) as D
 {
   var res as D;
   res.a = u;
