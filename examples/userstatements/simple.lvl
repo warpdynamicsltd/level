@@ -1,0 +1,29 @@
+type Pair(A) as rec(
+  var x as A,
+  var y as A
+)
+
+sub go(var k as int)
+{
+  echo k;
+}
+
+method sum(var this as ref(Pair(A)), var a as ref(Pair(A)))
+{
+  echo this.x + this.y + a.x + a.y;
+}
+
+
+entry
+{
+  go 3;
+
+  var p as Pair(int);
+  var q as Pair(int);
+  p.x = 1;
+  p.y = 5;
+  q.x = 3;
+  q.y = 7;
+
+  sum p, q;
+}

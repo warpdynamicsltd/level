@@ -544,6 +544,25 @@ class Compiler:
             next(gen)
             return
 
+        if ast.istype(s, ast.UserStatementFunction):
+            objs = []
+            var_types = []
+            for exp in s.args:
+                obj = self.compile_expression(exp, obj_manager)
+                objs.append(obj)
+                var_types.append(obj.type)
+
+            sub = self.get_subroutine_for_call(True, s.meta, s.name, *objs)
+            if sub is None:
+                sub = self.get_subroutine_for_call(False, s.meta, s.calling_name, *objs)
+                if sub is None:
+                    raise CompilerException(f"can't resolve subroutine name '{s.name}' in {s.meta}")
+                self.compile_call_execution(False, obj_manager, sub, *objs)
+            else:
+                self.compile_call_execution(True, obj_manager, sub, *objs)
+
+            return
+
         if ast.istype(s, ast.EmptyStatement):
             return
 

@@ -4,7 +4,8 @@ import stdlib:sys:brk_allocator;
 
 type Allocator as rec(
   var brk_allocator as stdlib:sys:brk_allocator:Allocator,
-  var map as array(stdlib:collections:sysstack:Stack(ref(byte), stdlib:sys:brk_allocator:Allocator), 0x1000)
+  var map as array(stdlib:collections:sysstack:Stack(ref(byte), stdlib:sys:brk_allocator:Allocator), 0x1000),
+  var used as int
 )
 
 method ()(Allocator) as Allocator
@@ -108,10 +109,12 @@ method allocate(var this as ref(Allocator), var size as int) as ref(byte)
       # allocate new memory
       addr = stdlib:sys:calls:sbrk(needed_real_size);
       ptr = set_size_and_get_ptr(addr, size);
+      this.used = this.used + needed_real_size;
       return ptr;
     }
     else
     {
+      this.used = this.used + needed_real_size;
       return ptr;
     }
   }
@@ -124,6 +127,7 @@ method allocate(var this as ref(Allocator), var size as int) as ref(byte)
       return null;
     }
     ptr = set_size_and_get_ptr(addr, size);
+    this.used = this.used + needed_real_size;
     return ptr;
   }
 }
@@ -136,11 +140,17 @@ method free(var this as ref(Allocator), var ptr as ref(byte)) as bool
   {
     index = real_size;
     exec this.map[index].push(ptr);
+    this.used = this.used - real_size;
     return true;
   }
   else
   {
     n = (real_size - 1)/0x1000 + 1;
-    return stdlib:sys:calls:delete_blocks(addr, n);
+    res = stdlib:sys:calls:delete_blocks(addr, n);
+    if (res)
+    {
+      this.used = this.used - real_size;
+    }
+    return res;
   }
 }

@@ -83,6 +83,10 @@ class Normalizer:
             element.name = normalized_name
             element.calling_name = normalized_name
 
+        if type(element) is ast.UserStatementFunction and not element.normalized:
+            normalized_name = self.normalize_name(element.meta, element.name)
+            element.calling_name = normalized_name
+
         for arg in element.args:
             self.normalise(arg)
 

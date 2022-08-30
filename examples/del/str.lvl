@@ -1,0 +1,14 @@
+import stdlib:collections:str as *;
+import stdlib:collections:vector as *;
+import stdlib:sys:app as *;
+
+entry
+{
+  s = str("Hello, world!");
+  echo app.allocator.used;
+  echo s;
+  echo app.allocator.used;
+  del s;
+  echo app.allocator.used;
+  echo "end";
+}
