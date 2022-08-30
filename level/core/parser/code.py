@@ -917,14 +917,17 @@ class Parser:
             exp.meta = arg.meta
             expressions.append(exp)
 
-        fun, n = builtin.statement_functions[fun_name]
+        if fun_name in builtin.statement_functions:
+            fun, n = builtin.statement_functions[fun_name]
+        else:
+            return ast.UserStatementFunction(fun_name, *expressions).add_meta(stream[0].meta)
+
 
         if n is not None:
             if n != len(expressions):
                 ParseException(f"{n} arguments expected after '{fun_name}' in {stream[0].meta}")
 
-        res = fun(*expressions)
-        res.meta = stream[0].meta
+        res = fun(*expressions).add_meta(stream[0].meta)
         return res
 
     def parse_statement_operator(self, op, stream):
@@ -1066,6 +1069,9 @@ class Parser:
                 res = self.try_parse_statement_operator(op, stream[:limit])
                 if res is not None:
                     return limit, res.add_meta(stream[0].meta)
+
+        if stream and type(stream[0]) is TerminalSymb:
+            return limit, self.parse_statement_function(stream[:limit])
 
         raise ParseException(f"unexpected statement in {stream[0].meta}")
 

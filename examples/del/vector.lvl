@@ -1,0 +1,12 @@
+import stdlib:collections:str as *;
+import stdlib:collections:vector as *;
+import stdlib:sys:app as *;
+
+entry
+{
+  v = Vector(int)(10);
+  echo app.allocator.used;
+  del v;
+  echo app.allocator.used;
+  echo "end";
+}

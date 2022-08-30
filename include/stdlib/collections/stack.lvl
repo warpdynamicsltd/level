@@ -17,3 +17,17 @@ method ()(Stack(T)) as Stack(T)
   this.length = 0;
   return this;
 }
+
+method del(var this as ref(Stack(T)))
+{
+  var data_block as ref(stdlib:collections:sysstack:DataBlock(T));
+  data_block = this.start;
+  while(data_block != null)
+  {
+    var mem = data_block.data as ref(byte);
+    exec this.allocator.free(mem);
+    mem = data_block;
+    data_block = data_block.next_addr;
+    exec this.allocator.free(mem);
+  }
+}

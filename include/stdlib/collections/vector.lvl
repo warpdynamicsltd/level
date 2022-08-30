@@ -24,6 +24,13 @@ method ()(Vector(A), var length as int) as Vector(A)
   return this;
 }
 
+method del(var this as ref(Vector(A)))
+{
+  var mem as ref(byte);
+  mem = this.data;
+  exec stdlib:sys:app:app.allocator.free(mem);
+}
+
 method [](var this as ref(Vector(A)), var index as int) as val ref(A)
 {
   return this.data + index;

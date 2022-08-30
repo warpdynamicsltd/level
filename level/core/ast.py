@@ -399,6 +399,15 @@ class Dec(Statement):
             raise GrammarTreeError()
         Statement.__init__(self, 'Dec', a)
 
+class UserStatementFunction(Statement):
+    def __init__(self, name, *exps):
+        for exp in exps:
+            if not istype(exp, Expression):
+                raise GrammarTreeError()
+        Statement.__init__(self, name, *exps)
+
+    def __repr__(self):
+        return f"UserStatementFunction({self.args})"
 
 
 """
