@@ -1,0 +1,38 @@
+type Container(A) as rec(
+   var a as A;
+)
+
+global N = 7 as int;
+
+sub g(var c as Container(A)) as A
+{
+  return c.a;
+}
+
+sub f(var c as Container(A)) as A
+{
+  echo g(c);
+}
+
+method ()(Container(A))
+{
+  echo N;
+}
+
+method +(var a as ref(Container(A)), var b as ref(Container(A))) as Container(A)
+{
+  var res as Container(A);
+  res.a = a.a + b.a;
+  return res;
+}
+
+method value(var a as ref(Container(A))) as A
+{
+  return a.a;
+}
+
+type Pair(A) extends Container(A) with rec
+(
+  var b as A;
+)
+

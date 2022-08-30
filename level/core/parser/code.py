@@ -3,6 +3,7 @@ import string
 import re
 
 from level.mathtools.float import  float80
+from level.core.parser.normalizer import Normalizer
 
 import level.core.parser.builtin as builtin
 import level.core.ast as ast
@@ -22,11 +23,9 @@ class CallingName:
         return f"CallingName({self.key}, {self.name})"
 
 class MetaParserInfo:
-    def __init__(self, n_line, n_char, lead=None, module_name=None):
-        # print(lead)
+    def __init__(self, n_line, n_char, module_name=None):
         self.n_line = n_line
         self.n_char = n_char
-        self.lead = lead
         self.module_name = module_name
 
     def __str__(self):
@@ -171,10 +170,9 @@ class Root(Symb):
 class Parser:
     def __init__(self, text):
         self.text = text
-        linker = level.core.parser.linker.Linker()
-        linker.text_recursive(text, lead=None, module_name=None)
-        #self.root = Root(self.text_to_alphabet_characters(text))
-        self.root = Root(linker.chars)
+        self.linker = level.core.parser.linker.Linker()
+        self.linker.text_recursive(text, module_name=None)
+        self.root = Root(self.linker.chars)
 
         self.string_markers = ['"', "'"]
         self.string_escape_map = {
@@ -207,7 +205,10 @@ class Parser:
         self.tokenize(self.is_token_char, TerminalSymb)
         self.remove_spaces()
         self.symbolise_brackets()
-        return self.parse_program(self.root.value)
+        program = self.parse_program(self.root.value)
+        normalizer = Normalizer(self.linker.imports, program)
+        program = normalizer.get_normalised_program()
+        return program
 
 
     def text_to_alphabet_characters(self, text):
@@ -644,11 +645,7 @@ class Parser:
             return None
 
     def build_calling_name(self, term):
-        lead = term.meta.lead
-        if lead is None:
-            return term.visual()
-        else:
-            return lead.name + ":" + term.visual()
+        return term.visual()
 
     def parse_type_expression(self, stream):
         if not stream:
@@ -980,7 +977,7 @@ class Parser:
                 else:
                     raise ParseException(f"expected type expression in {meta(stream)}")
                 return grammar_type(
-                            ast.TypeTemplate(var_type(self.build_calling_name(stream[1])).add_meta(stream[1].meta), *var_types),
+                            ast.TypeTemplate(var_type(self.build_calling_name(stream[1])).add_meta(stream[1].meta), *var_types).add_meta(stream[1].meta),
                             exp_type,
                             ast.ExtendsList(*extends_type_expressions)).add_meta(stream[0].meta)
             else:
@@ -1248,6 +1245,7 @@ class Parser:
             if stream[0] == 'method':
                 code_bracket_index = self.find(stream, BracketSymb(opening='{', closing='}', value=None))
                 def_ = self.parse_def(stream[1:code_bracket_index + 1], method=True)
+                def_.method = True
                 stream = stream[code_bracket_index + 1:]
                 subroutines.append(def_)
                 continue

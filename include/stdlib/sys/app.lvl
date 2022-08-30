@@ -7,7 +7,7 @@ type App as rec(
 
 global app = App() as App;
 
-sub ()(App) as App
+method ()(App) as App
 {
   var res as App;
   var brk_allocator as stdlib:sys:brk_allocator:Allocator;

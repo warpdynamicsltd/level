@@ -7,7 +7,7 @@ type Allocator as rec(
   var map as array(stdlib:collections:sysstack:Stack(ref(byte), stdlib:sys:brk_allocator:Allocator), 0x1000)
 )
 
-sub ()(Allocator) as Allocator
+method ()(Allocator) as Allocator
 {
   var res as Allocator;
   for (i = 0; i < 0x1000; inc i)

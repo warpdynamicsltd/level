@@ -4,7 +4,7 @@ import stdlib:sys:app;
 
 type Stack(T) extends stdlib:collections:sysstack:Stack(T, stdlib:sys:bin_allocator:Allocator) with rec();
 
-sub ()(Stack(T)) as Stack(T)
+method ()(Stack(T)) as Stack(T)
 {
   var this as Stack(T);
   this.allocator = stdlib:sys:app:app.allocator;

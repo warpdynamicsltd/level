@@ -27,15 +27,15 @@ test_source([test_path("args3.lvl"), "A", "B"], b'A\nB\n')
 
 test_source([test_path(r"algo/quicksort.lvl")],  b"-6fd11e34:25010968\n+66e3ae4b:99064207\n+2a2fd32c:7a55958a\n+29a21877:eef44091\n-433f930f:3b3c3634\n-39425dd8:4d55d1d5\n+40784a6c:6f3ff3de\n-6bda719b:e8297eab\n+1f77791a:14be6840\n+3885a264:bfd7948f\n+18671417:8e3a8f72\n-6adf4318:a5c9b9a7\n-6552b9f6:e25afa0c\n-0bc8d47d:0d9e66cd\n+35c9ae02:4c3ebc46\n+6065066f:da93539d\n+5c3b65c2:c02916e8\n-4231d271:a9fa5fe9\n-75e718f7:1dccf1a6\n-488861ed:df1e52df\n+00000000:00000000\n-75e718f7:1dccf1a6\n-6fd11e34:25010968\n-6bda719b:e8297eab\n-6adf4318:a5c9b9a7\n-6552b9f6:e25afa0c\n-488861ed:df1e52df\n-433f930f:3b3c3634\n-4231d271:a9fa5fe9\n-39425dd8:4d55d1d5\n-0bc8d47d:0d9e66cd\n+18671417:8e3a8f72\n+1f77791a:14be6840\n+29a21877:eef44091\n+2a2fd32c:7a55958a\n+35c9ae02:4c3ebc46\n+3885a264:bfd7948f\n+40784a6c:6f3ff3de\n+5c3b65c2:c02916e8\n+6065066f:da93539d\n+66e3ae4b:99064207\n")
 
-test_source([test_path(r"nesting/nesting1.lvl")], b"+00000000:00000003\n+00000000:00000004\n")
-test_source([test_path(r"nesting/nesting2.lvl")], b"+00000000:00000003\n+00000000:00000004\n")
-test_source([test_path(r"nesting/nesting3.lvl")], b"+00000000:00000003\n+00000000:00000004\n")
-test_source([test_path(r"nesting/nesting4.lvl")], b"+00000000:00000003\n+00000000:00000004\n")
-test_source([test_path(r"nesting/nesting5.lvl")], b"+00000000:00000003\n+00000000:00000004\n")
-test_source([test_path(r"nesting/nesting6.lvl")], b"+00000000:00000003\n+00000000:00000004\n")
-test_source([test_path(r"nesting/nesting7.lvl")], b"+00000000:00000003\n+00000000:00000004\n")
-test_source([test_path(r"nesting/nesting8.lvl")], b"+00000000:00000003\n+00000000:00000004\n")
-test_source([test_path(r"nesting/nesting9.lvl")], b"+00000000:00000003\n+00000000:00000004\n")
+test_source([test_path(r"nesting/nesting1.lvl")], b"+00000000:00000004\n")
+test_source([test_path(r"nesting/nesting2.lvl")], b"+00000000:00000004\n")
+test_source([test_path(r"nesting/nesting3.lvl")], b"+00000000:00000004\n")
+test_source([test_path(r"nesting/nesting4.lvl")], b"+00000000:00000004\n")
+test_source([test_path(r"nesting/nesting5.lvl")], b"+00000000:00000004\n")
+test_source([test_path(r"nesting/nesting6.lvl")], b"+00000000:00000004\n")
+test_source([test_path(r"nesting/nesting7.lvl")], b"+00000000:00000004\n")
+test_source([test_path(r"nesting/nesting8.lvl")], b"+00000000:00000004\n")
+test_source([test_path(r"nesting/nesting9.lvl")], b"+00000000:00000004\n")
 test_source([test_path(r"sub/calling.lvl")],  b"00000002\n00000003\n00000001\n00000001\n+00000000:00000005\n+00000000:00000004\n+00000000:00000006\nno-type\n+00000000:00000008\n+00000000:00000003\n")
 test_source([test_path(r"math/cmpref.lvl")], b"00000001\n00000001\n")
 test_source([test_path(r"math/cmpu64.lvl")], b"00000001\n")
@@ -113,11 +113,17 @@ test_source([test_path(r"inheritance/order.lvl")], b"+00000000:00000001\n+000000
 
 test_source([test_path(r"str/basic_utf8.lvl")], b"\xc2\xa3\n\xe0\xa4\xb9\n\xe2\x82\xac\n\xed\x95\x9c\n\xf0\x90\x8d\x88\n+00000000:00000029\nHello, world for \xc2\xa3100 and \xe0\xa4\xb9, \xe2\x82\xac, \xed\x95\x9c, \xf0\x90\x8d\x88, hej\nend\n")
 test_source([test_path(r"str/oper.lvl")], b"Hello, world!\nHello, world!\n{Level}\n45\n00000001\n00000000\n00000001\n")
-# ERRORS
 
-test_source([test_path(r"errors/nesting/nesting1.lvl")], b"", b"test:error : line 5[12]", script=True)
-test_source([test_path(r"errors/nesting/nesting2.lvl")], b"", b"test:error2 : line 3[10]")
-test_source([test_path(r"errors/nesting/nesting3.lvl")], b"", b"test:error : line 5[12]")
+test_source([test_path(r"norm/norm1.lvl")], b"+00000000:00000003\n+00000000:00000003\n+00000000:00000007\n+00000000:00000008\n+00000000:00000006\n+00000000:00000003\ninheritance\n+00000000:00000009\n+00000000:00000007\nend\n")
+test_source([test_path(r"norm/norm2.lvl")], b"+00000000:00000003\n+00000000:00000003\n+00000000:00000007\n+00000000:00000008\n+00000000:00000006\n+00000000:00000003\ninheritance\n+00000000:00000009\n+00000000:00000007\nend\n")
+test_source([test_path(r"norm/norm3.lvl")], b"+00000000:00000003\n+00000000:00000003\n+00000000:00000007\n+00000000:00000008\n+00000000:00000006\n+00000000:00000003\ninheritance\n+00000000:00000009\n+00000000:00000007\nend\n")
+test_source([test_path(r"norm/norm4.lvl")], b"+00000000:00000003\n+00000000:00000003\n+00000000:00000003\n+00000000:00000003\n+00000000:00000007\n+00000000:00000008\n+00000000:00000006\n+00000000:00000003\ninheritance\n+00000000:00000009\n+00000000:00000007\nend\n")
+
+# ERRORS
+# wait for new tests after LVL-78 is done
+# test_source([test_path(r"errors/nesting/nesting1.lvl")], b"", b"test:error : line 5[12]", script=True)
+# test_source([test_path(r"errors/nesting/nesting2.lvl")], b"", b"test:error2 : line 3[10]")
+# test_source([test_path(r"errors/nesting/nesting3.lvl")], b"", b"test:error : line 5[12]")
 
 
 

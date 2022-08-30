@@ -8,7 +8,7 @@ method sum(var this as ref(point), var a as int, var b as int) as int
   return this.x + this.y + a + b;
 }
 
-sub add(var this as ref(int), var a as ref(int)) as int
+method add(var this as ref(int), var a as ref(int)) as int
 {
   return val this + val a;
 }

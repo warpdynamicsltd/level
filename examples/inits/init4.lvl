@@ -8,7 +8,7 @@ type A as rec(
   var y = f(2) as int
 );
 
-sub ()(A) as A
+method ()(A) as A
 {
   var res as A;
   res.x = -1;

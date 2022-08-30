@@ -1,0 +1,10 @@
+import test:norm2;
+import test:norm1 as *;
+
+entry{
+  var x as Container(int);
+  x.a = 3;
+  echo x.a;
+  exec f(x);
+  exec test:norm2:main_function();
+}

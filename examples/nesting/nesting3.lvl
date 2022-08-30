@@ -3,7 +3,6 @@ import test:E as *;
 
 entry{
   var k as test:A:a_type;
-  k = h() + test:A:e:h();
-  echo test:A:f(k);
+  k = h() + h();
   echo test:A:g(k);
 }
