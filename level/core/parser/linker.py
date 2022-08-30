@@ -11,6 +11,7 @@ class LinkerException(Exception):
 
 class Linker:
     def __init__(self):
+        level.core.parser.code.MetaParserInfo.module_map = {}
         self.imports = Imports()
         self.chars = []
 
@@ -86,8 +87,12 @@ class Linker:
 
 
     def text_to_alphabet_characters(self, text, module_name, line_n=1, char_n=1):
+        module_code = hash(module_name)
+        if module_code not in level.core.parser.code.MetaParserInfo.module_map:
+            level.core.parser.code.MetaParserInfo.module_map[module_code] = module_name
+
         for c in text:
-            self.chars.append(level.core.parser.code.Char(c, meta=level.core.parser.code.MetaParserInfo(line_n, char_n, module_name)))
+            self.chars.append(level.core.parser.code.Char(c, meta=level.core.parser.code.MetaParserInfo(line_n, char_n, module_code)))
 
             char_n += 1
 
