@@ -23,10 +23,15 @@ class CallingName:
         return f"CallingName({self.key}, {self.name})"
 
 class MetaParserInfo:
-    def __init__(self, n_line, n_char, module_name=None):
+    module_map = {}
+    def __init__(self, n_line, n_char, module_code=None):
         self.n_line = n_line
         self.n_char = n_char
-        self.module_name = module_name
+        self.module_code = module_code
+
+    @property
+    def module_name(self):
+        return MetaParserInfo.module_map[self.module_code]
 
     def __str__(self):
         if self.module_name is not None:
