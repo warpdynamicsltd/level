@@ -1,0 +1,49 @@
+type pair as rec
+(
+  var z as int,
+  var a as int
+)
+
+method increase_ref(var p as ref(pair)) as val ref(pair)
+{
+  p.z = p.z + 1;
+  p.a = p.a + 1;
+  return p;
+}
+
+method increase_val(var p as ref(pair)) as pair
+{
+  var res as pair;
+  res.z = p.z + 1;
+  res.a = p.a + 1;
+  return res;
+}
+
+type triplet extends pair with
+rec(
+  var u = 9 as int
+)
+
+type quadruplet extends triplet with
+rec(
+  var b as int;
+)
+
+entry
+{
+  var q as quadruplet;
+  q.z = 1;
+  q.a = 1;
+  q.u = 7;
+  res $= q.increase_ref();
+  echo u64(ref(q)) == u64(ref(res));
+  res1 = q.increase_ref();
+  echo u64(ref(q)) != u64(ref(res1));
+  echo res1.z;
+  echo res1.a;
+  echo res1.u;
+  res2 = q.increase_val();
+  echo res2.z;
+  echo res2.a;
+  echo res2.u;
+}

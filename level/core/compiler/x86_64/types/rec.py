@@ -3,6 +3,7 @@ import level.core.ast as ast
 from level.core.compiler.types import Obj, Type
 from level.core.compiler.x86_64.types.u32 import U32
 from level.core.compiler.x86_64.types.ref import Ref
+from level.core.macro import *
 from level.core.x86_64 import *
 from level.core.compiler import CompilerNotLocatedException
 class Rec(Obj):
@@ -69,7 +70,6 @@ class Rec(Obj):
 
     def get_element(self, name : str):
         index = self.index_map[name]
-        # print(index)
         T = self.type_map[name]
         self.MC_get_from_storage(rax)
         add_(rax, index)
@@ -79,20 +79,21 @@ class Rec(Obj):
         return obj
 
     def set(self, obj):
-        if obj.type.main_type is Rec and self.object_manager.compiler.inheritance.is_1st_derived_from_2nd(hash(obj.type), hash(self.type)):
-            for name in self.index_map:
+        if obj.type.main_type is Rec and \
+                (self.object_manager.compiler.inheritance.is_1st_derived_from_2nd(hash(obj.type), hash(self.type)) \
+                or self.object_manager.compiler.inheritance.is_1st_derived_from_2nd(hash(self.type), hash(obj.type))):
+
+            names = set(self.type.sub_names)
+            names.intersection_update(obj.type.sub_names)
+
+            for name in names:
                 self.get_element(name).set(obj.get_element(name))
             return
 
         if obj.type.main_type in {Rec, Ref}:
             self.MC_get_from_storage(rdi)
             obj.MC_get_from_storage(rsi)
-            mov_(ecx, self.type.size())
-            loop = address()
-            mov_(al, [rsi + ecx - 1])
-            mov_([rdi + ecx - 1], al)
-            dec_(ecx)
-            jnz_(loop)
+            m_copy_rdi_rsi(self.type.size())
             return
 
         raise CompilerNotLocatedException(f"no cast from {obj.type} to {self.type}")

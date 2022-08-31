@@ -20,6 +20,14 @@ def m_echo(ptr, size):
     mov_(eax, 4)
     int_(0x80)
 
+def m_copy_rdi_rsi(size):
+    mov_(rcx, size)
+    loop = address()
+    mov_(al, [rsi + rcx - 1])
+    mov_([rdi + rcx - 1], al)
+    dec_(rcx)
+    jnz_(loop)
+
 def m_exit():
     mov_(eax, 1)
     mov_(ebx, 0)
