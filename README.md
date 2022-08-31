@@ -14,8 +14,8 @@ in **Level** yet.
 - <i>Python 3.6.0</i> or higher with installed <i>pip</i> is the only requirement to install and run **Level compiler** 
 on Linux OS with x86-64 architecture.
 - There are no other 3rd party dependencies needed for **Level compiler**.
-- At the current phase of development, **Level** is a statically-typed language with minimalistic support for 
-object-oriented programing, operators overloading and templates.
+- At the current phase of development, **Level** is a statically-typed language with templates. It has reasonable support 
+for object-oriented programing with multiple inheritance and operators overloading.
 - At the current phase of development, **Level** supports only x86-64 architecture with Linux based OS.
 - There is no **Level** documentation yet, so the best reference so far is the source code, 
 especially files with Level code in [examples](examples) (for expected results study 
