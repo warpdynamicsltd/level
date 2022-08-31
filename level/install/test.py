@@ -121,6 +121,7 @@ test_source([test_path(r"norm/norm3.lvl")], b"+00000000:00000003\n+00000000:0000
 test_source([test_path(r"norm/norm4.lvl")], b"+00000000:00000003\n+00000000:00000003\n+00000000:00000003\n+00000000:00000003\n+00000000:00000007\n+00000000:00000008\n+00000000:00000006\n+00000000:00000003\ninheritance\n+00000000:00000009\n+00000000:00000007\nend\n")
 
 test_source([test_path(r"userstatements/simple.lvl")], b"+00000000:00000003\n+00000000:00000010\n")
+test_source([test_path(r"userstatements/assign.lvl")], b"+00000000:00000002\n+00000000:00000001\n")
 
 test_source([test_path(r"del/stack.lvl")], b"00000001\n00000001\n+00000000:00000000\nend\n")
 test_source([test_path(r"del/vector.lvl")], b"+00000000:00000051\n+00000000:00000000\nend\n")

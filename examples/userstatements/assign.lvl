@@ -1,0 +1,22 @@
+type pair(A) as rec
+(
+  var x as A,
+  var y as A
+)
+
+method =(var this as ref(pair(A)), var a as ref(pair(A)))
+{
+  this.x = a.y;
+  this.y = a.x;
+}
+
+entry
+{
+  var u as pair(int);
+  var v as pair(int);
+  u.x = 1;
+  u.y = 2;
+  v = u;
+  echo v.x;
+  echo v.y;
+}
