@@ -51,7 +51,7 @@ class TypeDef:
                                                   with_type_var=with_type_var)
 
 
-        for t in parent_types:
+        for t in reversed(parent_types):
             T = t + T
 
         T.user_name = self.t.name

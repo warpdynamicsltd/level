@@ -60,21 +60,26 @@ class Type:
         if other.main_type.__name__ != 'Rec':
             return deepcopy(self)
 
-        types = {}
-        for i, name in enumerate(other.sub_names):
-            types[name] = other.sub_types[i], other.meta_data[i]
-
-        for i, name in enumerate(self.sub_names):
-            types[name] = self.sub_types[i], self.meta_data[i]
+        other_names = set()
+        for name in other.sub_names:
+            other_names.add(name)
 
         sub_types = []
         meta_data = []
         sub_names = []
-        for name in types:
-            T, data = types[name]
-            sub_types.append(T)
-            meta_data.append(data)
+
+        for i, name in enumerate(self.sub_names):
+            if name in other_names:
+                other_names.remove(name)
             sub_names.append(name)
+            sub_types.append(self.sub_types[i])
+            meta_data.append(self.meta_data[i])
+
+        for i, name in enumerate(other.sub_names):
+            if name in other_names:
+                sub_names.append(name)
+                sub_types.append(other.sub_types[i])
+                meta_data.append(other.meta_data[i])
 
         return Type(main_type=self.main_type, length=1, sub_types=sub_types, sub_names=sub_names, meta_data=meta_data)
 
