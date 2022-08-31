@@ -421,7 +421,11 @@ class Compiler:
 
             var_obj = self.compile_expression(var_exp.val, obj_manager)
 
-            var_obj.set(obj)
+            subroutine = self.get_subroutine_for_call(True, s.meta, '=', var_obj, obj)
+            if subroutine is not None:
+                return self.compile_call_execution(True, obj_manager, subroutine, var_obj, obj)
+            else:
+                var_obj.set(obj)
             return
 
         if ast.istype(s, ast.Echo):
