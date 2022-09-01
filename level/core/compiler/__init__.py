@@ -574,6 +574,11 @@ class Compiler:
 
         raise CompilerException(f"wrong statement type: {type(s)}")
 
+    def call_special_subroutine(self, obj_manager, method, fun_key, *objs):
+        subroutine = self.get_subroutine_for_call(method, self.meta, fun_key, *objs)
+        if subroutine is not None:
+            return self.compile_call_execution(method, obj_manager, subroutine, *objs)
+
     def compile_object_call(self, calling_meta, obj_manager, obj, *exps):
         objs = []
         for exp in exps:
@@ -768,6 +773,8 @@ class Compiler:
 
         child_obj_manager = obj_manager.create_child_obj_manager()
         self.compile_driver.call(subroutine.address)
+        if subroutine.name != "stdlib:sys:context:on_closing":
+            self.call_special_subroutine(child_obj_manager, False, "stdlib:sys:context:on_closing")
         child_obj_manager.close()
         T = subroutine.return_type
 
