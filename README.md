@@ -64,7 +64,7 @@ level test
 If installation is successful, you should be able to see something 
 similar to the text below in your terminal. 
 ```
-Level Compiler v0.3.0a
+Level Compiler v0.3.2a
 Copyright (c) 2022 Michal Stanislaw Wojcik. All rights reserved.
 ..........................................................................................................................
 Done in 5.13 s
