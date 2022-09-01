@@ -1,0 +1,4 @@
+sub on_closing()
+{
+    echo "context close";
+}

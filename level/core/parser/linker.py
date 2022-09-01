@@ -1,10 +1,11 @@
 import os
 import re
-import hashlib
+
 
 import level.core.parser.code
 from level.install import modules
 from level.core.parser.normalizer import Imports, ImportItem
+from level.core.parser.builtin import default_modules
 
 class LinkerException(Exception):
     pass
@@ -54,6 +55,10 @@ class Linker:
             return
         line_n = 1
         char_n = 1
+        modules = []
+        if module_name == "main":
+            modules += default_modules
+
         while True:
             m = re.match(r"^\s*import\s+(?P<lead>[_a-zA-Z0-9:]+)(\s+as\s+(?P<as>([_a-zA-Z0-9:]+|\*)))?\s*;", text, re.MULTILINE)
             if m:
@@ -65,22 +70,36 @@ class Linker:
                 if alias == '*':
                     alias = None
 
-                self.imports.add_import_item(
-                                    source_module=module_name,
-                                    import_item=ImportItem(
-                                                    module_name=imported_module_name,
-                                                    alias=alias))
-                filename = self.find_file(imported_module_name)
-                if filename is not None:
-                    self.file_to_alphabet_characters(filename, imported_module_name)
-                else:
-                    raise LinkerException(f"can't import {imported_module_name} in {module_name}")
+                modules.append((imported_module_name, alias))
+
+                # self.imports.add_import_item(
+                #                     source_module=module_name,
+                #                     import_item=ImportItem(
+                #                                     module_name=imported_module_name,
+                #                                     alias=alias))
+                # filename = self.find_file(imported_module_name)
+                # if filename is not None:
+                #     self.file_to_alphabet_characters(filename, imported_module_name)
+                # else:
+                #     raise LinkerException(f"can't import {imported_module_name} in {module_name}")
                 line_n_, char_n_ = self.count_nc(text[i:j])
                 line_n += line_n_
                 char_n += char_n_
                 text = text[j:]
             else:
                 break
+        # print('*')
+        for imported_module_name, alias in modules:
+            self.imports.add_import_item(
+                source_module=module_name,
+                import_item=ImportItem(
+                    module_name=imported_module_name,
+                    alias=alias))
+            filename = self.find_file(imported_module_name)
+            if filename is not None:
+                self.file_to_alphabet_characters(filename, imported_module_name)
+            else:
+                raise LinkerException(f"can't import {imported_module_name} in {module_name}")
 
         self.text_to_alphabet_characters(text, module_name, line_n, char_n)
         self.processed_modules.add(module_name)

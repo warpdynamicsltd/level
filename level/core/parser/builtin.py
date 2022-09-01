@@ -1,5 +1,9 @@
 import level.core.ast as ast
 
+default_modules = {
+    ("stdlib:sys:context", "stdlib:sys:context")
+}
+
 binary_operators = {
     '+' : ast.Add,
     '-' : ast.Sub,
