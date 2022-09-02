@@ -40,6 +40,7 @@ class Subroutine:
         self.compiled = False
         self.meta = meta
         self.ref_return = ref_return
+        self.gc_active = False
 
     def use(self):
         self.used = True
@@ -77,17 +78,34 @@ class Subroutine:
             return
 
         self.compiler.subroutines_stack.append(self)
-
         obj_manager = self.compiler.obj_manager_type(self.compiler)
-
         self.compiler.compile_driver.set_call_address(self.address)
 
         for i, name in enumerate(self.var_names):
             if name is not None:
                 obj_manager.reserve_variable_by_name(self.var_types[i], name, copy=True)
 
-        for s in self.statement_list.args:
+        k = 0
+        if self.statement_list.args:
+            while type(self.statement_list.args[k]) is ast.InitWithType:
+                self.compiler.compile_statement(self.statement_list.args[k], obj_manager)
+                k += 1
+
+        # this is suboptimal construction, not only that it must be after initiation of variables
+        # for compatibility with no arguments functions but also compile unnecessary jump
+        # solution do pre-compilation in which it will be revealed that mem obj is used in subroutine body
+        # also will go wrong if non constant inits are used
+        # TO FIX (the easiest way to add pre-compilator is to put compilation on hold but still compile statements for some
+        # different context - check if self.gc_active is True and the compile on_opening depends on that
+        on_opening_addr, no_action_addr = self.compiler.compile_driver.compile_on_opening(self.compiler, obj_manager, self)
+
+        for s in self.statement_list.args[k:]:
             self.compiler.compile_statement(s, obj_manager)
+
+        if not self.gc_active:
+            self.compiler.compile_driver.compile_on_opening_make_inactive(on_opening_addr, no_action_addr)
+
+        self.compile_on_closing(obj_manager)
 
         self.compiler.compile_driver.ret()
         self.compiler.subroutines_stack.pop()
@@ -95,6 +113,16 @@ class Subroutine:
         Subroutine.n_compiled += 1
         self.compiled = True
         self.compiler.subroutine_compiled_addresses[self.name, h] = self.address
+
+    def compile_on_opening(self, obj_manager):
+        if self.name not in {"stdlib:sys:context:on_opening", "stdlib:sys:context:on_closing"}:
+            self.compiler.call_special_subroutine(obj_manager, False, "stdlib:sys:context:on_opening")
+        pass
+
+    def compile_on_closing(self, obj_manager):
+        if self.gc_active and self.name not in {"stdlib:sys:context:on_opening", "stdlib:sys:context:on_closing"}:
+            self.compiler.call_special_subroutine(obj_manager, False, "stdlib:sys:context:on_closing")
+        pass
 
     def match(self, var_types):
         if not self.var_types:

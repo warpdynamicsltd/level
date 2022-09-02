@@ -167,6 +167,18 @@ class CompileDriver_x86_64(CompileDriver):
             res = obj_manager.reserve_variable(Type(I64), obj.type.size())
         return res
 
+    def compile_on_opening(self, compiler, obj_manager, subroutine):
+        on_opening_addr = SymBits()
+        jmp_(on_opening_addr)
+        set_symbol(on_opening_addr)
+        subroutine.compile_on_opening(obj_manager)
+        # compiler.call_special_subroutine(obj_manager, False, "stdlib:sys:context:on_opening")
+        no_action_addr = address()
+        return on_opening_addr, no_action_addr
+
+    def compile_on_opening_make_inactive(self, on_opening_addr, no_action_addr):
+        set_symbol(on_opening_addr, no_action_addr)
+
     def unary_operator(self, op_T, obj, obj_manager):
         if op_T is ast.Plus:
             return +obj
@@ -582,13 +594,13 @@ class CompileDriver_x86_64(CompileDriver):
 
 
 class StandardObjManager(ObjManager):
-    def __init__(self, compile_driver : CompileDriver_x86_64, memory=0x100000):
+    def __init__(self, compiler, subroutine=None, memory=0x100000):
         self.size = SymBits()
         self.cursor = 0
         self.on_top_cursor = 0
         self.parent = None
         self.memory = memory
-        ObjManager.__init__(self, compile_driver)
+        ObjManager.__init__(self, compiler, subroutine=subroutine)
 
     def set_main_frame(self):
         self.compiler.compile_driver.set_frame(self.memory)
@@ -596,9 +608,9 @@ class StandardObjManager(ObjManager):
     def get_current_heap_end_ptr(self):
         return ebp + self.cursor
 
-    def create_child_obj_manager(self):
+    def create_child_obj_manager(self, subroutine):
         self.on_top_cursor = 0
-        object_manager = StandardObjManager(self.compiler)
+        object_manager = StandardObjManager(self.compiler, subroutine=subroutine)
         object_manager.parent = self
         self.compiler.compile_driver.frame_up(self.size)
         return object_manager
@@ -609,6 +621,8 @@ class StandardObjManager(ObjManager):
         else:
             self.parent.on_top_cursor = 0
             self.compiler.compile_driver.frame_down(self.parent.size)
+
+        ObjManager.close(self)
 
     def reserve_variable_ptr(self, size, for_child_manager=False):
         if for_child_manager:

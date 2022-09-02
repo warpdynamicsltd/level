@@ -127,6 +127,8 @@ test_source([test_path(r"del/stack.lvl")], b"00000001\n00000001\n+00000000:00000
 test_source([test_path(r"del/vector.lvl")], b"+00000000:00000051\n+00000000:00000000\nend\n")
 test_source([test_path(r"del/str.lvl")], b"+00000000:00000035\nHello, world!\n+00000000:00000035\n+00000000:00000000\nend\n")
 
+test_source([test_path(r"context/openclose.lvl")], b"context open\n+00000000:00000001\ncontext close\n+00000000:00000007\ncontext open\n+00000000:00000001\ncontext close\n+00000000:00000003\n+00000000:00000009\ncontext open\n+00000000:00000001\ncontext close\n+00000000:00000003\nend\n")
+
 # ERRORS
 # wait for new tests after LVL-78 is done
 # test_source([test_path(r"errors/nesting/nesting1.lvl")], b"", b"test:error : line 5[12]", script=True)

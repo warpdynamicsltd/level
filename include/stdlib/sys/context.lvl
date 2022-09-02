@@ -1,4 +1,15 @@
+type mem as rec
+(
+  var addr = null as ref(byte),
+  var ref_count = 0 as int
+)
+
+sub on_opening()
+{
+  echo "context open";
+}
+
 sub on_closing()
 {
-    echo "context close";
+  echo "context close";
 }
