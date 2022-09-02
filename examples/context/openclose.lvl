@@ -1,0 +1,21 @@
+sub f()
+{
+    var m as stdlib:sys:context:mem;
+    m.addr = null;
+    echo 1;
+}
+
+sub g
+{
+    var a as int;
+    echo a;
+    exec f();
+    echo 3;
+}
+
+entry{
+    exec f();
+    exec g(7);
+    exec g(9);
+    echo "end";
+}

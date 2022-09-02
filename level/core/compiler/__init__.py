@@ -83,9 +83,11 @@ class CompileDriver(ABC):
         pass
 
 class ObjManager(ABC):
-    def __init__(self, compiler):
+    def __init__(self, compiler, subroutine=None):
         self.objs = {}
         self.compiler = compiler
+        self.subroutine = subroutine
+        self.open()
 
     @abstractmethod
     def set_main_frame(self):
@@ -99,7 +101,9 @@ class ObjManager(ABC):
     def create_child_obj_manager(self):
         return None
 
-    @abstractmethod
+    def open(self):
+        pass
+
     def close(self):
         pass
 
@@ -590,6 +594,12 @@ class Compiler:
 
         return obj(*objs)
 
+    def post_process_obj(self, obj):
+        if type(obj) is not Type and obj.type.main_type.__name__ == 'Rec' and obj.type.user_name == 'stdlib:sys:context:mem':
+            if self.subroutines_stack:
+                self.subroutines_stack[-1].gc_active = True
+        return obj
+
     def compile_expression(self, exp, obj_manager):
         self.update_meta(exp)
 
@@ -598,30 +608,37 @@ class Compiler:
                 calling_name = exp.args[0].calling_name
                 name = exp.args[0].name
                 if calling_name in self.calling_keys:
-                    return self.compile_call(ast.SubroutineCall(calling_name, *exp.args[1:]).add_meta(exp.meta), obj_manager)
+                    res = self.compile_call(ast.SubroutineCall(calling_name, *exp.args[1:]).add_meta(exp.meta), obj_manager)
+                    return self.post_process_obj(res)
                 elif name in translate_simple_types:
                     T = self.compile_type_expression(ast.Type(name))
-                    return self.compile_object_call(exp.meta, obj_manager, T, *exp.args[1:])
+                    res = self.compile_object_call(exp.meta, obj_manager, T, *exp.args[1:])
+                    return self.post_process_obj(res)
                 elif name == 'array':
-                    return self.compile_type_expression(ast.ArrayType(*exp.args[1:]))
+                    res = self.compile_type_expression(ast.ArrayType(*exp.args[1:]))
+                    return self.post_process_obj(res)
                 else:
                     d = self.type_defs.get_type_def(ast.TypeFunctor(calling_name))
                     if d is not None and len(d.type_vars) == 0:
                         T = self.compile_type_expression(ast.Type(calling_name).add_calling_name(calling_name))
-                        return self.compile_object_call(exp.meta, obj_manager, T, *exp.args[1:])
-                    return self.compile_type_expression(ast.TypeFunctor(calling_name, *exp.args[1:]).add_meta(exp.meta))
+                        res = self.compile_object_call(exp.meta, obj_manager, T, *exp.args[1:])
+                        return self.post_process_obj(res)
+                    res = self.compile_type_expression(ast.TypeFunctor(calling_name, *exp.args[1:]).add_meta(exp.meta))
+                    return self.post_process_obj(res)
 
             if ast.istype(exp.args[0], ast.ValueAtName):
                 expression = ast.MetaVar()
                 const = ast.MetaVar()
                 ast.ValueAtName(expression, const) << exp.args[0]
-                return self.compile_call(ast.SubroutineCall(const.val.name, expression.val, *exp.args[1:]).add_meta(exp.meta), obj_manager, method=True)
+                res = self.compile_call(ast.SubroutineCall(const.val.name, expression.val, *exp.args[1:]).add_meta(exp.meta), obj_manager, method=True)
+                return self.post_process_obj(res)
 
             if ast.istype(exp.args[0], ast.TypeExpression):
                 obj = self.compile_type_expression(exp.args[0])
             else:
                 obj = self.compile_expression(exp.args[0], obj_manager)
-            return self.compile_object_call(exp.meta, obj_manager, obj, *exp.args[1:])
+            res = self.compile_object_call(exp.meta, obj_manager, obj, *exp.args[1:])
+            return self.post_process_obj(res)
 
         if ast.istype(exp, ast.ApiCall):
             name_var = exp.args[0]
@@ -629,7 +646,8 @@ class Compiler:
             for arg in exp.args[1:]:
                 objs.append(self.compile_expression(arg, obj_manager))
 
-            return getattr(self.compile_driver, f"compile_api_{name_var.name}")(obj_manager, *objs)
+            res = getattr(self.compile_driver, f"compile_api_{name_var.name}")(obj_manager, *objs)
+            return self.post_process_obj(res)
 
         if ast.istype(exp, ast.Ref):
             expression = ast.MetaVar()
@@ -639,26 +657,29 @@ class Compiler:
                 T = self.compile_driver.get_ref_type_for_obj(obj)
                 ref = obj_manager.reserve_variable(T)
                 self.compile_driver.bind(ref, obj)
-                return ref
+                return self.post_process_obj(ref)
             else:
                 T = obj
-                return self.compile_driver.get_ref_type_for_type(T)
+                res = self.compile_driver.get_ref_type_for_type(T)
+                return self.post_process_obj(res)
 
 
         if ast.istype(exp, ast.Val):
             expression = ast.MetaVar()
             ast.Val(expression) << exp
             ref = self.compile_expression(expression.val, obj_manager)
-            return self.compile_driver.deref(ref)
+            res = self.compile_driver.deref(ref)
+            return self.post_process_obj(res)
 
         if ast.istype(exp, ast.Const):
             T = self.compile_driver.get_type_by_const(exp)
             obj = obj_manager.reserve_variable(T, exp.name)
-            return obj
+            return self.post_process_obj(obj)
 
         if ast.istype(exp, ast.Var):
             if exp.calling_name in self.globals.globals_dict:
-                return self.globals.get_obj(exp.calling_name, obj_manager)
+                res = self.globals.get_obj(exp.calling_name, obj_manager)
+                return self.post_process_obj(res)
 
             if obj_manager is None or not(exp.name in obj_manager.objs):
                 if exp.name in translate_simple_types:
@@ -666,9 +687,10 @@ class Compiler:
                 else:
                     calling_name = exp.calling_name
                 T = self.compile_type_expression(ast.Type(calling_name).add_meta(exp.meta))
-                return T
+                return self.post_process_obj(T)
 
-            return obj_manager.objs[exp.name]
+            res = obj_manager.objs[exp.name]
+            return self.post_process_obj(res)
 
         if ast.istype(exp, ast.ValueAt):
             expression = exp.args[0]
@@ -681,10 +703,12 @@ class Compiler:
 
             subroutine = self.get_subroutine_for_call(True, exp.meta, '[]', obj, *index_objs)
             if subroutine is not None:
-                return self.compile_call_execution(True, obj_manager, subroutine, obj, *index_objs)
+                res = self.compile_call_execution(True, obj_manager, subroutine, obj, *index_objs)
+                return self.post_process_obj(res)
 
             if len(index_expressions) >= 1:
-                return obj.get_element(index_objs[0])
+                res = obj.get_element(index_objs[0])
+                return self.post_process_obj(res)
 
             raise CompilerException(f"not defined [] in {exp.meta}")
 
@@ -696,13 +720,16 @@ class Compiler:
             if obj.type.main_type.__name__ == 'Ref':
                 obj = self.compile_driver.deref(obj)
 
-            return obj.get_element(const.val.name)
+            res = obj.get_element(const.val.name)
+            return self.post_process_obj(res)
 
         if ast.istype(exp, ast.BinaryExpression):
-            return self.compile_binary(exp, exp.args[0], exp.args[1], obj_manager)
+            res = self.compile_binary(exp, exp.args[0], exp.args[1], obj_manager)
+            return self.post_process_obj(res)
 
         if ast.istype(exp, ast.UnaryExpression):
-            return self.compile_unary(exp, exp.args[0], obj_manager)
+            res = self.compile_unary(exp, exp.args[0], obj_manager)
+            return self.post_process_obj(res)
 
         raise CompilerException(f"wrong expression type: {str(exp)} in {exp.meta}")
 
@@ -771,10 +798,8 @@ class Compiler:
             obj_manager.reserve_variable_for_child_obj_manager(T, init_obj, value)
 
 
-        child_obj_manager = obj_manager.create_child_obj_manager()
+        child_obj_manager = obj_manager.create_child_obj_manager(subroutine)
         self.compile_driver.call(subroutine.address)
-        if subroutine.name != "stdlib:sys:context:on_closing":
-            self.call_special_subroutine(child_obj_manager, False, "stdlib:sys:context:on_closing")
         child_obj_manager.close()
         T = subroutine.return_type
 

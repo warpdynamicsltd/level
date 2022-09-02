@@ -72,6 +72,7 @@ class SymBits(Symbol):
             return
 
         if type(other) is SymBits:
+            self.resolved_value = None
             self.left = None
             self.right = (1, other)
             return
