@@ -1,14 +1,14 @@
-sub rand as int
+sub rand(var seed as ref(int)) as int
 {
-    var seed as ref(int);
     [seed] = 6364136223846793005 * [seed] + 1442695040888963407;
     return [seed];
 }
 
-sub quick_sort{
-    var r as ref(array(int, 100));
-    var start as int;
-    var len as int;
+sub quick_sort(
+    var r as ref(array(int, 100)),
+    var start as int,
+    var len as int)
+{
 
     if (len < 2) {return 1;}
 

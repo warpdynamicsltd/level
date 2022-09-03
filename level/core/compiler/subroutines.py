@@ -18,6 +18,7 @@ class Subroutine:
     def __init__(self,
                  compiler,
                  name,
+                 direct,
                  var_types,
                  first_default,
                  var_inits,
@@ -29,6 +30,7 @@ class Subroutine:
                  meta):
         self.compiler = compiler
         self.name = name
+        self.direct = direct
         self.address = address
         self.var_types = var_types
         self.first_default = first_default
@@ -57,6 +59,7 @@ class Subroutine:
         return Subroutine(
                         compiler=self.compiler,
                         name=self.name,
+                        direct=self.direct,
                         var_types=var_types,
                         first_default=self.first_default,
                         var_inits=self.var_inits,
@@ -97,15 +100,17 @@ class Subroutine:
         # also will go wrong if non constant inits are used
         # TO FIX (the easiest way to add pre-compilator is to put compilation on hold but still compile statements for some
         # different context - check if self.gc_active is True and the compile on_opening depends on that
-        on_opening_addr, no_action_addr = self.compiler.compile_driver.compile_on_opening(self.compiler, obj_manager, self)
+        if not self.direct:
+            on_opening_addr, no_action_addr = self.compiler.compile_driver.compile_on_opening(self.compiler, obj_manager, self)
 
         for s in self.statement_list.args[k:]:
             self.compiler.compile_statement(s, obj_manager)
 
-        if not self.gc_active:
-            self.compiler.compile_driver.compile_on_opening_make_inactive(on_opening_addr, no_action_addr)
+        if not self.direct:
+            if not self.gc_active:
+                self.compiler.compile_driver.compile_on_opening_make_inactive(on_opening_addr, no_action_addr)
 
-        self.compile_on_closing(obj_manager)
+            self.compile_on_closing(obj_manager)
 
         self.compiler.compile_driver.ret()
         self.compiler.subroutines_stack.pop()
@@ -125,10 +130,6 @@ class Subroutine:
         pass
 
     def match(self, var_types):
-        if not self.var_types:
-        # we want functions without arguments to be checked at the end if there is no other candidates
-            return False
-
         if len(var_types) < len(self.var_types[:self.first_default]):
             return False
         limit = len(var_types)
@@ -162,13 +163,9 @@ class Subroutines:
             return self.subroutines_map[key, h]
 
         matches = []
-        no_args_matches = []
         for sub in self.subroutines[key]:
             if sub.match(var_types):
                 matches.append(sub)
-
-            if not sub.var_types:
-                no_args_matches.append(sub)
 
         if len(matches) > 1:
             msg = ""
@@ -179,17 +176,7 @@ class Subroutines:
         if len(matches) == 1:
             res = matches[0]
         else:
-            if len(no_args_matches) > 1:
-                msg = ""
-                for sub in no_args_matches:
-                    msg += f"matched function {sub.name.key} in {sub.meta}\n"
-                raise level.core.compiler.CompilerException(f"{msg}ambiguous function call '{key}' in {calling_meta}")
-            # if it hasn't found var type match return no var type if exists
-
-            if len(no_args_matches) == 1:
-                res = no_args_matches[0]
-            else:
-                res = None
+            res = None
 
         self.subroutines_map[key, h] = res
         return res
@@ -199,6 +186,7 @@ class Template:
     def __init__(self,
                  compiler,
                  name,
+                 direct,
                  var_types,
                  first_default,
                  var_inits,
@@ -209,6 +197,7 @@ class Template:
                  meta):
         self.compiler = compiler
         self.name = name
+        self.direct = direct
         self.var_types = var_types
         self.first_default = first_default
         self.var_inits = var_inits
@@ -262,7 +251,7 @@ class Template:
         res = Subroutine(
                         compiler=self.compiler,
                         name=self.name,
-
+                        direct=self.direct,
                         # when there are default parameters in the final positions of arguments they might not take part in arguments query
                         # but they can never contain type variable
                         # thus we can easily add the reminder of var types to var_types
@@ -280,10 +269,6 @@ class Template:
         return res
 
     def match(self, var_types):
-        if not self.var_types:
-        # we want functions without arguments to be checked at the end if there is no other candidates
-            return None
-
         if len(var_types) < len(self.var_types[:self.first_default]):
             return None
         limit = len(var_types)

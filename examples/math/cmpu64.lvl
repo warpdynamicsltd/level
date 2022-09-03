@@ -12,11 +12,8 @@ sub check(var a as u64, var b as u64) as u32
   return 0;
 }
 
-sub massive_check
+sub massive_check(var r as ref(u64), var N as int)
 {
-  var r as ref(u64);
-  var N as u32;
-
   var sum as u32;
   sum = 0;
 
@@ -54,5 +51,7 @@ entry
   a[3] = e;
   a[4] = f;
 
-  echo massive_check(ref a, 5) == 0;
+  var r = a as ref(u64);
+
+  echo massive_check(r, 5) == 0;
 }

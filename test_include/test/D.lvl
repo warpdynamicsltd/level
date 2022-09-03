@@ -2,8 +2,7 @@ import test:E as e;
 
 type natural as u32;
 
-sub f
+sub f(var n as natural)
 {
-  var n as natural;
   return n + e:h();
 }

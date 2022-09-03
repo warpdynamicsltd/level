@@ -8,7 +8,7 @@ type Allocator as rec(
   var used as int
 )
 
-method ()(Allocator) as Allocator
+method direct ()(Allocator) as Allocator
 {
   var res as Allocator;
   for (i = 0; i < 0x1000; inc i)
@@ -18,7 +18,7 @@ method ()(Allocator) as Allocator
   return res;
 }
 
-sub real_addr_and_size(var ptr as ref(byte), var addr as ref(ref(byte))) as int
+sub direct real_addr_and_size(var ptr as ref(byte), var addr as ref(ref(byte))) as int
 {
   if ([ptr - 1] != 0xff)
   {
@@ -36,7 +36,7 @@ sub real_addr_and_size(var ptr as ref(byte), var addr as ref(ref(byte))) as int
   }
 }
 
-sub set_size_and_get_ptr(var addr as ref(byte), var size as int) as ref(byte)
+sub direct set_size_and_get_ptr(var addr as ref(byte), var size as int) as ref(byte)
 {
   if (size < 0xff)
   {
@@ -53,7 +53,7 @@ sub set_size_and_get_ptr(var addr as ref(byte), var size as int) as ref(byte)
   }
 }
 
-sub get_real_size(var size as int) as int
+sub direct get_real_size(var size as int) as int
 {
   if (size < 0xff)
   {
@@ -65,7 +65,7 @@ sub get_real_size(var size as int) as int
   }
 }
 
-sub get_size(var real_size as int) as int
+sub direct get_size(var real_size as int) as int
 {
   if (real_size <= 0xff)
   {
@@ -78,7 +78,7 @@ sub get_size(var real_size as int) as int
 }
 
 
-sub get_size(var ptr as ref(byte)) as int
+sub direct get_size(var ptr as ref(byte)) as int
 {
   if ([ptr - 1] != 0xff)
   {
@@ -92,8 +92,12 @@ sub get_size(var ptr as ref(byte)) as int
   }
 }
 
-method allocate(var this as ref(Allocator), var size as int) as ref(byte)
+method direct allocate(var this as ref(Allocator), var size as int) as ref(byte)
 {
+  if (size <= 0)
+  {
+    return null;
+  }
   var ptr = null as ref(byte);
   var addr as ref(byte);
 
@@ -132,7 +136,7 @@ method allocate(var this as ref(Allocator), var size as int) as ref(byte)
   }
 }
 
-method free(var this as ref(Allocator), var ptr as ref(byte)) as bool
+method direct free(var this as ref(Allocator), var ptr as ref(byte)) as bool
 {
   var addr as ref(byte);
   real_size = real_addr_and_size(ptr, ref addr);

@@ -4,11 +4,13 @@ type DataBlock(T:main) as rec(
   var data as ref(T:main)
 )
 
-method ()(DataBlock(T:main), var size as int, var allocator as ref(T:allocator)) as ref(DataBlock(T:main))
+method direct ()(DataBlock(T:main), var size as int, var allocator as ref(T:allocator)) as ref(DataBlock(T:main))
 {
   var res as ref(DataBlock(T:main));
   res = allocator.allocate(sizeof(DataBlock(T:main)));
   res.data = allocator.allocate(sizeof(T:main)*size);
+  res.prev_addr = null;
+  res.next_addr = null;
   return res;
 }
 
@@ -20,21 +22,21 @@ type Stack(T:main, T:allocator) as rec(
   var length as int,
   var allocator as ref(T:allocator));
 
-method ()(Stack(T:main, T:allocator), var allocator as ref(T:allocator), var buff_length as int) as Stack(T:main, T:allocator)
+method direct ()(Stack(T:main, T:allocator), var allocator as ref(T:allocator), var buff_length as int) as Stack(T:main, T:allocator)
 {
   var this as Stack(T:main, T:allocator);
   this.allocator = allocator;
   this.data_block = DataBlock(T:main)(buff_length, allocator);
-  this.start = this.data_block;
   this.buff_length = buff_length;
   this.data_block.prev_addr = null;
   this.data_block.next_addr = null;
+  this.start = this.data_block;
   this.index = 0;
   this.length = 0;
   return this;
 }
 
-method push(var this as ref(Stack(T:main, T:allocator)), var v as T:main)
+method direct push(var this as ref(Stack(T:main, T:allocator)), var v as T:main)
 {
   if (this.index < this.buff_length)
   {
@@ -62,7 +64,7 @@ method push(var this as ref(Stack(T:main, T:allocator)), var v as T:main)
   }
 }
 
-method pop(var this as ref(Stack(T:main, T:allocator)), var out as ref(T:main)) as bool
+method direct pop(var this as ref(Stack(T:main, T:allocator)), var out as ref(T:main)) as bool
 {
   dec this.index;
 
@@ -89,12 +91,12 @@ method pop(var this as ref(Stack(T:main, T:allocator)), var out as ref(T:main)) 
   return false;
 }
 
-method length(var this as ref(Stack(T:main, T:allocator))) as int
+method direct length(var this as ref(Stack(T:main, T:allocator))) as int
 {
   return this.length;
 }
 
-method iterator(var this as ref(Stack(T:main, T:allocator))) as StackIterator(T:main)
+method direct iterator(var this as ref(Stack(T:main, T:allocator))) as StackIterator(T:main)
 {
   var res as StackIterator(T:main);
   res.index = 0;

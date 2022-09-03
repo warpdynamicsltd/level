@@ -12,10 +12,9 @@ sub check(var a as float, var b as float) as u32
   return 0;
 }
 
-sub massive_check
+sub massive_check(var r as ref(float), var N as int)
 {
-  var r as ref(float);
-  var N as u32;
+
 
   var sum as u32;
   sum = 0;
@@ -57,5 +56,7 @@ entry
   a[8] = 9221332323233235622;
   a[9] = 9221342323233235622;
 
-  echo massive_check(ref a, 10) == 0;
+  var r = a as ref(float);
+
+  echo massive_check(r, 10) == 0;
 }

@@ -23,13 +23,6 @@ sub f(var i as u32, var j as u64, var k = 1 as i64)
   return i + j + k;
 }
 
-sub f
-{
-  var a as u32;
-  echo "no-type";
-  return a + 1;
-}
-
 sub f(var x as int)
 {
   return g(x) + 1;

@@ -1,3 +1,5 @@
+import stdlib:sys:context;
+
 sub f()
 {
     var m as stdlib:sys:context:mem;
@@ -5,9 +7,8 @@ sub f()
     echo 1;
 }
 
-sub g
+sub g(var a as int)
 {
-    var a as int;
     echo a;
     exec f();
     echo 3;
