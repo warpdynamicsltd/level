@@ -440,11 +440,11 @@ comp.compile()
 test_run(b'+00000000:00000003\n+00000000:00000005\n+00000000:00000007\n')
 
 s = """
-sub f{
-    var r as ref(array(array(int, 10), 10));
-    var i as int;
-    var j as int;
-    var x as int;
+sub f(
+    var r as ref(array(array(int, 10), 10)),
+    var i as int,
+    var j as int,
+    var x as int){
     
     [r][i][j] <- x;
 }
@@ -464,17 +464,16 @@ comp.compile()
 test_run(b'+00000000:00000009\n')
 
 s = """
-sub rand as u32
+sub rand(var seed as ref(u32)) as u32
 {
-    var seed as ref(u32);
     [seed] <- 22695477 * [seed] + 1;
     return [seed];
 }
 
-sub quick_sort{
-    var r as ref(array(u32, 100));
-    var start as u32;
-    var len as u32;
+sub quick_sort(
+    var r as ref(array(u32, 100)),
+    var start as u32,
+    var len as u32){
     
     if (len < 2) {return}
     
@@ -546,9 +545,8 @@ comp.compile()
 test_run(b'1195f8b2\n7666b8db\na794ff58\n3495ad39\n9cce3ace\nc708f0a7\n2fe2b494\n0cfc7aa5\n60a5aa2a\n78e906b3\n1636ed10\nbd39f451\n0aea42c6\ne27426ff\nfa93c4cc\ne245e63d\n531140a2\ncf37bd8b\n102897c8\ndaf65c69\n00000000\n0aea42c6\n0cfc7aa5\n102897c8\n1195f8b2\n1636ed10\n2fe2b494\n3495ad39\n531140a2\n60a5aa2a\n7666b8db\n78e906b3\n9cce3ace\na794ff58\nbd39f451\nc708f0a7\ncf37bd8b\ndaf65c69\ne245e63d\ne27426ff\nfa93c4cc\n')
 
 s = """
-sub f
+sub f(var b as array(int, 10))
 {
-    var b as array(int, 10);
     echo b[0];
 }
 
@@ -566,9 +564,8 @@ comp.compile()
 test_run(b'+00000000:00000003\n')
 
 s = """
-sub f as array(int, 10)
+sub f(var b as array(int, 10)) as array(int, 10)
 {
-    var b as array(int, 10);
     echo b[0];
     b[0] <- 7;
     b[1] <- 5;
@@ -593,33 +590,30 @@ comp.compile()
 test_run(b'+00000000:00000003\n+00000000:00000007\n+00000000:00000005\n+00000000:00000007\n+00000000:00000005\n')
 
 s = """
-type natural is int
+type natural as int
 
-type Vec3D is rec
+type Vec3D extends Vec2D with rec
 (
     var x as int,
     var y as int,
     var z as int,
 )
 
-type Vec2D is rec
+type Vec2D as rec
 (
     var x as int,
     var y as int,
 )
 
-sub length as int
+sub length(var r as ref(Vec2D)) as int
 {
-    var r as ref(Vec2D);
     v $= [r];
     
     return v.x * v.x + v.y * v.y;
 }
 
-sub f as int  
+sub f(var x as int) as int  
 {
-    var x as int;
-    
     return x + 1;
 }
 
@@ -650,7 +644,7 @@ entry
     [r.y] <- 11;
     
     echo x + y;
-    echo f(y);
+    echo f(int(y));
 }
 """
 
@@ -667,9 +661,8 @@ type exp as rec
     var b as array(int, 10),
 )
 
-sub f as int
+sub f(var r as ref(exp)) as int
 {
-    var r as ref(exp);
     return [r].a[0] + [r].b[0];
 }
 

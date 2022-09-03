@@ -1,8 +1,9 @@
 import test:B;
 import test:E as *;
+import test:D;
 
 entry{
   var k as test:B:b_type;
   k = h() + h();
-  echo test:B:g(k);
+  echo test:B:g(test:D:natural(k));
 }

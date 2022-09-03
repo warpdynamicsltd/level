@@ -1,15 +1,54 @@
+import stdlib:collections:stack as *;
+import stdlib:sys:app;
+
 type mem as rec
 (
   var addr = null as ref(byte),
   var ref_count = 0 as int
 )
 
-sub on_opening()
+type GC as rec
+(
+  var global_stack as Stack(Stack(ref(mem))),
+  var running = false as bool;
+)
+
+method direct ()(GC) as GC
 {
-  echo "context open";
+  var res as GC;
+  res.global_stack = Stack(Stack(ref(mem)))();
+  return res;
 }
 
-sub on_closing()
+global gc = GC() as GC;
+
+sub direct on_opening()
+{
+  echo "context open";
+  if (gc.running)
+  {
+    return;
+  }
+  gc.running = true;
+
+  stack = Stack(ref(mem))();
+  exec gc.global_stack.push(stack);
+  gc.running = false;
+}
+
+sub direct on_closing()
 {
   echo "context close";
+  if (gc.running)
+  {
+    return;
+  }
+  gc.running = true;
+
+  var stack as Stack(ref(mem));
+  if (gc.global_stack.pop(ref stack))
+  {
+    del stack;
+  }
+  gc.running = false;
 }

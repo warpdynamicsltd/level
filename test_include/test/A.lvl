@@ -2,14 +2,12 @@ import test:D as *;
 
 type a_type as u32;
 
-sub u
+sub u(var k as natural)
 {
-  var k as natural;
   return k;
 }
 
-sub g
+sub g(var k as natural)
 {
-  var k as natural;
   return 2*u(k);
 }

@@ -1,4 +1,4 @@
-sub h as u32
+sub h() as u32
 {
   return 1;
 }

@@ -29,7 +29,7 @@ entry{
 
   var j as natural;
   j = 7;
-  echo f(j);
+  echo f(u32(j));
 
   var u1 = 1 as int;
   echo f(u1);

@@ -292,6 +292,7 @@ class Compiler:
             subroutine = self.subroutines.add(key=fun_name, sub=Subroutine(
                                                                 compiler=self,
                                                                 name=name.val,
+                                                                direct=d.direct,
                                                                 var_types=var_types,
                                                                 first_default=first_default,
                                                                 var_inits=var_inits,
@@ -310,6 +311,7 @@ class Compiler:
             template = self.templates.add(key=fun_name, template=Template(
                                                                     compiler=self,
                                                                     name=name.val,
+                                                                    direct=d.direct,
                                                                     var_types=var_types,
                                                                     first_default=first_default,
                                                                     var_inits=var_inits,

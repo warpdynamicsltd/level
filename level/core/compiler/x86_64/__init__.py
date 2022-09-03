@@ -172,7 +172,6 @@ class CompileDriver_x86_64(CompileDriver):
         jmp_(on_opening_addr)
         set_symbol(on_opening_addr)
         subroutine.compile_on_opening(obj_manager)
-        # compiler.call_special_subroutine(obj_manager, False, "stdlib:sys:context:on_opening")
         no_action_addr = address()
         return on_opening_addr, no_action_addr
 

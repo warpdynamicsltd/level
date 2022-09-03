@@ -127,6 +127,8 @@ class TerminalSymb(Symb):
         if type(other) is str:
             return "".join(map(str, self.value)) == other
 
+        return False
+
     def __ne__(self, other):
         return not self.__eq__(other)
 
@@ -899,7 +901,7 @@ class Parser:
 
     def find(self, stream, term):
         for i, c in enumerate(stream):
-            if c == term:
+            if term == c:
                 return i
 
         return len(stream)
@@ -1216,10 +1218,14 @@ class Parser:
         if stream and type(stream[code_bracket_index]) is BracketSymb:
             statements = self.parse_statement_list(stream[code_bracket_index].value)
             if not ref:
-                return ast.SubroutineDef(func_name, ast.VarList(*variables).add_meta(stream[0].meta), statements, return_type).add_meta(stream[0].meta)
+                res = ast.SubroutineDef(func_name, ast.VarList(*variables).add_meta(stream[0].meta), statements, return_type).add_meta(stream[0].meta)
             else:
-                return ast.RefSubroutineDef(func_name, ast.VarList(*variables).add_meta(stream[0].meta), statements,
+                res = ast.RefSubroutineDef(func_name, ast.VarList(*variables).add_meta(stream[0].meta), statements,
                                          return_type).add_meta(stream[0].meta)
+            if method:
+                res.method = True
+
+            return res
 
         raise ParseException(f"badly formed function definition in {stream[0].meta}")
 
@@ -1246,17 +1252,25 @@ class Parser:
         subroutines = []
 
         while (stream and type(stream[0]) is TerminalSymb and stream[0] in {'sub', 'type', 'method', 'global'}):
-            if stream[0] == 'sub':
+            if stream[0] == 'sub' or stream[0] == 'method':
                 code_bracket_index = self.find(stream, BracketSymb(opening='{', closing='}', value=None))
-                def_ = self.parse_def(stream[1:code_bracket_index + 1])
-                stream = stream[code_bracket_index + 1:]
-                subroutines.append(def_)
-                continue
+                i = 1
+                modes = []
+                while(type(stream[i]) is TerminalSymb):
+                    modes.append(stream[i])
+                    i += 1
 
-            if stream[0] == 'method':
-                code_bracket_index = self.find(stream, BracketSymb(opening='{', closing='}', value=None))
-                def_ = self.parse_def(stream[1:code_bracket_index + 1], method=True)
-                def_.method = True
+                if type(stream[i]) is BracketSymb and (stream[i].opening == '(' or type(stream[i]) is BracketSymb and stream[i].opening == '[') and\
+                        type(stream[i + 1]) is BracketSymb and (stream[i + 1].opening == '('):
+                    i += 1
+                else:
+                    modes.pop()
+
+                def_ = self.parse_def(stream[i - 1:code_bracket_index + 1], method=(stream[0] == 'method'))
+
+                if 'direct' in modes:
+                    def_.direct = True
+
                 stream = stream[code_bracket_index + 1:]
                 subroutines.append(def_)
                 continue

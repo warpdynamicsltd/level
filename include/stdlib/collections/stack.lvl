@@ -4,30 +4,46 @@ import stdlib:sys:app;
 
 type Stack(T) extends stdlib:collections:sysstack:Stack(T, stdlib:sys:bin_allocator:Allocator) with rec();
 
-method ()(Stack(T)) as Stack(T)
+method direct ()(Stack(T)) as Stack(T)
 {
   var this as Stack(T);
   this.allocator = stdlib:sys:app:app.allocator;
   this.data_block = stdlib:collections:sysstack:DataBlock(T)(256, this.allocator);
-  this.start = this.data_block;
   this.buff_length = 256;
   this.data_block.prev_addr = null;
   this.data_block.next_addr = null;
+  this.start = this.data_block;
   this.index = 0;
   this.length = 0;
   return this;
 }
 
-method del(var this as ref(Stack(T)))
+method direct top(var this as ref(Stack(T))) as val ref(T)
 {
+  if (this.index > 0)
+  {
+    return this.data_block.data + (this.index - 1);
+  }
+  return null;
+}
+
+method direct del(var this as ref(Stack(T)))
+{
+  #echo "start deleting";
   var data_block as ref(stdlib:collections:sysstack:DataBlock(T));
   data_block = this.start;
   while(data_block != null)
   {
+    # echo "while";
+    # echo u64(data_block);
+    # echo u64(this.start.next_addr);
     var mem = data_block.data as ref(byte);
     exec this.allocator.free(mem);
     mem = data_block;
     data_block = data_block.next_addr;
+    # echo ">>>>";
     exec this.allocator.free(mem);
+    # echo "<<<<";
   }
+  #echo "end deleting";
 }
