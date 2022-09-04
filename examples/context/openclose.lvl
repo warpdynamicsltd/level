@@ -1,22 +1,32 @@
-import stdlib:sys:context;
+import stdlib:sys:context as *;
+import stdlib:sys:app as *;
 
 sub f()
 {
-    var m as stdlib:sys:context:mem;
-    m.addr = null;
-    echo 1;
-}
+  var a = mem_obj() as mem_obj;
+  var b = mem_obj() as mem_obj;
+  var c = mem_obj() as mem_obj;
 
-sub g(var a as int)
-{
-    echo a;
-    exec f();
-    echo 3;
+  echo "object without reference";
+  echo mem_obj(10).m.ref_count;
+
+  a = mem_obj(10);
+  echo "referenced 1";
+  echo a.m.ref_count;
+  b = a;
+  c = a;
+  echo "referenced 3";
+  echo a.m.ref_count;
+
+  del a;
+  del b;
+  del c;
 }
 
 entry{
     exec f();
-    exec g(7);
-    exec g(9);
+    exec gc.clear();
+    echo "gc test";
+    echo app.allocator.used;
     echo "end";
 }

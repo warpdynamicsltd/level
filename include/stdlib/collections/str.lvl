@@ -49,7 +49,7 @@ method utf8(var this as ref(str)) as stdlib:collections:vector:Vector(byte)
   stack = stdlib:collections:stack:Stack(byte)();
   foreach (var c as char in this)
   {
-    if (not process_char_utf8(ref stack, c))
+    if (not process_char_utf8(stack, c))
     {
       return stdlib:collections:vector:Vector(byte)(0);
     }

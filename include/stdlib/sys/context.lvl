@@ -1,5 +1,5 @@
 import stdlib:collections:stack as *;
-import stdlib:sys:app;
+import stdlib:sys:app as *;
 
 type mem as rec
 (
@@ -7,48 +7,122 @@ type mem as rec
   var ref_count = 0 as int
 )
 
+method direct ()(mem, var size as int) as ref(mem)
+{
+  var this as ref(mem);
+  this = app.allocator.allocate(sizeof(mem));
+  this.addr = app.allocator.allocate(size);
+  this.ref_count = 0;
+
+  if (gc.global_stack != null and gc.global_stack.length() > 0)
+  {
+    exec gc.global_stack.top().push(this);
+  }
+
+  return this;
+}
+
+method direct del(var this as ref(mem))
+{
+  exec app.allocator.free(this.addr);
+  exec app.allocator.free(this);
+}
+
+type mem_obj as rec
+(
+  var m as ref(mem)
+)
+
+method direct ()(mem_obj, var size = 0 as int) as mem_obj
+{
+  var res as mem_obj;
+  if (size == 0)
+  {
+    res.m = null;
+    return res;
+  }
+
+  res.m = mem(size);
+  res.m.ref_count = 0;
+
+  return res;
+}
+
+method direct del(var this as ref(mem_obj))
+{
+  if (this.m != null)
+  {
+    dec this.m.ref_count;
+    if (this.m.ref_count == 0)
+    {
+      del this.m;
+      this.m.ref_count = -1;
+    }
+  }
+
+  this.m = null;
+}
+
+method direct =(var this as ref(mem_obj), var a as ref(mem_obj))
+{
+  if (this.m != null)
+  {
+    dec this.m.ref_count;
+    if (this.m.ref_count == 0)
+    {
+      del this.m;
+    }
+  }
+
+  this.m = a.m;
+  inc this.m.ref_count;
+}
+
 type GC as rec
 (
-  var global_stack as Stack(Stack(ref(mem))),
-  var running = false as bool;
+  var global_stack as ref(Stack(ref(Stack(ref(mem))))),
+  var running = false as bool
 )
 
 method direct ()(GC) as GC
 {
   var res as GC;
-  res.global_stack = Stack(Stack(ref(mem)))();
+  res.global_stack = Stack(ref(Stack(ref(mem))))();
   return res;
+}
+
+method direct clear(var this as ref(GC))
+{
+  del this.global_stack;
+  this.global_stack = null;
 }
 
 global gc = GC() as GC;
 
 sub direct on_opening()
 {
-  echo "context open";
-  if (gc.running)
-  {
-    return;
-  }
-  gc.running = true;
-
-  stack = Stack(ref(mem))();
+  var stack = Stack(ref(mem))();
   exec gc.global_stack.push(stack);
-  gc.running = false;
+
 }
 
 sub direct on_closing()
 {
-  echo "context close";
-  if (gc.running)
+  if (gc.global_stack != null and gc.global_stack.length() > 0)
   {
-    return;
-  }
-  gc.running = true;
+    foreach (var m as ref(mem) in gc.global_stack.top())
+    {
+      if (m.ref_count == 0)
+      {
+        del m;
+      }
+    }
 
-  var stack as Stack(ref(mem));
-  if (gc.global_stack.pop(ref stack))
-  {
-    del stack;
+    var stack as ref(Stack(ref(mem)));
+
+    if (gc.global_stack.pop(ref stack))
+    {
+      del stack;
+    }
   }
-  gc.running = false;
 }

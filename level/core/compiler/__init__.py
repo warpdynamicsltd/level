@@ -597,7 +597,7 @@ class Compiler:
         return obj(*objs)
 
     def post_process_obj(self, obj):
-        if type(obj) is not Type and obj.type.main_type.__name__ == 'Rec' and obj.type.user_name == 'stdlib:sys:context:mem':
+        if type(obj) is not Type and self.compile_driver.gc_trigger(obj.type):
             if self.subroutines_stack:
                 self.subroutines_stack[-1].gc_active = True
         return obj
@@ -836,7 +836,7 @@ class Compiler:
                     ancestor_T = self.inheritance.map[a]
                     _var_types = []
                     for t in var_types:
-                        if t.main_type.__name__ == "Ref" and t.sub_types[0] == T:
+                        if t.main_type.__name__ == "Ref" and t.sub_types and t.sub_types[0] == T:
                             _var_types.append(self.compile_driver.get_ref_type_for_type(ancestor_T))
                             continue
                         if t == T:

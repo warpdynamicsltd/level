@@ -88,22 +88,13 @@ class Subroutine:
             if name is not None:
                 obj_manager.reserve_variable_by_name(self.var_types[i], name, copy=True)
 
-        k = 0
-        if self.statement_list.args:
-            while type(self.statement_list.args[k]) is ast.InitWithType:
-                self.compiler.compile_statement(self.statement_list.args[k], obj_manager)
-                k += 1
-
-        # this is suboptimal construction, not only that it must be after initiation of variables
-        # for compatibility with no arguments functions but also compile unnecessary jump
-        # solution do pre-compilation in which it will be revealed that mem obj is used in subroutine body
-        # also will go wrong if non constant inits are used
+        # this is suboptimal construction, it compiles unnecessary jump
+        # solution: do pre-compilation in which it will be revealed that mem obj is used in subroutine body
         # TO FIX (the easiest way to add pre-compilator is to put compilation on hold but still compile statements for some
-        # different context - check if self.gc_active is True and the compile on_opening depends on that
         if not self.direct:
             on_opening_addr, no_action_addr = self.compiler.compile_driver.compile_on_opening(self.compiler, obj_manager, self)
 
-        for s in self.statement_list.args[k:]:
+        for s in self.statement_list.args:
             self.compiler.compile_statement(s, obj_manager)
 
         if not self.direct:
