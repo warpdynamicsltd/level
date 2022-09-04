@@ -136,14 +136,14 @@ method direct allocate(var this as ref(Allocator), var size as int) as ref(byte)
   }
 }
 
-method direct free(var this as ref(Allocator), var ptr as ref(byte)) as bool
+method direct free(var this as ref(Allocator), var ptr as ref(A)) as bool
 {
   var addr as ref(byte);
-  real_size = real_addr_and_size(ptr, ref addr);
+  real_size = real_addr_and_size((ref(byte))(ptr), ref addr);
   if (real_size < 0x1000)
   {
     index = real_size;
-    exec this.map[index].push(ptr);
+    exec this.map[index].push((ref(byte))(ptr));
     this.used = this.used - real_size;
     return true;
   }

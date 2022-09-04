@@ -76,6 +76,9 @@ class CompileDriver_x86_64(CompileDriver):
     def ret(self):
         ret_()
 
+    def gc_trigger(self, T):
+        return T.main_type == Rec and T.user_name == 'stdlib:sys:context:mem_obj'
+
     def get_type_by_const(self, c):
         #print(c, c.name)
         if type(c.name) is int:

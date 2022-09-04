@@ -4,9 +4,10 @@ import stdlib:sys:app;
 
 type Stack(T) extends stdlib:collections:sysstack:Stack(T, stdlib:sys:bin_allocator:Allocator) with rec();
 
-method direct ()(Stack(T)) as Stack(T)
+method direct ()(Stack(T)) as ref(Stack(T))
 {
-  var this as Stack(T);
+  var this as ref(Stack(T));
+  this = stdlib:sys:app:app.allocator.allocate(sizeof(Stack(T)));
   this.allocator = stdlib:sys:app:app.allocator;
   this.data_block = stdlib:collections:sysstack:DataBlock(T)(256, this.allocator);
   this.buff_length = 256;
@@ -29,21 +30,14 @@ method direct top(var this as ref(Stack(T))) as val ref(T)
 
 method direct del(var this as ref(Stack(T)))
 {
-  #echo "start deleting";
   var data_block as ref(stdlib:collections:sysstack:DataBlock(T));
   data_block = this.start;
   while(data_block != null)
   {
-    # echo "while";
-    # echo u64(data_block);
-    # echo u64(this.start.next_addr);
-    var mem = data_block.data as ref(byte);
-    exec this.allocator.free(mem);
+    exec this.allocator.free(data_block.data);
     mem = data_block;
     data_block = data_block.next_addr;
-    # echo ">>>>";
     exec this.allocator.free(mem);
-    # echo "<<<<";
   }
-  #echo "end deleting";
+  exec this.allocator.free(this);
 }
