@@ -21,6 +21,7 @@ sub f()
   del a;
   del b;
   del c;
+  exec gc.collect();
 }
 
 entry{

@@ -91,17 +91,17 @@ class Subroutine:
         # this is suboptimal construction, it compiles unnecessary jump
         # solution: do pre-compilation in which it will be revealed that mem obj is used in subroutine body
         # TO FIX (the easiest way to add pre-compilator is to put compilation on hold but still compile statements for some
-        if not self.direct:
-            on_opening_addr, no_action_addr = self.compiler.compile_driver.compile_on_opening(self.compiler, obj_manager, self)
+        # if not self.direct:
+        #     on_opening_addr, no_action_addr = self.compiler.compile_driver.compile_on_opening(self.compiler, obj_manager, self)
 
         for s in self.statement_list.args:
             self.compiler.compile_statement(s, obj_manager)
 
-        if not self.direct:
-            if not self.gc_active:
-                self.compiler.compile_driver.compile_on_opening_make_inactive(on_opening_addr, no_action_addr)
-
-            self.compile_on_closing(obj_manager)
+        # if not self.direct:
+        #     if not self.gc_active:
+        #         self.compiler.compile_driver.compile_on_opening_make_inactive(on_opening_addr, no_action_addr)
+        #
+        #     self.compile_on_closing(obj_manager)
 
         self.compiler.compile_driver.ret()
         self.compiler.subroutines_stack.pop()

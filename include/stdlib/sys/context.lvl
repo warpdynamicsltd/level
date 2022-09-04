@@ -14,9 +14,9 @@ method direct ()(mem, var size as int) as ref(mem)
   this.addr = app.allocator.allocate(size);
   this.ref_count = 0;
 
-  if (gc.global_stack != null and gc.global_stack.length() > 0)
+  if (gc.global_stack != null)
   {
-    exec gc.global_stack.top().push(this);
+    exec gc.global_stack.push(this);
   }
 
   return this;
@@ -24,7 +24,10 @@ method direct ()(mem, var size as int) as ref(mem)
 
 method direct del(var this as ref(mem))
 {
-  exec app.allocator.free(this.addr);
+  if (this.addr != null)
+  {
+    exec app.allocator.free(this.addr);
+  }
   exec app.allocator.free(this);
 }
 
@@ -48,30 +51,39 @@ method direct ()(mem_obj, var size = 0 as int) as mem_obj
   return res;
 }
 
+method direct ptr(var this as ref(mem_obj), A) as ref(A)
+{
+  return (ref(A))(this.m.addr);
+}
+
 method direct del(var this as ref(mem_obj))
 {
-  if (this.m != null)
+  # echo "deleting ...";
+  if (this.m != null and this.m.ref_count > 0)
   {
     dec this.m.ref_count;
-    if (this.m.ref_count == 0)
-    {
-      del this.m;
-      this.m.ref_count = -1;
-    }
+#    if (this.m.ref_count == 0)
+#    {
+#      #del this.m;
+#      #this.m.ref_count = -1;
+#      exec app.allocator.free(this.m.addr);
+#      this.m.addr = null;
+#      this.m.ref_count = -1;
+#
+#    }
+    # echo "ref count after deletion";
+    # echo this.m.ref_count;
   }
 
-  this.m = null;
+  #this.m = null;
 }
 
 method direct =(var this as ref(mem_obj), var a as ref(mem_obj))
 {
+  # echo "=";
   if (this.m != null)
   {
-    dec this.m.ref_count;
-    if (this.m.ref_count == 0)
-    {
-      del this.m;
-    }
+    del this;
   }
 
   this.m = a.m;
@@ -80,15 +92,38 @@ method direct =(var this as ref(mem_obj), var a as ref(mem_obj))
 
 type GC as rec
 (
-  var global_stack as ref(Stack(ref(Stack(ref(mem))))),
-  var running = false as bool
+  var global_stack as ref(Stack(ref(mem))),
 )
 
 method direct ()(GC) as GC
 {
   var res as GC;
-  res.global_stack = Stack(ref(Stack(ref(mem))))();
+  res.global_stack = Stack(ref(mem))();
   return res;
+}
+
+method collect(var this as ref(GC))
+{
+  if (gc.global_stack != null and gc.global_stack.length() > 0)
+  {
+    stack = Stack(ref(mem))();
+    foreach(var m as ref(mem) in gc.global_stack)
+    {
+#      echo ".";
+#      echo m.ref_count;
+      if (m.ref_count <= 0)
+      {
+        del m;
+      }
+      else
+      {
+        exec stack.push(m);
+      }
+
+    }
+    del gc.global_stack;
+    gc.global_stack = stack;
+  }
 }
 
 method direct clear(var this as ref(GC))
@@ -101,28 +136,12 @@ global gc = GC() as GC;
 
 sub direct on_opening()
 {
-  var stack = Stack(ref(mem))();
-  exec gc.global_stack.push(stack);
-
+  #echo "opening";
+  #var stack = Stack(ref(mem))();
+  #exec gc.global_stack.push(stack);
 }
 
 sub direct on_closing()
 {
-  if (gc.global_stack != null and gc.global_stack.length() > 0)
-  {
-    foreach (var m as ref(mem) in gc.global_stack.top())
-    {
-      if (m.ref_count == 0)
-      {
-        del m;
-      }
-    }
-
-    var stack as ref(Stack(ref(mem)));
-
-    if (gc.global_stack.pop(ref stack))
-    {
-      del stack;
-    }
-  }
+  exec gc.collect();
 }
