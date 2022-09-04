@@ -1,0 +1,70 @@
+import stdlib:sys:context as *;
+import stdlib:sys:app as *;
+
+type vector(A) as rec
+(
+  var data = mem_obj() as mem_obj,
+  var k as A,
+  var length = 0 as int
+)
+
+method =(var this as ref(vector(A)), var a as ref(vector(A)))
+{
+  this.data = a.data;
+  this.length = a.length;
+}
+
+method ()(vector(A), var length as int) as vector(A)
+{
+  var this as vector(A);
+  exec this.init(length);
+  del this;
+  return this;
+}
+
+method del(var this as ref(vector(A)))
+{
+  del this.data;
+}
+
+
+method init(var this as ref(vector(A)), var length as int)
+{
+  this.data = mem_obj(sizeof(A)*length);
+}
+
+sub f()
+{
+  var a as vector(int);
+  var b as vector(int);
+  b = vector(int)(16);
+  a = vector(int)(10);
+  b = a;
+  exec vector(int)(5);
+  a = vector(int)(10);
+  #echo "a.data.m.ref_count";
+  #echo a.data.m.ref_count;
+  #echo app.allocator.used;
+  #exec a.init(1);
+
+  #del a.data;
+  #del a.data;
+  del a;
+  del b;
+  #echo b.data.m.ref_count;
+  exec gc.collect();
+}
+
+entry{
+    exec f();
+
+
+    echo "global stack length";
+    echo gc.global_stack.length;
+
+    exec gc.clear();
+
+    echo "gc test";
+    echo app.allocator.used;
+    echo "end";
+}
