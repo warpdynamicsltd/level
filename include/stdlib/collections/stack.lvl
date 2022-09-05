@@ -30,6 +30,7 @@ method direct top(var this as ref(Stack(T))) as val ref(T)
 
 method direct del(var this as ref(Stack(T)))
 {
+
   var data_block as ref(stdlib:collections:sysstack:DataBlock(T));
   data_block = this.start;
   while(data_block != null)

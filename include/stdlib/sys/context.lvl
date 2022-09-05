@@ -1,6 +1,8 @@
 import stdlib:collections:stack as *;
 import stdlib:sys:app as *;
 
+type object as rec();
+
 type mem as rec
 (
   var addr = null as ref(byte),
@@ -27,13 +29,19 @@ method direct del(var this as ref(mem))
   if (this.addr != null)
   {
     exec app.allocator.free(this.addr);
+    this.addr = null;
   }
   exec app.allocator.free(this);
 }
 
 type mem_obj as rec
 (
-  var m as ref(mem)
+  var m = null as ref(mem)
+)
+
+type mem_obj_shadow as rec
+(
+  var m = null as ref(mem)
 )
 
 method direct ()(mem_obj, var size = 0 as int) as mem_obj
@@ -71,8 +79,6 @@ method direct del(var this as ref(mem_obj))
 #      this.m.ref_count = -1;
 #
 #    }
-    # echo "ref count after deletion";
-    # echo this.m.ref_count;
   }
 
   #this.m = null;
@@ -80,10 +86,15 @@ method direct del(var this as ref(mem_obj))
 
 method direct =(var this as ref(mem_obj), var a as ref(mem_obj))
 {
-  # echo "=";
+
   if (this.m != null)
   {
     del this;
+  }
+  else
+  {
+    exec gc.var_stack.push((ref(mem_obj_shadow))(this));
+    inc gc.n_var_stack.top();
   }
 
   this.m = a.m;
@@ -92,14 +103,28 @@ method direct =(var this as ref(mem_obj), var a as ref(mem_obj))
 
 type GC as rec
 (
-  var global_stack as ref(Stack(ref(mem))),
+  var global_stack = null as ref(Stack(ref(mem))),
+  var n_var_stack = null as ref(Stack(int)),
+  var var_stack = null as ref(Stack(ref(mem_obj_shadow))),
+  var block as bool,
 )
 
 method direct ()(GC) as GC
 {
   var res as GC;
   res.global_stack = Stack(ref(mem))();
+  res.n_var_stack = Stack(int)();
+  res.var_stack = Stack(ref(mem_obj_shadow))();
   return res;
+}
+
+method direct clear(var this as ref(GC))
+{
+  exec this.collect();
+  del this.n_var_stack;
+  del this.var_stack;
+  del this.global_stack;
+  this.global_stack = null;
 }
 
 method collect(var this as ref(GC))
@@ -109,8 +134,6 @@ method collect(var this as ref(GC))
     stack = Stack(ref(mem))();
     foreach(var m as ref(mem) in gc.global_stack)
     {
-#      echo ".";
-#      echo m.ref_count;
       if (m.ref_count <= 0)
       {
         del m;
@@ -126,22 +149,25 @@ method collect(var this as ref(GC))
   }
 }
 
-method direct clear(var this as ref(GC))
-{
-  del this.global_stack;
-  this.global_stack = null;
-}
-
 global gc = GC() as GC;
 
 sub direct on_opening()
 {
-  #echo "opening";
-  #var stack = Stack(ref(mem))();
-  #exec gc.global_stack.push(stack);
+  exec gc.n_var_stack.push(0);
 }
 
 sub direct on_closing()
 {
   exec gc.collect();
+  var n as int;
+  var out as ref(mem_obj_shadow);
+
+  exec gc.n_var_stack.pop(ref n);
+
+  for (i = 0; i < n; inc i)
+  {
+    exec gc.var_stack.pop(ref out);
+    dec out.m.ref_count;
+  }
+
 }
