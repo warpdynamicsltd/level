@@ -10,31 +10,41 @@ type vector(A) as rec
 
 method =(var this as ref(vector(A)), var a as ref(vector(A)))
 {
+  exec on_opening();
   this.data = a.data;
   this.length = a.length;
+  exec on_closing();
 }
 
 method ()(vector(A), var length as int) as vector(A)
 {
+  exec on_opening();
   var this as vector(A);
   exec this.init(length);
   del this;
+  exec on_closing();
   return this;
 }
 
 method del(var this as ref(vector(A)))
 {
+  exec on_opening();
   del this.data;
+  exec on_closing();
 }
 
 
 method init(var this as ref(vector(A)), var length as int)
 {
+  exec on_opening();
   this.data = mem_obj(sizeof(A)*length);
+  exec on_closing();
 }
 
 sub f()
 {
+  exec on_opening();
+
   var a as vector(int);
   var b as vector(int);
   b = vector(int)(16);
@@ -42,23 +52,12 @@ sub f()
   b = a;
   exec vector(int)(5);
   a = vector(int)(10);
-  #echo "a.data.m.ref_count";
-  #echo a.data.m.ref_count;
-  #echo app.allocator.used;
-  #exec a.init(1);
 
-  #del a.data;
-  #del a.data;
-  del a;
-  del b;
-  #echo b.data.m.ref_count;
-  exec gc.collect();
+  exec on_closing();
 }
 
 entry{
     exec f();
-
-
     echo "global stack length";
     echo gc.global_stack.length;
 

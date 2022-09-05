@@ -3,6 +3,7 @@ import stdlib:sys:app as *;
 
 sub f()
 {
+  exec on_opening();
   var a = mem_obj() as mem_obj;
   var b = mem_obj() as mem_obj;
   var c = mem_obj() as mem_obj;
@@ -21,7 +22,7 @@ sub f()
   del a;
   del b;
   del c;
-  exec gc.collect();
+  exec on_closing();
 }
 
 entry{
