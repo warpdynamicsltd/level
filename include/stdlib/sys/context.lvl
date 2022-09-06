@@ -59,9 +59,9 @@ method direct ()(mem_obj, var size = 0 as int) as mem_obj
   return res;
 }
 
-method direct ptr(var this as ref(mem_obj), A) as ref(A)
+method direct ptr(var this as ref(mem_obj), A) as val ref(A)
 {
-  return (ref(A))(this.m.addr);
+  return this.m.addr;
 }
 
 method direct del(var this as ref(mem_obj))
@@ -120,7 +120,6 @@ method direct ()(GC) as GC
 
 method direct clear(var this as ref(GC))
 {
-  exec this.collect();
   del this.n_var_stack;
   del this.var_stack;
   del this.global_stack;
@@ -131,6 +130,7 @@ method collect(var this as ref(GC))
 {
   if (gc.global_stack != null and gc.global_stack.length() > 0)
   {
+
     stack = Stack(ref(mem))();
     foreach(var m as ref(mem) in gc.global_stack)
     {
@@ -159,6 +159,7 @@ sub direct on_opening()
 sub direct on_closing()
 {
   exec gc.collect();
+
   var n as int;
   var out as ref(mem_obj_shadow);
 
@@ -167,7 +168,9 @@ sub direct on_closing()
   for (i = 0; i < n; inc i)
   {
     exec gc.var_stack.pop(ref out);
-    dec out.m.ref_count;
+    if (out.m != null)
+    {
+      dec out.m.ref_count;
+     }
   }
-
 }

@@ -10,6 +10,9 @@ class Ref(Obj):
     priority = 32
     size = 8
     def __init__(self, object_manager, for_child_manager=False, ptr=None, T=None, value=None, referenced=False, copy=False):
+
+        Obj.__init__(self)
+
         self.object_manager = object_manager
         self.referenced = referenced
 

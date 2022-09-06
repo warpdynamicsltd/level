@@ -8,6 +8,7 @@ from level.core.compiler.type_defs import TypeDefs, TypeDef
 from level.core.compiler.globals import Globals, Global
 from level.core.compiler.inheritance import Inheritance
 from level.core.compiler.types import Obj, Type, TypeVar
+from level.core.compiler.codeblock import CodeBlockContexts
 from level.core.parser.builtin import translate_simple_types
 
 
@@ -138,6 +139,8 @@ class Compiler:
         self.subroutine_compiled_addresses = {}
         self.type_defs_compiled = {}
 
+        self.code_block_contexts = CodeBlockContexts(self)
+
     def update_meta(self, exp):
         if exp is not None and exp.meta is not None:
             self.meta = exp.meta
@@ -166,7 +169,10 @@ class Compiler:
         object_manager.set_main_frame()
         self.globals.init(object_manager)
 
+        self.code_block_contexts.open_new(object_manager)
+
         self.compile_statements(statements.val, obj_manager=object_manager)
+        self.code_block_contexts.close_current()
         self.compile_driver.end()
 
         self.main_program = False
@@ -360,7 +366,15 @@ class Compiler:
                 obj = self.compile_expression(s.args[0], obj_manager)
                 if obj.type != subroutine.return_type:
                     obj = subroutine.return_type(obj)
+
+                obj.returned = True
+
+                self.code_block_contexts.compile_current_mass_del()
+
                 obj.to_acc()
+            else:
+                self.code_block_contexts.compile_current_mass_del()
+
             self.compile_driver.ret()
         else:
             if s.args:
@@ -811,11 +825,18 @@ class Compiler:
         self.subroutines.subroutines_stack.append(subroutine)
 
         if not subroutine.ref_return:
-            return obj
+            res = obj
         else:
             if obj.type.main_type.__name__ != 'Ref':
                 raise CompilerNotLocatedException("ref type expected")
-            return obj.get_obj()
+            res = obj.get_obj()
+
+        # self.add_new_object_to_code_block_context(subroutine.name, method, res, *objs)
+        return res
+
+    def add_new_object_to_code_block_context(self, sub_name, method,  res, *objs):
+        if sub_name == '()' and method and objs and res.type == objs[0]:
+            self.code_block_contexts.add_obj(res)
 
     def get_subroutine_by_types_with_inheritance(self, calling_meta, fun_key, var_types):
         sub = self.get_direct_subroutine_by_types(calling_meta, fun_key, var_types)
@@ -871,7 +892,6 @@ class Compiler:
 
             var_types.append(T)
 
-        #return self.get_direct_subroutine_by_types(calling_meta, fun_key, var_types)
         return self.get_subroutine_by_types_with_inheritance(calling_meta, fun_key, var_types)
 
     def compile_call(self, sub, obj_manager, method=False):

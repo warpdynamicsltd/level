@@ -21,7 +21,9 @@ class U32(Obj):
                  T=None,
                  referenced=False,
                  copy=False):
-        #self.size = 4
+
+        Obj.__init__(self)
+
         if T is None:
             self.type = Type(U32)
         else:

@@ -198,6 +198,9 @@ class TypeVar:
         return element
 
 class Obj:
+    def __init__(self):
+        self.returned = False
+
     @abstractmethod
     def set(self, obj):
         pass

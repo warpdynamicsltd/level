@@ -20,6 +20,8 @@ class Float(Obj):
                  referenced=False,
                  copy=False):
 
+        Obj.__init__(self)
+
         if T is None:
             self.type = Type(Float)
         else:

@@ -22,6 +22,8 @@ class U64(Obj):
                  referenced=False,
                  copy=False):
 
+        Obj.__init__(self)
+
         if T is None:
             self.type = Type(U64)
         else:
