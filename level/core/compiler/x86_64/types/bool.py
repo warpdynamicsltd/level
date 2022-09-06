@@ -14,6 +14,8 @@ class Bool(Obj):
                  referenced=False,
                  copy=False):
 
+        Obj.__init__(self)
+
         if T is None:
             self.type = Type(Bool)
         else:
