@@ -31,6 +31,8 @@ class I64(Obj):
                  referenced=False,
                  copy=False):
 
+        Obj.__init__(self)
+
         if T is None:
             self.type = Type(I64)
         else:

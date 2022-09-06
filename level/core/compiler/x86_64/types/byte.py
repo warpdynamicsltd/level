@@ -15,6 +15,8 @@ class Byte(Obj):
                  referenced=False,
                  copy=False):
 
+        Obj.__init__(self)
+
         if T is None:
             self.type = Type(Byte)
         else:

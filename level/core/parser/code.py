@@ -1217,6 +1217,8 @@ class Parser:
 
         if stream and type(stream[code_bracket_index]) is BracketSymb:
             statements = self.parse_statement_list(stream[code_bracket_index].value)
+            statements.args = list(statements.args)
+            statements.args.append(ast.Return())
             if not ref:
                 res = ast.SubroutineDef(func_name, ast.VarList(*variables).add_meta(stream[0].meta), statements, return_type).add_meta(stream[0].meta)
             else:

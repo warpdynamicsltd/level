@@ -7,6 +7,9 @@ from level.core.x86_64 import *
 class Array(Obj):
     size = None
     def __init__(self, object_manager, T, ptr=None, for_child_manager=False, value=None, referenced=False, copy=False):
+
+        Obj.__init__(self)
+
         self.object_manager = object_manager
         self.length = T.length
         self.type = T

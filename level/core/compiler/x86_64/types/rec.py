@@ -9,6 +9,9 @@ from level.core.compiler import CompilerNotLocatedException
 class Rec(Obj):
     size = None
     def __init__(self, object_manager, T, ptr=None, for_child_manager=False, value=None, referenced=False, copy=False):
+
+        Obj.__init__(self)
+
         self.object_manager = object_manager
         self.length = 1
         self.type = T

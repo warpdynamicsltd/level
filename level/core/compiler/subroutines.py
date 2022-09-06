@@ -88,6 +88,8 @@ class Subroutine:
             if name is not None:
                 obj_manager.reserve_variable_by_name(self.var_types[i], name, copy=True)
 
+        self.compiler.code_block_contexts.open_new(obj_manager)
+
         # this is suboptimal construction, it compiles unnecessary jump
         # solution: do pre-compilation in which it will be revealed that mem obj is used in subroutine body
         # TO FIX (the easiest way to add pre-compilator is to put compilation on hold but still compile statements for some
@@ -103,7 +105,12 @@ class Subroutine:
         #
         #     self.compile_on_closing(obj_manager)
 
-        self.compiler.compile_driver.ret()
+
+        # because last statement from each subroutine is always ast.Return() this line is no longer needed
+        # but it is here as a reminder
+        # self.compiler.compile_driver.ret()
+
+        self.compiler.code_block_contexts.close_current()
         self.compiler.subroutines_stack.pop()
         obj_manager.close()
         Subroutine.n_compiled += 1
