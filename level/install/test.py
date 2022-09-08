@@ -125,7 +125,7 @@ test_source([test_path(r"userstatements/assign.lvl")], b"+00000000:00000002\n+00
 
 test_source([test_path(r"del/stack.lvl")], b"00000001\n00000001\n+00000000:00000000\nend\n")
 test_source([test_path(r"del/vector.lvl")], b"+00000000:00000051\n+00000000:00000000\nend\n")
-test_source([test_path(r"del/str.lvl")], b"+00000000:00000035\nHello, world!\n+00000000:00000035\n+00000000:00000000\nend\n")
+# test_source([test_path(r"del/str.lvl")], b"+00000000:00000035\nHello, world!\n+00000000:00000035\n+00000000:00000000\nend\n")
 
 test_source([test_path(r"context/openclose.lvl")], b"object without reference\n+00000000:00000000\nreferenced 1\n+00000000:00000001\nreferenced 3\n+00000000:00000003\ngc test\n+00000000:00000000\nend\n")
 test_source([test_path(r"context/vector.lvl")], b"global stack length\n+00000000:00000000\ngc test\n+00000000:00000000\nend\n")
