@@ -27,5 +27,6 @@ class CodeBlockContexts:
         self.code_block_contexts.pop()
 
     def add_obj(self, obj):
-        self.code_block_contexts[-1].add_obj(obj)
+        if self.code_block_contexts:
+            self.code_block_contexts[-1].add_obj(obj)
 

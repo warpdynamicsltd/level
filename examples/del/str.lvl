@@ -8,7 +8,7 @@ entry
   echo app.allocator.used;
   echo s;
   echo app.allocator.used;
-  del s;
+  #del s;
   echo app.allocator.used;
   echo "end";
 }

@@ -37,7 +37,10 @@ method del(var this as ref(vector(A)))
 method init(var this as ref(vector(A)), var length as int)
 {
   exec on_opening();
-  this.data = mem_obj(sizeof(A)*length);
+  if (length > 0)
+  {
+    this.data = mem_obj(sizeof(A)*length);
+  }
   exec on_closing();
 }
 
@@ -45,8 +48,8 @@ sub f()
 {
   exec on_opening();
 
-  var a as vector(int);
-  var b as vector(int);
+  a = vector(int)(0);
+  b = vector(int)(0);
   b = vector(int)(16);
   a = vector(int)(10);
   b = a;
@@ -58,6 +61,9 @@ sub f()
 
 entry{
     exec f();
+
+    exec gc.collect();
+
     echo "global stack length";
     echo gc.global_stack.length;
 
