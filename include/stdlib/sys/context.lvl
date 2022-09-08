@@ -67,8 +67,10 @@ method direct ptr(var this as ref(mem_obj), A) as val ref(A)
 method direct del(var this as ref(mem_obj))
 {
   # echo "deleting ...";
+  # echo u64(this.m);
   if (this.m != null and this.m.ref_count > 0)
   {
+    # echo this.m.ref_count;
     dec this.m.ref_count;
 #    if (this.m.ref_count == 0)
 #    {
@@ -86,15 +88,9 @@ method direct del(var this as ref(mem_obj))
 
 method direct =(var this as ref(mem_obj), var a as ref(mem_obj))
 {
-
   if (this.m != null)
   {
     del this;
-  }
-  else
-  {
-    exec gc.var_stack.push((ref(mem_obj_shadow))(this));
-    inc gc.n_var_stack.top();
   }
 
   this.m = a.m;
@@ -104,8 +100,8 @@ method direct =(var this as ref(mem_obj), var a as ref(mem_obj))
 type GC as rec
 (
   var global_stack = null as ref(Stack(ref(mem))),
-  var n_var_stack = null as ref(Stack(int)),
-  var var_stack = null as ref(Stack(ref(mem_obj_shadow))),
+  # var n_var_stack = null as ref(Stack(int)),
+  # var var_stack = null as ref(Stack(ref(mem_obj_shadow))),
   var block as bool,
 )
 
@@ -113,15 +109,15 @@ method direct ()(GC) as GC
 {
   var res as GC;
   res.global_stack = Stack(ref(mem))();
-  res.n_var_stack = Stack(int)();
-  res.var_stack = Stack(ref(mem_obj_shadow))();
+  # res.n_var_stack = Stack(int)();
+  # res.var_stack = Stack(ref(mem_obj_shadow))();
   return res;
 }
 
 method direct clear(var this as ref(GC))
 {
-  del this.n_var_stack;
-  del this.var_stack;
+  # del this.n_var_stack;
+  # del this.var_stack;
   del this.global_stack;
   this.global_stack = null;
 }
@@ -153,24 +149,24 @@ global gc = GC() as GC;
 
 sub direct on_opening()
 {
-  exec gc.n_var_stack.push(0);
+  #exec gc.n_var_stack.push(0);
 }
 
 sub direct on_closing()
 {
-  exec gc.collect();
-
-  var n as int;
-  var out as ref(mem_obj_shadow);
-
-  exec gc.n_var_stack.pop(ref n);
-
-  for (i = 0; i < n; inc i)
-  {
-    exec gc.var_stack.pop(ref out);
-    if (out.m != null)
-    {
-      dec out.m.ref_count;
-     }
-  }
+#  exec gc.collect();
+#
+#  var n as int;
+#  var out as ref(mem_obj_shadow);
+#
+#  exec gc.n_var_stack.pop(ref n);
+#
+#  for (i = 0; i < n; inc i)
+#  {
+#    exec gc.var_stack.pop(ref out);
+#    if (out.m != null)
+#    {
+#      dec out.m.ref_count;
+#     }
+#  }
 }

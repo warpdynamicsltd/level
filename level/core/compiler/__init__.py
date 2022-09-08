@@ -115,7 +115,10 @@ class ObjManager(ABC):
     def reserve_variable_by_name(self, T, name, value=None, copy=False, obj=None):
         if name in self.objs:
             return False
-        self.objs[name] = self.reserve_variable(T, value, copy=copy, obj=obj)
+        res = self.reserve_variable(T, value, copy=copy, obj=obj)
+        res.name = name
+        self.objs[name] = res
+
         return True
 
 class Compiler:
@@ -405,6 +408,9 @@ class Compiler:
                 raise CompilerException(f"variable name '{var.val.name}' already used in this scope, can't initiate in {var.val.meta}")
 
             obj = obj_manager.objs[var.val.name]
+            obj.name = var.val.name
+            if obj.created:
+                self.code_block_contexts.add_obj(obj)
 
             if obj.type.main_type.__name__ == 'Rec':
                 obj.init()
@@ -437,6 +443,8 @@ class Compiler:
                 if not (var_exp.val.name in obj_manager.objs or var_exp.val.calling_name in self.globals.globals_dict):
                     self.var_name_raise_not_available(var_exp.val)
                     obj_manager.reserve_variable_by_name(obj.type, var_exp.val.name, obj=obj)
+                    if obj.created:
+                        self.code_block_contexts.add_obj(obj_manager.objs[var_exp.val.name])
                     return
 
             var_obj = self.compile_expression(var_exp.val, obj_manager)
@@ -831,12 +839,13 @@ class Compiler:
                 raise CompilerNotLocatedException("ref type expected")
             res = obj.get_obj()
 
-        # self.add_new_object_to_code_block_context(subroutine.name, method, res, *objs)
+        self.add_new_object_to_code_block_context(subroutine.name, method, res, *objs)
         return res
 
     def add_new_object_to_code_block_context(self, sub_name, method,  res, *objs):
         if sub_name == '()' and method and objs and res.type == objs[0]:
-            self.code_block_contexts.add_obj(res)
+            #self.code_block_contexts.add_obj(res)
+            res.created = True
 
     def get_subroutine_by_types_with_inheritance(self, calling_meta, fun_key, var_types):
         sub = self.get_direct_subroutine_by_types(calling_meta, fun_key, var_types)

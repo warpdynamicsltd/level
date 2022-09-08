@@ -200,6 +200,8 @@ class TypeVar:
 class Obj:
     def __init__(self):
         self.returned = False
+        self.created = False
+        self.name = None
 
     @abstractmethod
     def set(self, obj):
