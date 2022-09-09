@@ -2,13 +2,19 @@ import stdlib:collections:str as *;
 import stdlib:collections:vector as *;
 import stdlib:sys:app as *;
 
-entry
+sub main()
 {
   s = str("Hello, world!");
   echo app.allocator.used;
   echo s;
   echo app.allocator.used;
-  #del s;
+}
+
+entry
+{
+  exec main();
+
+  # del s;
   echo app.allocator.used;
   echo "end";
 }

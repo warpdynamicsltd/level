@@ -14,7 +14,14 @@ type VectorIterator(A) as rec(
 method init(var this as ref(Vector(A)), var length as int)
 {
   this.length = length;
-  this.data = stdlib:sys:app:app.allocator.allocate(length*sizeof(A));
+  if (this.length > 0)
+  {
+    this.data = stdlib:sys:app:app.allocator.allocate(length*sizeof(A));
+  }
+  else
+  {
+    this.data = null;
+  }
 }
 
 method ()(Vector(A), var length as int) as Vector(A)

@@ -48,8 +48,8 @@ sub f()
 {
   exec on_opening();
 
-  a = vector(int)(0);
-  b = vector(int)(0);
+  a = vector(int)(1);
+  b = vector(int)(1);
   b = vector(int)(16);
   a = vector(int)(10);
   b = a;
