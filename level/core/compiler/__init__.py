@@ -844,7 +844,7 @@ class Compiler:
 
     def add_new_object_to_code_block_context(self, sub_name, method,  res, *objs):
         if sub_name == '()' and method and objs and res.type == objs[0]:
-            #self.code_block_contexts.add_obj(res)
+            self.code_block_contexts.add_obj(res)
             res.created = True
 
     def get_subroutine_by_types_with_inheritance(self, calling_meta, fun_key, var_types):

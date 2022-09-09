@@ -636,8 +636,8 @@ class StandardObjManager(ObjManager):
         return res
 
     def reserve_variable(self, T, value=None, for_child_manager=False, copy=False, obj=None):
-        if obj is not None:
-            T = obj.type
+        # if obj is not None:
+        #     T = obj.type
 
         res = T.main_type(self, T=T, value=value, for_child_manager=for_child_manager, copy=copy)
 
