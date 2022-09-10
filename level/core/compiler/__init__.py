@@ -112,14 +112,15 @@ class ObjManager(ABC):
     def reserve_variable_for_child_obj_manager(self, T, handle):
         pass
 
-    def reserve_variable_by_name(self, T, name, value=None, copy=False, obj=None):
+    def reserve_variable_by_name(self, T, name, value=None, copy=False):
         if name in self.objs:
-            return False
-        res = self.reserve_variable(T, value, copy=copy, obj=obj)
+            return None
+
+        res = self.reserve_variable(T, value, copy=copy)
         res.name = name
         self.objs[name] = res
 
-        return True
+        return res
 
 class Compiler:
     def __init__(self, program : ast.Program, obj_manager_type: type, compile_driver_type: type, memory: int=0x100000):
@@ -336,8 +337,13 @@ class Compiler:
         for s in statements.args:
             self.compile_statement(s, obj_manager)
 
-    def var_name_raise_not_available(self, var_exp):
+    def var_name_raise_not_available(self, var_exp, obj_manager=None):
         name = var_exp.name
+
+        if obj_manager is not None:
+            if name in obj_manager.objs:
+                raise CompilerException(f"already defined variable name '{name}' can't be used as variable name in {var_exp.meta}")
+
         calling_name = var_exp.calling_name
         if \
                 calling_name in self.calling_keys or \
@@ -387,6 +393,18 @@ class Compiler:
                 self.compile_driver.set_acc(0)
             self.compile_driver.exit()
 
+    def compile_assigment(self, obj_manager, var_obj, obj):
+        subroutine = self.get_subroutine_for_call(True, self.meta, '=', var_obj, obj)
+        if subroutine is not None:
+            return self.compile_call_execution(True, obj_manager, subroutine, var_obj, obj)
+        else:
+            var_obj.set(obj)
+
+    def compile_first_assigment(self, obj_manager, var_obj, obj):
+        if obj.created:
+            self.code_block_contexts.add_obj(var_obj)
+        self.compile_assigment(obj_manager, var_obj, obj)
+
     def compile_statement(self, s, obj_manager):
         self.update_meta(s)
 
@@ -404,19 +422,16 @@ class Compiler:
             else:
                 T = self.compile_type_expression(type_expression.val)
 
-            if not obj_manager.reserve_variable_by_name(T, var.val.name, const):
+            var_obj = obj_manager.reserve_variable_by_name(T, var.val.name, const)
+
+            if var_obj is None:
                 raise CompilerException(f"variable name '{var.val.name}' already used in this scope, can't initiate in {var.val.meta}")
 
-            obj = obj_manager.objs[var.val.name]
-            obj.name = var.val.name
-            if obj.created:
-                self.code_block_contexts.add_obj(obj)
-
-            if obj.type.main_type.__name__ == 'Rec':
-                obj.init()
+            if var_obj.type.main_type.__name__ == 'Rec':
+                var_obj.init()
 
             if const is None and init_obj is not None:
-                obj.set(init_obj)
+                self.compile_first_assigment(obj_manager, var_obj, init_obj)
 
             return
 
@@ -441,19 +456,13 @@ class Compiler:
 
             if type(var_exp.val) is ast.Var:
                 if not (var_exp.val.name in obj_manager.objs or var_exp.val.calling_name in self.globals.globals_dict):
-                    self.var_name_raise_not_available(var_exp.val)
-                    obj_manager.reserve_variable_by_name(obj.type, var_exp.val.name, obj=obj)
-                    if obj.created:
-                        self.code_block_contexts.add_obj(obj_manager.objs[var_exp.val.name])
+                    self.var_name_raise_not_available(var_exp.val, obj_manager=obj_manager)
+                    var_obj = obj_manager.reserve_variable_by_name(obj.type, var_exp.val.name)
+                    self.compile_first_assigment(obj_manager, var_obj, obj)
                     return
 
             var_obj = self.compile_expression(var_exp.val, obj_manager)
-
-            subroutine = self.get_subroutine_for_call(True, s.meta, '=', var_obj, obj)
-            if subroutine is not None:
-                return self.compile_call_execution(True, obj_manager, subroutine, var_obj, obj)
-            else:
-                var_obj.set(obj)
+            self.compile_assigment(obj_manager, var_obj, obj)
             return
 
         if ast.istype(s, ast.Echo):
