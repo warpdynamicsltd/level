@@ -56,6 +56,7 @@ method direct ()(mem_obj, var size = 0 as int) as mem_obj
   res.m = mem(size);
   res.m.ref_count = 0;
 
+
   return res;
 }
 
@@ -94,7 +95,10 @@ method direct =(var this as ref(mem_obj), var a as ref(mem_obj))
   }
 
   this.m = a.m;
-  inc this.m.ref_count;
+  if (this.m != null)
+  {
+    inc this.m.ref_count;
+  }
 }
 
 type GC as rec
