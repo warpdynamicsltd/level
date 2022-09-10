@@ -1,0 +1,57 @@
+type Container as rec(
+  var x = 0 as int,
+)
+
+method ()(Container, var x as int) as Container
+{
+  var this as Container;
+  this.x = x;
+  return this;
+}
+
+method del (var this as ref(Container))
+{
+  echo "deleting";
+  echo this.x;
+}
+
+method finish(var this as ref(Container))
+{
+  echo "finish";
+  echo this.x;
+}
+
+entry
+{
+  var c as Container;
+  var a = Container(1) as Container;
+  for (i = 0; i < 2; inc i)
+  {
+    b = Container(4 + i);
+    a = Container(5 + i);
+  }
+
+  for (i = 0; i < -2; inc i)
+  {
+    b = Container(7);
+    a = Container(8);
+  }
+
+  if (true)
+  {
+    b = Container(9);
+  }
+  else
+  {
+    b = Container(10);
+  }
+
+  if (false)
+  {
+    b = Container(11);
+  }
+  else
+  {
+    b = Container(12);
+  }
+}

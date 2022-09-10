@@ -297,7 +297,7 @@ class Parser:
                     string_mode = False
                     last_marker = None
                     tr_s = self.transform_string(s)
-                    symb = StringSymb(tr_s, meta=tr_s[0].meta)
+                    symb = StringSymb(tr_s, meta=self.root.value[i].meta)
                     _id += 1
                     current = current[:start_index] + [symb] + current[j + 1:]
                     shift -= (j - start_index)
@@ -1297,6 +1297,8 @@ class Parser:
 
         stream, program_block = self.parse_block('entry', stream)
         statements = self.parse_statement_list(program_block)
+        statements.args = list(statements.args)
+        statements.args.append(ast.Return(ast.Const(0)))
         return ast.Program(
             ast.AssignTypeList(*type_defs),
             ast.GlobalBlock(*global_inits),
