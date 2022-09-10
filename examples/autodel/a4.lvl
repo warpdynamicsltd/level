@@ -1,0 +1,57 @@
+import stdlib:collections:ascii as *;
+import stdlib:sys:app as *;
+import stdlib:sys:context as *;
+
+sub main()
+{
+  c = str("");
+  a = str("hello ");
+  b = str("world!");
+  c = a + b;
+  echo c;
+  for (i = 0; i < 5; inc i)
+  {
+    a = str(", ") + b;
+    c = c + a;
+  }
+  echo c;
+
+  for (i = 0; i < -5; inc i)
+  {
+    a = str(", ") + b;
+    c = c + a;
+  }
+
+  if (true)
+  {
+    c = str(">>>") + c;
+  }
+  else
+  {
+    c = str("erased1") + c;
+  }
+
+  echo c;
+
+  if (false)
+  {
+    c = str("<<<") + c;
+  }
+  else
+  {
+    c = str("erased2") + c;
+  }
+
+  echo c;
+  a = b;
+  echo a;
+}
+
+entry{
+  exec main();
+  exec gc.collect();
+  exec gc.clear();
+  echo "gc test";
+  echo app.allocator.used;
+  echo "end";
+}

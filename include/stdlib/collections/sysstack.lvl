@@ -75,9 +75,10 @@ method direct pop(var this as ref(Stack(T:main, T:allocator)), var out as ref(T:
     return true;
   }
 
+  var prev_data_block as ref(DataBlock(T:main));
+
   if (this.index < 0 and this.data_block.prev_addr != null)
   {
-    var prev_data_block as DataBlock(T:main);
     prev_data_block = this.data_block.prev_addr;
 
     this.data_block = prev_data_block;

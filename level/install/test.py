@@ -125,10 +125,16 @@ test_source([test_path(r"userstatements/assign.lvl")], b"+00000000:00000002\n+00
 
 test_source([test_path(r"del/stack.lvl")], b"00000001\n00000001\n+00000000:00000000\nend\n")
 test_source([test_path(r"del/vector.lvl")], b"+00000000:00000051\n+00000000:00000000\nend\n")
-# test_source([test_path(r"del/str.lvl")], b"+00000000:00000035\nHello, world!\n+00000000:00000035\n+00000000:00000000\nend\n")
+#test_source([test_path(r"del/str.lvl")], b"+00000000:00000035\nHello, world!\n+00000000:00000035\n+00000000:00000000\nend\n")
 
 test_source([test_path(r"autodel/a1.lvl")], b"hello\nworld\nhello world\ncbcd\ncbcd\ngc test\n+00000000:00000000\nend\n")
-test_source([test_path(r"autodel/a2.lvl")], b"deleted\ndeleted\ndeleted\ngc test\n+00000000:00000000\nend\n")
+test_source([test_path(r"autodel/a2.lvl")], b"finished\nfinished\ndeleted\ndeleted\ndeleted\ngc test\n+00000000:00000000\nend\n")
+test_source([test_path(r"autodel/a3.lvl")], b"finish\n+00000000:00000003\nfinish\n+00000000:00000003\ndeleting\n+00000000:00000001\ndeleting\n+00000000:00000002\ndeleting\n+00000000:00000003\n")
+test_source([test_path(r"autodel/a4.lvl")], b"hello world!\nhello world!, world!, world!, world!, world!, world!\n>>>hello world!, world!, world!, world!, world!, world!\nerased2>>>hello world!, world!, world!, world!, world!, world!\nworld!\ngc test\n+00000000:00000000\nend\n")
+test_source([test_path(r"autodel/a5.lvl")], b"deleting\n+00000000:00000004\ndeleting\n+00000000:00000005\ndeleting\n+00000000:00000005\ndeleting\n+00000000:00000006\ndeleting\n+00000000:00000009\ndeleting\n+00000000:0000000c\nfinish\n+00000000:00000000\nfinish\n+00000000:00000006\nfinish\n+00000000:0000000c\ndeleting\n+00000000:00000001\n")
+test_source([test_path(r"autodel/continue.lvl")], b"deleting\n-00000000:00000001\ndeleting\n+00000000:00000001\ndeleting\n-00000000:00000002\ndeleting\n+00000000:00000002\ndeleting\n-00000000:00000003\ndeleting\n+00000000:00000003\ndeleting\n-00000000:00000004\ndeleting\n+00000000:00000004\ndeleting\n-00000000:00000005\ndeleting\n+00000000:00000005\ndeleting\n-00000000:00000064\ndeleting\n-00000000:00000006\ndeleting\n-00000000:00000007\ndeleting\n-00000000:00000008\nfinish\n-00000000:00000008\ndeleting\n+00000000:00000001\n")
+test_source([test_path(r"autodel/break.lvl")], b"deleting\n-00000000:00000001\ndeleting\n+00000000:00000001\ndeleting\n-00000000:00000002\ndeleting\n+00000000:00000002\ndeleting\n-00000000:00000003\ndeleting\n+00000000:00000003\ndeleting\n-00000000:00000004\ndeleting\n+00000000:00000004\ndeleting\n-00000000:00000005\ndeleting\n+00000000:00000005\ndeleting\n-00000000:00000064\ndeleting\n-00000000:00000006\nfinish\n-00000000:00000064\ndeleting\n+00000000:00000001\n")
+test_source([test_path(r"autodel/return.lvl")], b"deleting\n-00000000:00000001\ndeleting\n+00000000:00000001\ndeleting\n-00000000:00000002\ndeleting\n+00000000:00000002\ndeleting\n-00000000:00000003\ndeleting\n+00000000:00000003\ndeleting\n-00000000:00000004\ndeleting\n+00000000:00000004\ndeleting\n-00000000:00000005\ndeleting\n+00000000:00000005\ndeleting\n-00000000:00000064\ndeleting\n-00000000:00000006\nfinish\n-00000000:00000064\ndeleting\n+00000000:00000001\n")
 
 test_source([test_path(r"context/openclose.lvl")], b"object without reference\n+00000000:00000000\nreferenced 1\n+00000000:00000001\nreferenced 3\n+00000000:00000003\ngc test\n+00000000:00000000\nend\n")
 test_source([test_path(r"context/vector.lvl")], b"global stack length\n+00000000:00000000\ngc test\n+00000000:00000000\nend\n")

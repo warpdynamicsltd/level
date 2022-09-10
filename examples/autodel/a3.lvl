@@ -1,0 +1,31 @@
+type Container as rec(
+  var x as int,
+)
+
+method ()(Container, var x as int) as Container
+{
+  var this as Container;
+  this.x = x;
+  return this;
+}
+
+method del (var this as ref(Container))
+{
+  echo "deleting";
+  echo this.x;
+}
+
+method finish(var this as ref(Container))
+{
+  echo "finish";
+  echo this.x;
+}
+
+entry
+{
+  var b as Container;
+  var a = Container(1) as Container;
+  a = Container(2);
+  b = Container(3);
+  a = b;
+}
