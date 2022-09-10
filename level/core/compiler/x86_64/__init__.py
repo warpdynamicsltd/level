@@ -31,7 +31,8 @@ class FloatInfo:
         self.addr = addr
 
 class CompileDriver_x86_64(CompileDriver):
-    def __init__(self):
+    def __init__(self, compiler):
+        self.compiler = compiler
         self.hex_trans = SymBits(bits=64)
         self.new_line = SymBits(bits=64)
         self.u64space = SymBits(bits=64)
@@ -40,6 +41,7 @@ class CompileDriver_x86_64(CompileDriver):
         self.args_addr = SymBits(bits=64)
 
         self.while_stack = []
+        self.if_stack = []
 
         self.string_table = []
         self.float_table = []
@@ -495,46 +497,61 @@ class CompileDriver_x86_64(CompileDriver):
         self.print(eax, edx)
         #self.print(self.enter, 1)
 
-    def ifelse_acc(self, else_= False):
+    def ifelse_acc(self, obj_manager, else_= False):
+        self.if_stack.append(None)
         end_if_block = SymBits()
         if else_:
             end_else_block = SymBits()
         or_(rax, rax)
         jz_(end_if_block)
+        self.compiler.code_block_contexts.open_new(obj_manager, scope_name="ifelse")
         yield None
+        self.compiler.code_block_contexts.compile_current_closure()
+        self.compiler.code_block_contexts.close_current()
 
         if else_:
+            self.compiler.code_block_contexts.open_new(obj_manager, scope_name="ifelse")
             jmp_(end_else_block)
         set_symbol(end_if_block)
 
         if else_:
             yield None
+            self.compiler.code_block_contexts.compile_current_closure()
+            self.compiler.code_block_contexts.close_current()
             set_symbol(end_else_block)
 
+        self.if_stack.pop()
         yield None
 
-    def while_acc(self):
+    def while_acc(self, obj_manager):
         end_while_block = SymBits()
         continue_addr = SymBits()
         begin_while_block = address()
-        self.while_stack.append((continue_addr, end_while_block))
         yield None
         or_(rax, rax)
         jz_(end_while_block)
+        self.while_stack.append((continue_addr, end_while_block))
+        self.compiler.code_block_contexts.open_new(obj_manager, scope_name="while")
         yield None
+        self.compiler.code_block_contexts.compile_current_closure()
         set_symbol(continue_addr)
         yield None
         jmp_(begin_while_block)
         set_symbol(end_while_block)
+        self.compiler.code_block_contexts.close_current()
         self.while_stack.pop()
+        # self.compiler.code
         yield None
+
 
     def compile_break(self):
         if self.while_stack:
+            self.compiler.code_block_contexts.compile_on_break()
             jmp_(self.while_stack[-1][1])
 
     def compile_continue(self):
         if self.while_stack:
+            self.compiler.code_block_contexts.compile_on_continue()
             jmp_(self.while_stack[-1][0])
 
     def exit(self):

@@ -87,6 +87,29 @@ method direct del(var this as ref(mem_obj))
   #this.m = null;
 }
 
+
+method direct finish(var this as ref(mem_obj))
+{
+  # echo "finishing ...";
+  # echo u64(this.m);
+  if (this.m != null and this.m.ref_count > 0)
+  {
+    # echo this.m.ref_count;
+    dec this.m.ref_count;
+#    if (this.m.ref_count == 0)
+#    {
+#      #del this.m;
+#      #this.m.ref_count = -1;
+#      exec app.allocator.free(this.m.addr);
+#      this.m.addr = null;
+#      this.m.ref_count = -1;
+#
+#    }
+  }
+
+  #this.m = null;
+}
+
 method direct =(var this as ref(mem_obj), var a as ref(mem_obj))
 {
   if (this.m != null)

@@ -125,7 +125,7 @@ class ObjManager(ABC):
 class Compiler:
     def __init__(self, program : ast.Program, obj_manager_type: type, compile_driver_type: type, memory: int=0x100000):
         self.program = program
-        self.compile_driver = compile_driver_type()
+        self.compile_driver = compile_driver_type(self)
         self.obj_manager_type = obj_manager_type
         self.subroutines = Subroutines()
         self.templates = Templates()
@@ -378,19 +378,22 @@ class Compiler:
 
                 obj.returned = True
 
-                self.code_block_contexts.compile_current_mass_del()
+                self.code_block_contexts.compile_on_return()
 
                 obj.to_acc()
             else:
-                self.code_block_contexts.compile_current_mass_del()
+                self.code_block_contexts.compile_on_return()
 
             self.compile_driver.ret()
         else:
             if s.args:
                 obj = self.compile_expression(s.args[0], obj_manager)
+                self.code_block_contexts.compile_on_return()
                 obj.to_acc()
             else:
+                self.code_block_contexts.compile_on_return()
                 self.compile_driver.set_acc(0)
+
             self.compile_driver.exit()
 
     def compile_assigment(self, obj_manager, var_obj, obj):
@@ -400,19 +403,23 @@ class Compiler:
         else:
             var_obj.set(obj)
 
-    def compile_first_assigment(self, obj_manager, var_obj, obj):
-        if obj.created:
-            self.code_block_contexts.add_obj(var_obj)
-        self.compile_assigment(obj_manager, var_obj, obj)
+    def compile_first_assigment(self, obj_manager, var_obj, obj=None):
+        if not var_obj.assigned:
+            self.code_block_contexts.add_obj_to_finish(var_obj)
+            if obj is not None:
+                self.compile_assigment(obj_manager, var_obj, obj)
+            var_obj.assigned = True
 
     def compile_statement(self, s, obj_manager):
         self.update_meta(s)
 
         if ast.istype(s, ast.InitWithType):
+
             var = ast.MetaVar()
             type_expression = ast.MetaVar()
             init_expression = ast.MetaVar()
             ast.InitWithType(var, type_expression, init_expression) << s
+
             self.var_name_raise_not_available(var.val)
 
             init_obj, const = self.compile_init(init_expression.val, obj_manager)
@@ -431,7 +438,10 @@ class Compiler:
                 var_obj.init()
 
             if const is None and init_obj is not None:
+                self.update_meta(var.val)
                 self.compile_first_assigment(obj_manager, var_obj, init_obj)
+            else:
+                self.compile_first_assigment(obj_manager, var_obj)
 
             return
 
@@ -458,6 +468,7 @@ class Compiler:
                 if not (var_exp.val.name in obj_manager.objs or var_exp.val.calling_name in self.globals.globals_dict):
                     self.var_name_raise_not_available(var_exp.val, obj_manager=obj_manager)
                     var_obj = obj_manager.reserve_variable_by_name(obj.type, var_exp.val.name)
+                    self.update_meta(var_exp.val)
                     self.compile_first_assigment(obj_manager, var_obj, obj)
                     return
 
@@ -507,7 +518,7 @@ class Compiler:
             ast.IfElse(condition, if_statements, else_statements) << s
             obj = self.compile_expression(condition.val, obj_manager)
             obj.to_acc()
-            gen = self.compile_driver.ifelse_acc(else_=True if else_statements.val.args else False)
+            gen = self.compile_driver.ifelse_acc(obj_manager, else_=True if else_statements.val.args else False)
             next(gen)
             self.compile_statements(if_statements.val, obj_manager)
             next(gen)
@@ -520,7 +531,7 @@ class Compiler:
             condition = ast.MetaVar()
             statements = ast.MetaVar()
             ast.While(condition, statements) << s
-            gen = self.compile_driver.while_acc()
+            gen = self.compile_driver.while_acc(obj_manager)
             next(gen)
             obj = self.compile_expression(condition.val, obj_manager)
             obj.to_acc()
@@ -545,7 +556,7 @@ class Compiler:
             for_statement_list = ast.MetaVar()
             ast.For(init_statement, condition_expression, final_statement, for_statement_list) << s
             self.compile_statement(init_statement.val, obj_manager)
-            gen = self.compile_driver.while_acc()
+            gen = self.compile_driver.while_acc(obj_manager)
             next(gen)
             obj = self.compile_expression(condition_expression.val, obj_manager)
             obj.to_acc()
@@ -577,7 +588,7 @@ class Compiler:
             iterator_obj = self.compile_call_execution(True, obj_manager, iterator_method, iteration_obj)
             ref = self.compile_driver.build_ref(obj_manager, obj)
             next_method = self.get_subroutine_for_call(True, iteration_expression.val.meta, 'next', iterator_obj, ref)
-            gen = self.compile_driver.while_acc()
+            gen = self.compile_driver.while_acc(obj_manager)
             next(gen)
             bool_obj = self.compile_call_execution(True, obj_manager, next_method, iterator_obj, ref)
             bool_obj.to_acc()
@@ -853,8 +864,8 @@ class Compiler:
 
     def add_new_object_to_code_block_context(self, sub_name, method,  res, *objs):
         if sub_name == '()' and method and objs and res.type == objs[0]:
-            self.code_block_contexts.add_obj(res)
-            res.created = True
+            self.code_block_contexts.add_obj_to_del(res)
+            res.constructed = True
 
     def get_subroutine_by_types_with_inheritance(self, calling_meta, fun_key, var_types):
         sub = self.get_direct_subroutine_by_types(calling_meta, fun_key, var_types)

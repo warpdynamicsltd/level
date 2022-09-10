@@ -200,7 +200,9 @@ class TypeVar:
 class Obj:
     def __init__(self):
         self.returned = False
-        self.created = False
+        self.constructed = False
+        self.assigned = False
+
         self.name = None
 
     @abstractmethod

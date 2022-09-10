@@ -20,6 +20,7 @@ method direct ()(Allocator) as Allocator
 
 sub direct real_addr_and_size(var ptr as ref(byte), var addr as ref(ref(byte))) as int
 {
+  var r as ref(int);
   if ([ptr - 1] != 0xff)
   {
     val addr = ptr - 1;
@@ -28,7 +29,6 @@ sub direct real_addr_and_size(var ptr as ref(byte), var addr as ref(ref(byte))) 
   }
   else
   {
-    var r as ref(int);
     r = ptr - 9;
     val addr = r;
     # 8 additional bytes for size and one 0xff
@@ -38,6 +38,7 @@ sub direct real_addr_and_size(var ptr as ref(byte), var addr as ref(ref(byte))) 
 
 sub direct set_size_and_get_ptr(var addr as ref(byte), var size as int) as ref(byte)
 {
+  var r as ref(u64);
   if (size < 0xff)
   {
     addr[0] = size;
@@ -45,7 +46,6 @@ sub direct set_size_and_get_ptr(var addr as ref(byte), var size as int) as ref(b
   }
   else
   {
-    var r as ref(u64);
     r = addr;
     [r] = size;
     addr[8] = 0xff;
