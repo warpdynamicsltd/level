@@ -17,6 +17,10 @@ sub f()
   c = a;
   echo "referenced 4";
   echo a.m.ref_count;
+
+  del a;
+  del b;
+  del c;
 }
 
 entry{

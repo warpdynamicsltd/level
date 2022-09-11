@@ -408,7 +408,8 @@ class Compiler:
 
     def compile_first_assigment(self, obj_manager, var_obj, obj=None):
         if not var_obj.assigned:
-            self.code_block_contexts.add_obj_to_finish(var_obj)
+            if self.inheritance.is_1st_derived_from_2nd(hash(var_obj.type), hash(self.compile_driver.object_type)):
+                self.code_block_contexts.add_obj_to_finish(var_obj)
             if obj is not None:
                 self.compile_assigment(obj_manager, var_obj, obj)
             var_obj.assigned = True
@@ -870,9 +871,12 @@ class Compiler:
         return res
 
     def add_new_object_to_code_block_context(self, subroutine, method, res):
-        if 'new' in subroutine.modes:
+        if self.inheritance.is_1st_derived_from_2nd(hash(res.type), hash(self.compile_driver.object_type)) and 'new' in subroutine.modes:
+        #if self.inheritance.is_1st_derived_from_2nd(hash(res.type), hash(self.compile_driver.object_type)):
             self.code_block_contexts.add_obj_to_del(res)
-            res.constructed = True
+        # if 'new' in subroutine.modes:
+        #     self.code_block_contexts.add_obj_to_del(res)
+        #     res.constructed = True
 
     def get_subroutine_by_types_with_inheritance(self, calling_meta, fun_key, var_types):
         sub = self.get_direct_subroutine_by_types(calling_meta, fun_key, var_types)
