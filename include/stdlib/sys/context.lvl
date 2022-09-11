@@ -1,8 +1,6 @@
 import stdlib:collections:stack as *;
 import stdlib:sys:app as *;
 
-type object as rec();
-
 type mem as rec
 (
   var addr = null as ref(byte),
@@ -34,7 +32,7 @@ method direct del(var this as ref(mem))
   exec app.allocator.free(this);
 }
 
-type mem_obj as rec
+type mem_obj extends object with rec
 (
   var m = null as ref(mem)
 )
@@ -77,10 +75,10 @@ method direct del(var this as ref(mem_obj))
 
 method direct finish(var this as ref(mem_obj))
 {
-  if (this.m != null and this.m.ref_count > 0)
-  {
-    dec this.m.ref_count;
-  }
+#  if (this.m != null and this.m.ref_count > 0)
+#  {
+#    dec this.m.ref_count;
+#  }
 }
 
 method direct =(var this as ref(mem_obj), var a as ref(mem_obj))
@@ -150,7 +148,7 @@ global gc = GC() as GC;
 
 sub direct on_opening()
 {
-  exec gc.global_stack.length;
+  # exec gc.global_stack.length;
 }
 
 sub direct on_closing()

@@ -1,0 +1,89 @@
+import stdlib:sys:app as *;
+import stdlib:sys:context as *;
+import stdlib:collections:ascii as *;
+
+type vector(A) extends object with rec
+(
+  var data = mem_obj() as mem_obj,
+  var k as A,
+  var length = 0 as int
+)
+
+method =(var this as ref(vector(A)), var a as ref(vector(A)))
+{
+  this.data = a.data;
+  this.length = a.length;
+}
+
+method new ()(vector(A), var length as int) as vector(A)
+{
+  var this as vector(A);
+  var a as A;
+  if (length > 0)
+  {
+    this.data = mem_obj(sizeof(A)*length);
+  }
+  for (i = 0; i < length; inc i)
+  {
+    this[i] = a;
+  }
+  this.length = length;
+  return this;
+}
+
+method del(var this as ref(vector(A)))
+{
+  for (i = 0; i < this.length; inc i)
+  {
+    #echo '*';
+    del this[i];
+  }
+
+  del this.data;
+}
+
+method finish(var this as ref(vector(A)))
+{
+  del this.data;
+}
+
+method [](var this as ref(vector(A)), var i as int) as val ref(A)
+{
+  var data as ref(A);
+  data = this.data.m.addr;
+  return data + i;
+}
+
+sub main()
+{
+  var v = vector(str)(10) as vector(str);
+
+  var a = str("a") as str;
+  for (i = 0; i < 10; inc i)
+  {
+    a = a + str("a");
+    v[i] = a;
+  }
+
+  exec gc.collect();
+
+  for (i = 0; i < 10; inc i)
+  {
+     echo v[i];
+  }
+
+  a = str("test");
+  echo a;
+}
+
+entry
+{
+  exec main();
+  exec gc.collect();
+  echo gc.global_stack.length;
+
+  exec gc.clear();
+  echo "gc test";
+  echo app.allocator.used;
+  echo "end";
+}

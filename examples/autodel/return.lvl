@@ -1,4 +1,4 @@
-type Container as rec(
+type Container extends object with rec(
   var x = 0 as int,
 )
 

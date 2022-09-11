@@ -1,7 +1,7 @@
 import stdlib:sys:context as *;
 import stdlib:sys:app as *;
 
-type pair as rec(
+type pair extends object with rec(
   var x = 0 as int,
   var y = 0 as int
 )

@@ -8,6 +8,7 @@ sub main()
   echo app.allocator.used;
   echo s;
   echo app.allocator.used;
+  del s;
 }
 
 entry
