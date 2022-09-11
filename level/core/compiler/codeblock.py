@@ -41,6 +41,7 @@ class CodeBlockContexts:
     def compile_current_closure(self, i=-1):
         self.compile_current_mass_finish(i)
         self.compile_current_mass_del(i)
+        pass
 
     def compile_on_continue(self):
         i = len(self.code_block_contexts) - 1

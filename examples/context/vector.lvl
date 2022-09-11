@@ -1,7 +1,7 @@
 import stdlib:sys:context as *;
 import stdlib:sys:app as *;
 
-type vector(A) as rec
+type vector(A) extends object with rec
 (
   var data = mem_obj() as mem_obj,
   var k as A,
@@ -40,6 +40,7 @@ method init(var this as ref(vector(A)), var length as int)
   if (length > 0)
   {
     this.data = mem_obj(sizeof(A)*length);
+    this.length = length;
   }
   exec on_closing();
 }

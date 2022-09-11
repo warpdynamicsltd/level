@@ -80,7 +80,8 @@ translate_simple_types = {
     'float': 'Float',
     'bool': 'Bool',
     'byte': 'Byte',
-    'ref' : 'Ref'
+    'ref' : 'Ref',
+    'object': 'Object'
 }
 
 class BuiltinValue:

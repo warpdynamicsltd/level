@@ -10,7 +10,7 @@ sub len(var s as ref(byte)) as int
   return i;
 }
 
-type str as rec(
+type str extends object with rec(
   var data = mem_obj() as mem_obj,
   var length = 0 as int
 )
@@ -45,7 +45,7 @@ method del (var this as ref(str))
 method finish(var this as ref(str))
 {
   #echo "finishing string";
-  finish this.data;
+  del this.data;
 }
 
 method [](var this as ref(str), var i as int) as val ref(byte)

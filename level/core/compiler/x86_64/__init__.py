@@ -46,6 +46,8 @@ class CompileDriver_x86_64(CompileDriver):
         self.string_table = []
         self.float_table = []
 
+        self.object_type = Type(main_type=Rec, user_name="object")
+
 
     def set_args_addr(self):
         mov_(rdi, self.args_addr)
@@ -123,7 +125,10 @@ class CompileDriver_x86_64(CompileDriver):
 
     def get_simple_type_by_name(self, t):
         if t.name in translate_simple_types:
-            return Type(eval(translate_simple_types[t.name]))
+            if t.name == 'object':
+                return self.object_type
+            else:
+                return Type(eval(translate_simple_types[t.name]))
 
         return None
 
