@@ -50,6 +50,7 @@ class Globals:
 
     def init(self, obj_manager):
         for key in self.globals_dict:
+            # print(key)
             g = self.globals_dict[key]
             if g.init_expression is not None:
                 self.get_obj(key, obj_manager)
@@ -76,7 +77,8 @@ class Globals:
         if g.init_expression is not None and not g.initiated:
             # print(g.init_expression)
             init_obj = self.compiler.compile_expression(g.init_expression, obj_manager)
-            res.set(init_obj)
+            self.compiler.compile_assigment(obj_manager, res, init_obj)
+            #res.set(init_obj)
             g.initiated = True
 
         return res

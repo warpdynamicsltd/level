@@ -201,6 +201,7 @@ class SubroutineDef(Element):
     def __init__(self, name, var_list, statement_list, return_type_exp):
         self.method = False
         self.direct = False
+        self.modes = set()
         if not (istype(var_list, VarList) and istype(statement_list, StatementList) and istype(return_type_exp, TypeExpression)):
             raise GrammarTreeError()
         Element.__init__(self, name, var_list, statement_list, return_type_exp)
@@ -209,6 +210,8 @@ class RefSubroutineDef(Element):
     def __init__(self, name, var_list, statement_list, return_type_exp):
         self.method = False
         self.direct = False
+        self.new = False
+        self.modes = set()
         if not (istype(var_list, VarList) and istype(statement_list, StatementList) and istype(return_type_exp, TypeExpression)):
             raise GrammarTreeError()
         Element.__init__(self, name, var_list, statement_list, return_type_exp)

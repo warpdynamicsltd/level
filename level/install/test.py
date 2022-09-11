@@ -125,7 +125,7 @@ test_source([test_path(r"userstatements/assign.lvl")], b"+00000000:00000002\n+00
 
 test_source([test_path(r"del/stack.lvl")], b"00000001\n00000001\n+00000000:00000000\nend\n")
 test_source([test_path(r"del/vector.lvl")], b"+00000000:00000051\n+00000000:00000000\nend\n")
-#test_source([test_path(r"del/str.lvl")], b"+00000000:00000035\nHello, world!\n+00000000:00000035\n+00000000:00000000\nend\n")
+test_source([test_path(r"del/str.lvl")], b"+00000000:00000035\nHello, world!\n+00000000:00000035\n+00000000:00000000\nend\n")
 
 test_source([test_path(r"autodel/a1.lvl")], b"hello\nworld\nhello world\ncbcd\ncbcd\ngc test\n+00000000:00000000\nend\n")
 test_source([test_path(r"autodel/a2.lvl")], b"finished\nfinished\ndeleted\ndeleted\ndeleted\ngc test\n+00000000:00000000\nend\n")
@@ -136,7 +136,7 @@ test_source([test_path(r"autodel/continue.lvl")], b"deleting\n-00000000:00000001
 test_source([test_path(r"autodel/break.lvl")], b"deleting\n-00000000:00000001\ndeleting\n+00000000:00000001\ndeleting\n-00000000:00000002\ndeleting\n+00000000:00000002\ndeleting\n-00000000:00000003\ndeleting\n+00000000:00000003\ndeleting\n-00000000:00000004\ndeleting\n+00000000:00000004\ndeleting\n-00000000:00000005\ndeleting\n+00000000:00000005\ndeleting\n-00000000:00000064\ndeleting\n-00000000:00000006\nfinish\n-00000000:00000064\ndeleting\n+00000000:00000001\n")
 test_source([test_path(r"autodel/return.lvl")], b"deleting\n-00000000:00000001\ndeleting\n+00000000:00000001\ndeleting\n-00000000:00000002\ndeleting\n+00000000:00000002\ndeleting\n-00000000:00000003\ndeleting\n+00000000:00000003\ndeleting\n-00000000:00000004\ndeleting\n+00000000:00000004\ndeleting\n-00000000:00000005\ndeleting\n+00000000:00000005\ndeleting\n-00000000:00000064\ndeleting\n-00000000:00000006\nfinish\n-00000000:00000064\ndeleting\n+00000000:00000001\n")
 
-test_source([test_path(r"context/openclose.lvl")], b"object without reference\n+00000000:00000000\nreferenced 1\n+00000000:00000001\nreferenced 3\n+00000000:00000003\ngc test\n+00000000:00000000\nend\n")
+test_source([test_path(r"context/openclose.lvl")], b"referenced 1\n+00000000:00000001\nreferenced 2\n+00000000:00000002\nreferenced 4\n+00000000:00000004\ngc test\n+00000000:00000000\nend\n")
 test_source([test_path(r"context/vector.lvl")], b"global stack length\n+00000000:00000000\ngc test\n+00000000:00000000\nend\n")
 
 # ERRORS

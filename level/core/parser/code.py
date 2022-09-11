@@ -1273,6 +1273,8 @@ class Parser:
                 if 'direct' in modes:
                     def_.direct = True
 
+                def_.modes = set(modes)
+
                 stream = stream[code_bracket_index + 1:]
                 subroutines.append(def_)
                 continue

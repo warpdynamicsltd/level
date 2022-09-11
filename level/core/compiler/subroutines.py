@@ -18,7 +18,8 @@ class Subroutine:
     def __init__(self,
                  compiler,
                  name,
-                 direct,
+                 #direct,
+                 modes,
                  var_types,
                  first_default,
                  var_inits,
@@ -30,7 +31,8 @@ class Subroutine:
                  meta):
         self.compiler = compiler
         self.name = name
-        self.direct = direct
+        #self.direct = direct
+        self.modes = modes
         self.address = address
         self.var_types = var_types
         self.first_default = first_default
@@ -59,7 +61,8 @@ class Subroutine:
         return Subroutine(
                         compiler=self.compiler,
                         name=self.name,
-                        direct=self.direct,
+                        #direct=self.direct,
+                        modes=self.modes,
                         var_types=var_types,
                         first_default=self.first_default,
                         var_inits=self.var_inits,
@@ -184,7 +187,8 @@ class Template:
     def __init__(self,
                  compiler,
                  name,
-                 direct,
+                 #direct,
+                 modes,
                  var_types,
                  first_default,
                  var_inits,
@@ -195,7 +199,8 @@ class Template:
                  meta):
         self.compiler = compiler
         self.name = name
-        self.direct = direct
+        #self.direct = direct
+        self.modes = modes
         self.var_types = var_types
         self.first_default = first_default
         self.var_inits = var_inits
@@ -249,7 +254,8 @@ class Template:
         res = Subroutine(
                         compiler=self.compiler,
                         name=self.name,
-                        direct=self.direct,
+                        #direct=self.direct,
+                        modes=self.modes,
                         # when there are default parameters in the final positions of arguments they might not take part in arguments query
                         # but they can never contain type variable
                         # thus we can easily add the reminder of var types to var_types

@@ -16,7 +16,7 @@ method =(var this as ref(vector(A)), var a as ref(vector(A)))
   exec on_closing();
 }
 
-method ()(vector(A), var length as int) as vector(A)
+method new ()(vector(A), var length as int) as vector(A)
 {
   exec on_opening();
   var this as vector(A);

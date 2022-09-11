@@ -44,8 +44,9 @@ type mem_obj_shadow as rec
   var m = null as ref(mem)
 )
 
-method direct ()(mem_obj, var size = 0 as int) as mem_obj
+method new ()(mem_obj, var size = 0 as int) as mem_obj
 {
+  #echo "mem_obj init";
   var res as mem_obj;
   if (size == 0)
   {
@@ -54,7 +55,7 @@ method direct ()(mem_obj, var size = 0 as int) as mem_obj
   }
 
   res.m = mem(size);
-  res.m.ref_count = 0;
+  res.m.ref_count = 1;
 
 
   return res;
@@ -67,7 +68,7 @@ method direct ptr(var this as ref(mem_obj), A) as val ref(A)
 
 method direct del(var this as ref(mem_obj))
 {
-  # echo "deleting ...";
+  #echo "deleting ...";
   # echo u64(this.m);
   if (this.m != null and this.m.ref_count > 0)
   {
@@ -90,7 +91,7 @@ method direct del(var this as ref(mem_obj))
 
 method direct finish(var this as ref(mem_obj))
 {
-  # echo "finishing ...";
+  #echo "finishing ...";
   # echo u64(this.m);
   if (this.m != null and this.m.ref_count > 0)
   {
@@ -134,6 +135,7 @@ type GC as rec
 
 method direct ()(GC) as GC
 {
+  # echo "gc init";
   var res as GC;
   res.global_stack = Stack(ref(mem))();
   # res.n_var_stack = Stack(int)();
@@ -176,7 +178,7 @@ global gc = GC() as GC;
 
 sub direct on_opening()
 {
-  #exec gc.n_var_stack.push(0);
+  exec gc.global_stack.length;
 }
 
 sub direct on_closing()

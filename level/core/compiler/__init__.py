@@ -130,6 +130,7 @@ class Compiler:
         self.subroutines = Subroutines()
         self.templates = Templates()
         self.inheritance = Inheritance()
+        self.code_block_contexts = CodeBlockContexts(self)
         self.calling_keys = set()
         self.type_defs = TypeDefs()
         self.globals = Globals(self)
@@ -143,7 +144,7 @@ class Compiler:
         self.subroutine_compiled_addresses = {}
         self.type_defs_compiled = {}
 
-        self.code_block_contexts = CodeBlockContexts(self)
+
 
     def update_meta(self, exp):
         if exp is not None and exp.meta is not None:
@@ -171,9 +172,8 @@ class Compiler:
         object_manager = self.obj_manager_type(self, memory=self.memory)
 
         object_manager.set_main_frame()
-        self.globals.init(object_manager)
-
         self.code_block_contexts.open_new(object_manager)
+        self.globals.init(object_manager)
 
         self.compile_statements(statements.val, obj_manager=object_manager)
         self.code_block_contexts.close_current()
@@ -302,7 +302,8 @@ class Compiler:
             subroutine = self.subroutines.add(key=fun_name, sub=Subroutine(
                                                                 compiler=self,
                                                                 name=name.val,
-                                                                direct=d.direct,
+                                                                #direct=d.direct,
+                                                                modes=d.modes,
                                                                 var_types=var_types,
                                                                 first_default=first_default,
                                                                 var_inits=var_inits,
@@ -321,7 +322,8 @@ class Compiler:
             template = self.templates.add(key=fun_name, template=Template(
                                                                     compiler=self,
                                                                     name=name.val,
-                                                                    direct=d.direct,
+                                                                    #direct=d.direct,
+                                                                    modes=d.modes,
                                                                     var_types=var_types,
                                                                     first_default=first_default,
                                                                     var_inits=var_inits,
@@ -376,6 +378,7 @@ class Compiler:
                 if obj.type != subroutine.return_type:
                     obj = subroutine.return_type(obj)
 
+                #if 'new' in subroutine.modes:
                 obj.returned = True
 
                 self.code_block_contexts.compile_on_return()
@@ -859,11 +862,11 @@ class Compiler:
                 raise CompilerNotLocatedException("ref type expected")
             res = obj.get_obj()
 
-        self.add_new_object_to_code_block_context(subroutine.name, method, res, *objs)
+        self.add_new_object_to_code_block_context(subroutine, method, res)
         return res
 
-    def add_new_object_to_code_block_context(self, sub_name, method,  res, *objs):
-        if sub_name == '()' and method and objs and res.type == objs[0]:
+    def add_new_object_to_code_block_context(self, subroutine, method, res):
+        if 'new' in subroutine.modes:
             self.code_block_contexts.add_obj_to_del(res)
             res.constructed = True
 
