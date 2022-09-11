@@ -165,7 +165,7 @@ sub prepare_vector(var r as ref(byte)) as stdlib:collections:vector:Vector(byte)
   return res;
 }
 
-method ()(str, var a as ref(byte)) as str
+method new ()(str, var a as ref(byte)) as str
 {
   v = prepare_vector(a);
   res = str(ref v);
@@ -173,7 +173,7 @@ method ()(str, var a as ref(byte)) as str
   return res;
 }
 
-method +(var a as ref(str), var b as ref(str)) as str
+method new +(var a as ref(str), var b as ref(str)) as str
 {
   var res as str;
   exec res.init(a.length() + b.length());

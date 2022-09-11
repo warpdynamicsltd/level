@@ -7,15 +7,15 @@ sub f()
   b = mem_obj();
   c = mem_obj();
 
-  echo "object without reference";
+  echo "referenced 1";
   echo mem_obj(10).m.ref_count;
 
   a = mem_obj(10);
-  echo "referenced 1";
+  echo "referenced 2";
   echo a.m.ref_count;
   b = a;
   c = a;
-  echo "referenced 3";
+  echo "referenced 4";
   echo a.m.ref_count;
 }
 

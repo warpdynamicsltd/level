@@ -6,7 +6,7 @@ type pair as rec(
   var y = 0 as int
 )
 
-method ()(pair, var x as int, var y as int) as pair
+method new ()(pair, var x as int, var y as int) as pair
 {
   var res as pair;
   res.x = x;

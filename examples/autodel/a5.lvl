@@ -2,7 +2,7 @@ type Container as rec(
   var x = 0 as int,
 )
 
-method ()(Container, var x as int) as Container
+method new ()(Container, var x as int) as Container
 {
   var this as Container;
   this.x = x;

@@ -21,7 +21,7 @@ method =(var this as ref(str), var a as ref(str))
   this.length = a.length;
 }
 
-method ()(str, var s as ref(byte)) as str
+method new ()(str, var s as ref(byte)) as str
 {
   var res as str;
   n = len(s);
@@ -38,6 +38,7 @@ method ()(str, var s as ref(byte)) as str
 
 method del (var this as ref(str))
 {
+  #echo "deleting string";
   del this.data;
 }
 
@@ -53,7 +54,7 @@ method [](var this as ref(str), var i as int) as val ref(byte)
   return data + i;
 }
 
-method +(var a as ref(str), var b as ref(str)) as str
+method new +(var a as ref(str), var b as ref(str)) as str
 {
   var res as str;
   res.data = mem_obj(a.length + b.length + 1);
