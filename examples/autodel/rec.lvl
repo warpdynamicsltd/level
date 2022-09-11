@@ -1,0 +1,46 @@
+import stdlib:sys:context as *;
+import stdlib:sys:app as *;
+import stdlib:collections:ascii as *;
+
+sub f(var p as pair) as str
+{
+  p.a = str("lala1");
+  echo p.a;
+  echo p.b;
+  return p.a;
+}
+
+type pair as
+rec(
+  var a as str,
+  var b as str
+)
+
+sub main()
+{
+  #echo f(str("hallo ")) + str("asas");
+
+  var p as pair;
+  # var a as str;
+  p.a = str("lala2");
+  if (true)
+  {
+    p.b = str("lala3");
+  }
+  else
+  {
+    p.b = str("lalala4");
+  }
+  #a = str("lalaa");
+  exec f(p);
+}
+
+entry{
+    exec main();
+    exec gc.collect();
+    echo gc.global_stack.length;
+    exec gc.clear();
+    echo "gc test";
+    echo app.allocator.used;
+    echo "end";
+}
