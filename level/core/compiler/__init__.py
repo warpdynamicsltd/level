@@ -476,7 +476,11 @@ class Compiler:
                     return
 
             var_obj = self.compile_expression(var_exp.val, obj_manager)
-            self.compile_assigment(obj_manager, var_obj, obj)
+            #self.compile_assigment(obj_manager, var_obj, obj)
+            if var_obj.assigned:
+                self.compile_assigment(obj_manager, var_obj, obj)
+            else:
+                self.compile_first_assigment(obj_manager, var_obj, obj)
             return
 
         if ast.istype(s, ast.Echo):

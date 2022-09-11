@@ -44,6 +44,7 @@ method del (var this as ref(str))
 
 method finish(var this as ref(str))
 {
+  #echo "finishing string";
   finish this.data;
 }
 
