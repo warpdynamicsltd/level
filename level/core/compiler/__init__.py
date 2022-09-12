@@ -401,7 +401,8 @@ class Compiler:
 
     def compile_assigment(self, obj_manager, var_obj, obj):
         subroutine = self.get_subroutine_for_call(True, self.meta, '=', var_obj, obj)
-        if subroutine is not None:
+        # we don't want to overwrite real references assignment
+        if subroutine is not None and var_obj.type.main_type.__name__ != 'Ref':
             return self.compile_call_execution(True, obj_manager, subroutine, var_obj, obj)
         else:
             var_obj.set(obj)
@@ -618,6 +619,9 @@ class Compiler:
             if sub is None:
                 sub = self.get_subroutine_for_call(False, s.meta, s.calling_name, *objs)
                 if sub is None:
+                    if s.name == 'del':
+                        # we make a del special operator which should be not compiled if not found
+                        return
                     raise CompilerException(f"can't resolve subroutine name '{s.name}' in {s.meta}")
                 self.compile_call_execution(False, obj_manager, sub, *objs)
             else:
@@ -728,6 +732,11 @@ class Compiler:
             obj = obj_manager.reserve_variable(T, exp.name)
             return self.post_process_obj(obj)
 
+        # this is special patch for templates allowing expressions like (object < A) etc.
+        if ast.istype(exp, ast.Type):
+            if type(exp.name) is Type:
+                return exp.name
+
         if ast.istype(exp, ast.Var):
             if exp.calling_name in self.globals.globals_dict:
                 res = self.globals.get_obj(exp.calling_name, obj_manager)
@@ -796,12 +805,32 @@ class Compiler:
         if subroutine is not None:
             return self.compile_call_execution(True, obj_manager, subroutine, obj1, obj2)
 
-        if op_T is ast.Lt and type(obj1) is Type and type(obj2) is Type:
-            return self.compile_driver.get_bool(self.inheritance.is_1st_derived_from_2nd(hash(obj1), hash(obj2)), obj_manager)
+        if type(obj1) is Type and type(obj2) is Type:
+            return self.compile_types_binary(obj_manager, op_T, obj1, obj2)
 
         res = self.compile_driver.operator(op_T, obj1, obj2)
         self.compile_driver.logic_operator_compile_end(jump_address, res)
         return res
+
+    def compile_types_binary(self, obj_manager, op_T, obj1, obj2):
+        if op_T is ast.Lt:
+            return self.compile_driver.get_bool(self.inheritance.is_1st_derived_from_2nd(hash(obj2), hash(obj1)), obj_manager)
+
+        if op_T is ast.Gt:
+            return self.compile_driver.get_bool(self.inheritance.is_1st_derived_from_2nd(hash(obj1), hash(obj2)), obj_manager)
+
+        if op_T is ast.Le:
+            return self.compile_driver.get_bool(self.inheritance.is_1st_derived_from_2nd(hash(obj2), hash(obj1)) or hash(obj1) == hash(obj2),
+                                                obj_manager)
+
+        if op_T is ast.Ge:
+            return self.compile_driver.get_bool(self.inheritance.is_1st_derived_from_2nd(hash(obj1), hash(obj2)) or hash(obj1) == hash(obj2),
+                                                obj_manager)
+
+        if op_T is ast.Eq:
+            return self.compile_driver.get_bool(hash(obj1) == hash(obj2), obj_manager)
+
+        raise CompilerException(f"not supported operator between types in {self.meta}")
 
     def compile_unary(self, op_exp, exp, obj_manager):
         op_T = type(op_exp)
@@ -872,11 +901,7 @@ class Compiler:
 
     def add_new_object_to_code_block_context(self, subroutine, method, res):
         if self.inheritance.is_1st_derived_from_2nd(hash(res.type), hash(self.compile_driver.object_type)) and 'new' in subroutine.modes:
-        #if self.inheritance.is_1st_derived_from_2nd(hash(res.type), hash(self.compile_driver.object_type)):
             self.code_block_contexts.add_obj_to_del(res)
-        # if 'new' in subroutine.modes:
-        #     self.code_block_contexts.add_obj_to_del(res)
-        #     res.constructed = True
 
     def get_subroutine_by_types_with_inheritance(self, calling_meta, fun_key, var_types):
         sub = self.get_direct_subroutine_by_types(calling_meta, fun_key, var_types)

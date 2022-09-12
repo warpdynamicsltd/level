@@ -4,7 +4,7 @@ type DataBlock(T:main) as rec(
   var data as ref(T:main)
 )
 
-method direct ()(DataBlock(T:main), var size as int, var allocator as ref(T:allocator)) as ref(DataBlock(T:main))
+method ()(DataBlock(T:main), var size as int, var allocator as ref(T:allocator)) as ref(DataBlock(T:main))
 {
   var res as ref(DataBlock(T:main));
   res = allocator.allocate(sizeof(DataBlock(T:main)));
@@ -22,7 +22,7 @@ type Stack(T:main, T:allocator) as rec(
   var length as int,
   var allocator as ref(T:allocator));
 
-method direct ()(Stack(T:main, T:allocator), var allocator as ref(T:allocator), var buff_length as int) as Stack(T:main, T:allocator)
+method ()(Stack(T:main, T:allocator), var allocator as ref(T:allocator), var buff_length as int) as Stack(T:main, T:allocator)
 {
   var this as Stack(T:main, T:allocator);
   this.allocator = allocator;
@@ -36,7 +36,7 @@ method direct ()(Stack(T:main, T:allocator), var allocator as ref(T:allocator), 
   return this;
 }
 
-method direct push(var this as ref(Stack(T:main, T:allocator)), var v as T:main)
+method push(var this as ref(Stack(T:main, T:allocator)), var v as T:main)
 {
   if (this.index < this.buff_length)
   {
@@ -64,7 +64,7 @@ method direct push(var this as ref(Stack(T:main, T:allocator)), var v as T:main)
   }
 }
 
-method direct pop(var this as ref(Stack(T:main, T:allocator)), var out as ref(T:main)) as bool
+method pop(var this as ref(Stack(T:main, T:allocator)), var out as ref(T:main)) as bool
 {
   dec this.index;
 
@@ -92,12 +92,12 @@ method direct pop(var this as ref(Stack(T:main, T:allocator)), var out as ref(T:
   return false;
 }
 
-method direct length(var this as ref(Stack(T:main, T:allocator))) as int
+method length(var this as ref(Stack(T:main, T:allocator))) as int
 {
   return this.length;
 }
 
-method direct iterator(var this as ref(Stack(T:main, T:allocator))) as StackIterator(T:main)
+method iterator(var this as ref(Stack(T:main, T:allocator))) as StackIterator(T:main)
 {
   var res as StackIterator(T:main);
   res.index = 0;

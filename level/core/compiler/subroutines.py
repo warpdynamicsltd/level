@@ -18,7 +18,6 @@ class Subroutine:
     def __init__(self,
                  compiler,
                  name,
-                 #direct,
                  modes,
                  var_types,
                  first_default,
@@ -31,7 +30,6 @@ class Subroutine:
                  meta):
         self.compiler = compiler
         self.name = name
-        #self.direct = direct
         self.modes = modes
         self.address = address
         self.var_types = var_types
@@ -61,7 +59,6 @@ class Subroutine:
         return Subroutine(
                         compiler=self.compiler,
                         name=self.name,
-                        #direct=self.direct,
                         modes=self.modes,
                         var_types=var_types,
                         first_default=self.first_default,
@@ -93,25 +90,8 @@ class Subroutine:
 
         self.compiler.code_block_contexts.open_new(obj_manager)
 
-        # this is suboptimal construction, it compiles unnecessary jump
-        # solution: do pre-compilation in which it will be revealed that mem obj is used in subroutine body
-        # TO FIX (the easiest way to add pre-compilator is to put compilation on hold but still compile statements for some
-        # if not self.direct:
-        #     on_opening_addr, no_action_addr = self.compiler.compile_driver.compile_on_opening(self.compiler, obj_manager, self)
-
         for s in self.statement_list.args:
             self.compiler.compile_statement(s, obj_manager)
-
-        # if not self.direct:
-        #     if not self.gc_active:
-        #         self.compiler.compile_driver.compile_on_opening_make_inactive(on_opening_addr, no_action_addr)
-        #
-        #     self.compile_on_closing(obj_manager)
-
-
-        # because last statement from each subroutine is always ast.Return() this line is no longer needed
-        # but it is here as a reminder
-        # self.compiler.compile_driver.ret()
 
         self.compiler.code_block_contexts.close_current()
         self.compiler.subroutines_stack.pop()
@@ -119,16 +99,6 @@ class Subroutine:
         Subroutine.n_compiled += 1
         self.compiled = True
         self.compiler.subroutine_compiled_addresses[self.name, h] = self.address
-
-    def compile_on_opening(self, obj_manager):
-        if self.name not in {"stdlib:sys:context:on_opening", "stdlib:sys:context:on_closing"}:
-            self.compiler.call_special_subroutine(obj_manager, False, "stdlib:sys:context:on_opening")
-        pass
-
-    def compile_on_closing(self, obj_manager):
-        if self.gc_active and self.name not in {"stdlib:sys:context:on_opening", "stdlib:sys:context:on_closing"}:
-            self.compiler.call_special_subroutine(obj_manager, False, "stdlib:sys:context:on_closing")
-        pass
 
     def match(self, var_types):
         if len(var_types) < len(self.var_types[:self.first_default]):
@@ -187,7 +157,6 @@ class Template:
     def __init__(self,
                  compiler,
                  name,
-                 #direct,
                  modes,
                  var_types,
                  first_default,
@@ -254,7 +223,6 @@ class Template:
         res = Subroutine(
                         compiler=self.compiler,
                         name=self.name,
-                        #direct=self.direct,
                         modes=self.modes,
                         # when there are default parameters in the final positions of arguments they might not take part in arguments query
                         # but they can never contain type variable

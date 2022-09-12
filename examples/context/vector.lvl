@@ -1,54 +1,9 @@
 import stdlib:sys:context as *;
 import stdlib:sys:app as *;
-
-type vector(A) extends object with rec
-(
-  var data = mem_obj() as mem_obj,
-  var k as A,
-  var length = 0 as int
-)
-
-method =(var this as ref(vector(A)), var a as ref(vector(A)))
-{
-  exec on_opening();
-  this.data = a.data;
-  this.length = a.length;
-  exec on_closing();
-}
-
-method new ()(vector(A), var length as int) as vector(A)
-{
-  exec on_opening();
-  var this as vector(A);
-  exec this.init(length);
-  del this;
-  exec on_closing();
-  return this;
-}
-
-method del(var this as ref(vector(A)))
-{
-  exec on_opening();
-  del this.data;
-  exec on_closing();
-}
-
-
-method init(var this as ref(vector(A)), var length as int)
-{
-  exec on_opening();
-  if (length > 0)
-  {
-    this.data = mem_obj(sizeof(A)*length);
-    this.length = length;
-  }
-  exec on_closing();
-}
+import object:collections:vector as *;
 
 sub f()
 {
-  exec on_opening();
-
   a = vector(int)(1);
   b = vector(int)(1);
   b = vector(int)(16);
@@ -56,8 +11,6 @@ sub f()
   b = a;
   exec vector(int)(5);
   a = vector(int)(10);
-
-  exec on_closing();
 }
 
 entry{
