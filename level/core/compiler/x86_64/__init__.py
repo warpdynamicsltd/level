@@ -177,17 +177,6 @@ class CompileDriver_x86_64(CompileDriver):
             res = obj_manager.reserve_variable(Type(I64), obj.type.size())
         return res
 
-    def compile_on_opening(self, compiler, obj_manager, subroutine):
-        on_opening_addr = SymBits()
-        jmp_(on_opening_addr)
-        set_symbol(on_opening_addr)
-        subroutine.compile_on_opening(obj_manager)
-        no_action_addr = address()
-        return on_opening_addr, no_action_addr
-
-    def compile_on_opening_make_inactive(self, on_opening_addr, no_action_addr):
-        set_symbol(on_opening_addr, no_action_addr)
-
     def unary_operator(self, op_T, obj, obj_manager):
         if op_T is ast.Plus:
             return +obj
@@ -658,9 +647,6 @@ class StandardObjManager(ObjManager):
         return res
 
     def reserve_variable(self, T, value=None, for_child_manager=False, copy=False, source_obj=None):
-        # if obj is not None:
-        #     T = obj.type
-
         res = T.main_type(self, T=T, value=value, for_child_manager=for_child_manager, copy=copy)
 
         if source_obj is not None:

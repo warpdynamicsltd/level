@@ -2,7 +2,7 @@ import stdlib:sys:calls;
 
 type Allocator as int;
 
-method direct allocate(var this as ref(Allocator), var size as int) as ref(byte)
+method allocate(var this as ref(Allocator), var size as int) as ref(byte)
 {
   if (size <= 0)
   {
