@@ -75,10 +75,8 @@ class Globals:
         ref_obj.bind(obj)
         res = ref_obj.get_obj()
         if g.init_expression is not None and not g.initiated:
-            # print(g.init_expression)
             init_obj = self.compiler.compile_expression(g.init_expression, obj_manager)
             self.compiler.compile_assigment(obj_manager, res, init_obj)
-            #res.set(init_obj)
             g.initiated = True
 
         return res

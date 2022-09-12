@@ -4,7 +4,6 @@ import stdlib:sys:context as *;
 
 sub main()
 {
-  exec on_opening();
   echo str("hello");
   echo str("world");
   a = str("hello");
@@ -15,8 +14,6 @@ sub main()
   s[0] = s[2];
   echo s;
   echo s;
-
-  exec on_closing();
 }
 
 entry

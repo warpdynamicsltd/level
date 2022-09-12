@@ -47,9 +47,9 @@ class TypeDef:
             parent_types.append(t)
 
         type_def = TypeVar.substitute_ast_element(type_def, substitute)
-        T = self.compiler.compile_type_expression(type_def, from_subroutine_header=from_subroutine_header,
-                                                  with_type_var=with_type_var)
-
+        T = self.compiler.compile_type_expression(type_def, from_subroutine_header=from_subroutine_header, with_type_var=with_type_var)
+        T.arg_types = types
+        T.reset_hash()
 
         for t in reversed(parent_types):
             T = t + T

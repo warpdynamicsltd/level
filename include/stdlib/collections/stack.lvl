@@ -4,7 +4,7 @@ import stdlib:sys:app;
 
 type Stack(T) extends stdlib:collections:sysstack:Stack(T, stdlib:sys:bin_allocator:Allocator) with rec();
 
-method direct ()(Stack(T)) as ref(Stack(T))
+method ()(Stack(T)) as ref(Stack(T))
 {
   var this as ref(Stack(T));
   this = stdlib:sys:app:app.allocator.allocate(sizeof(Stack(T)));
@@ -19,7 +19,7 @@ method direct ()(Stack(T)) as ref(Stack(T))
   return this;
 }
 
-method direct top(var this as ref(Stack(T))) as val ref(T)
+method top(var this as ref(Stack(T))) as val ref(T)
 {
   if (this.index > 0)
   {
@@ -28,7 +28,7 @@ method direct top(var this as ref(Stack(T))) as val ref(T)
   return null;
 }
 
-method direct del(var this as ref(Stack(T)))
+method del(var this as ref(Stack(T)))
 {
   # echo "del stack";
   var data_block as ref(stdlib:collections:sysstack:DataBlock(T));

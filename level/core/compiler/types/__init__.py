@@ -5,10 +5,11 @@ from abc import ABC, abstractmethod
 import level.core.ast as ast
 
 class Type:
-    def __init__(self, main_type, length=1, sub_types=[], sub_names=[], meta_data=None, user_name=None):
+    def __init__(self, main_type, length=1, sub_types=[], sub_names=[], meta_data=None, user_name=None, arg_types=[]):
         self.main_type = main_type
         self.length = length
         self.sub_types = sub_types
+        self.arg_types = arg_types
         self.sub_names = sub_names
         self.meta_data = meta_data
         self.user_name = user_name
@@ -42,7 +43,12 @@ class Type:
 
     def __hash__(self):
         if self._hash is None:
-            self._hash = hash((hash(self.main_type.__name__), self.length, tuple(hash(t) for t in self.sub_types), tuple(hash(name) for name in self.sub_names), hash(self.user_name)))
+            self._hash = hash((hash(self.main_type.__name__),
+                               self.length,
+                               tuple(hash(t) for t in self.sub_types),
+                               tuple(hash(t) for t in self.arg_types),
+                               tuple(hash(name) for name in self.sub_names),
+                               hash(self.user_name)))
         return self._hash
 
     def __call__(self, obj):
@@ -81,7 +87,12 @@ class Type:
                 sub_types.append(other.sub_types[i])
                 meta_data.append(other.meta_data[i])
 
-        return Type(main_type=self.main_type, length=1, sub_types=sub_types, sub_names=sub_names, meta_data=meta_data)
+        return Type(main_type=self.main_type,
+                    length=1,
+                    sub_types=sub_types,
+                    sub_names=sub_names,
+                    meta_data=meta_data,
+                    arg_types=self.arg_types + other.arg_types)
 
     @classmethod
     def _match(cls, a, b, substitution):
@@ -104,7 +115,13 @@ class Type:
         if len(a.sub_types) != len(b.sub_types):
             return False
 
-        return all([Type._match(T, b.sub_types[i], substitution) for i, T in enumerate(a.sub_types)])
+        if len(a.arg_types) != len(b.arg_types):
+            return False
+
+        res_sub_types = all([Type._match(T, b.sub_types[i], substitution) for i, T in enumerate(a.sub_types)])
+        res_arg_types = all([Type._match(T, b.arg_types[i], substitution) for i, T in enumerate(a.arg_types)])
+
+        return res_sub_types and res_arg_types
 
     @classmethod
     def validate(cls, substitution):

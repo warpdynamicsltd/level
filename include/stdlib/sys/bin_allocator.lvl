@@ -8,7 +8,7 @@ type Allocator as rec(
   var used as int
 )
 
-method direct ()(Allocator) as Allocator
+method ()(Allocator) as Allocator
 {
   var res as Allocator;
   for (i = 0; i < 0x1000; inc i)
@@ -18,7 +18,7 @@ method direct ()(Allocator) as Allocator
   return res;
 }
 
-sub direct real_addr_and_size(var ptr as ref(byte), var addr as ref(ref(byte))) as int
+sub real_addr_and_size(var ptr as ref(byte), var addr as ref(ref(byte))) as int
 {
   var r as ref(int);
   if ([ptr - 1] != 0xff)
@@ -36,7 +36,7 @@ sub direct real_addr_and_size(var ptr as ref(byte), var addr as ref(ref(byte))) 
   }
 }
 
-sub direct set_size_and_get_ptr(var addr as ref(byte), var size as int) as ref(byte)
+sub set_size_and_get_ptr(var addr as ref(byte), var size as int) as ref(byte)
 {
   var r as ref(u64);
   if (size < 0xff)
@@ -53,7 +53,7 @@ sub direct set_size_and_get_ptr(var addr as ref(byte), var size as int) as ref(b
   }
 }
 
-sub direct get_real_size(var size as int) as int
+sub get_real_size(var size as int) as int
 {
   if (size < 0xff)
   {
@@ -65,7 +65,7 @@ sub direct get_real_size(var size as int) as int
   }
 }
 
-sub direct get_size(var real_size as int) as int
+sub get_size(var real_size as int) as int
 {
   if (real_size <= 0xff)
   {
@@ -78,7 +78,7 @@ sub direct get_size(var real_size as int) as int
 }
 
 
-sub direct get_size(var ptr as ref(byte)) as int
+sub get_size(var ptr as ref(byte)) as int
 {
   if ([ptr - 1] != 0xff)
   {
@@ -92,7 +92,7 @@ sub direct get_size(var ptr as ref(byte)) as int
   }
 }
 
-method direct allocate(var this as ref(Allocator), var size as int) as ref(byte)
+method allocate(var this as ref(Allocator), var size as int) as ref(byte)
 {
   if (size <= 0)
   {
@@ -136,7 +136,7 @@ method direct allocate(var this as ref(Allocator), var size as int) as ref(byte)
   }
 }
 
-method direct free(var this as ref(Allocator), var ptr as ref(A)) as bool
+method free(var this as ref(Allocator), var ptr as ref(A)) as bool
 {
   var addr as ref(byte);
   real_size = real_addr_and_size((ref(byte))(ptr), ref addr);

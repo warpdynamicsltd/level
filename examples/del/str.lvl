@@ -14,8 +14,6 @@ sub main()
 entry
 {
   exec main();
-
-  # del s;
   echo app.allocator.used;
   echo "end";
 }
