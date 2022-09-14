@@ -1,0 +1,203 @@
+import stdlib:sys:context as *;
+import stdlib:obj:collections:vector as *;
+
+type DataBlock(T:main) extends object with rec(
+  var prev_addr = mem_obj() as mem_obj(),
+  var next_addr = mem_obj() as mem_obj(),
+  var data = vector(T:main)(0) as vector(T:main)
+)
+
+method new ()(DataBlock(T:main), var size as int) as DataBlock(T:main)
+{
+  var res as DataBlock(T:main);
+  res.data = vector(T:main)(size);
+  res.prev_addr = mem_obj();
+  res.next_addr = mem_obj();
+  return res;
+}
+
+method del (var this as ref(DataBlock(T:main)))
+{
+  #del this.prev_addr.ptr(DataBlock(T:main));
+  del this.data;
+#  if (this.next_addr.m != null)
+#  {
+#    del this.next_addr.ptr(DataBlock(T:main));
+#  }
+
+#  if (this.prev_addr.m != null)
+#  {
+#    del this.prev_addr.ptr(DataBlock(T:main));
+#  }
+
+  del this.prev_addr;
+  del this.next_addr;
+
+}
+
+method finish (var this as ref(DataBlock(T:main)))
+{
+  del this;
+}
+
+type Stack(T:main) extends object with rec(
+  var index as int,
+  var buff_length as int,
+  var start = mem_obj() as mem_obj,
+  var data_block = mem_obj() as mem_obj,
+  var length as int);
+
+method new ()(Stack(T:main), var buff_length = 256 as int) as Stack(T:main)
+{
+  var this as Stack(T:main);
+  this.data_block = mem_obj(sizeof(DataBlock(T:main)));
+  this.data_block.ptr(DataBlock(T:main)) = DataBlock(T:main)(buff_length);
+  this.buff_length = buff_length;
+  this.data_block.ptr(DataBlock(T:main)).prev_addr = mem_obj();
+  this.data_block.ptr(DataBlock(T:main)).next_addr = mem_obj();
+  this.start = this.data_block;
+  this.index = 0;
+  this.length = 0;
+  return this;
+}
+
+method push(var this as ref(Stack(T:main)), var v as T:main)
+{
+  if (this.index < this.buff_length)
+  {
+    this.data_block.ptr(DataBlock(T:main)).data[this.index] = v;
+    inc this.index;
+    inc this.length;
+    return;
+  }
+
+  if (this.index == this.buff_length)
+  {
+    if (this.data_block.ptr(DataBlock(T:main)).next_addr.m == null)
+    {
+      next_data_block = mem_obj(sizeof(DataBlock(T:main)));
+      next_data_block.ptr(DataBlock(T:main)) = DataBlock(T:main)(this.buff_length);
+      this.data_block.ptr(DataBlock(T:main)).next_addr = next_data_block;
+      next_data_block.ptr(DataBlock(T:main)).prev_addr = this.data_block;
+    }
+
+    this.data_block = this.data_block.ptr(DataBlock(T:main)).next_addr;
+    this.index = 0;
+    this.data_block.ptr(DataBlock(T:main)).data[this.index] = v;
+    inc this.index;
+    inc this.length;
+    return;
+  }
+}
+
+method pop(var this as ref(Stack(T:main)), var out as ref(T:main)) as bool
+{
+  dec this.index;
+
+  if (this.index >= 0)
+  {
+    val out = this.data_block.ptr(DataBlock(T:main)).data[this.index];
+    dec this.length;
+    return true;
+  }
+
+  var prev_data_block = mem_obj() as mem_obj;
+
+  if (this.index < 0 and this.data_block.ptr(DataBlock(T:main)).prev_addr.m != null)
+  {
+    prev_data_block = this.data_block.ptr(DataBlock(T:main)).prev_addr;
+
+    this.data_block = prev_data_block;
+    this.index = this.buff_length - 1;
+    val out = this.data_block.ptr(DataBlock(T:main)).data[this.index];
+    dec this.length;
+    return true;
+  }
+
+  this.index = 0;
+  return false;
+}
+
+method length(var this as ref(Stack(T:main))) as int
+{
+  return this.length;
+}
+
+method iterator(var this as ref(Stack(T:main))) as StackIterator(T:main)
+{
+  var res as StackIterator(T:main);
+  res.index = 0;
+  res.end_index = this.index;
+  res.data_block = this.start;
+  res.buff_length = this.buff_length;
+  return res
+}
+
+type StackIterator(T:main) as rec(
+  var index as int,
+  var buff_length as int,
+  var end_index as int,
+  var data_block = mem_obj() as mem_obj,
+)
+
+method next(var this as ref(StackIterator(T:main)), var out as ref(T:main)) as bool
+{
+  if (this.index < this.buff_length)
+  {
+    # echo u64(this.data_block.next_addr);
+    if (this.data_block.ptr(DataBlock(T:main)).next_addr.m == null and this.index == this.end_index)
+    {
+      return false;
+    }
+    val out = this.data_block.ptr(DataBlock(T:main)).data[this.index];
+    inc this.index;
+    return true;
+  }
+
+  if (this.index == this.buff_length)
+  {
+    if (this.data_block.ptr(DataBlock(T:main)).next_addr.m == null)
+    {
+      return false
+    }
+
+    this.data_block = this.data_block.ptr(DataBlock(T:main)).next_addr;
+    this.index = 0;
+    val out = this.data_block.ptr(DataBlock(T:main)).data[this.index];
+    inc this.index;
+    return true;
+  }
+}
+
+method top(var this as ref(Stack(T:main))) as val ref(T:main)
+{
+  if (this.index > 0)
+  {
+    return this.data_block.ptr(DataBlock(T:main)).data.data.m.addr + (this.index - 1);
+  }
+  return null;
+}
+
+method del(var this as ref(Stack(T:main)))
+{
+  # echo "del stack";
+  var data_block = mem_obj() as mem_obj;
+  data_block = this.start;
+  while(data_block.m != null)
+  {
+    del data_block.ptr(DataBlock(T:main));
+    m = data_block;
+    data_block = data_block.ptr(DataBlock(T:main)).next_addr;
+    del m;
+  }
+  #exec this.allocator.free(this);
+  del this.start.ptr(DataBlock(T:main));
+  #del this.data_block.ptr(DataBlock(T:main));
+  del this.start;
+  #del this.data_block;
+}
+
+method finish(var this as ref(Stack(T)))
+{
+  del this;
+}
