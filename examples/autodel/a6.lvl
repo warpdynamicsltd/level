@@ -1,7 +1,7 @@
 import stdlib:sys:app as *;
 import stdlib:sys:context as *;
 import stdlib:collections:ascii as *;
-import object:collections:vector as *;
+import stdlib:obj:collections:vector as *;
 
 sub main()
 {
