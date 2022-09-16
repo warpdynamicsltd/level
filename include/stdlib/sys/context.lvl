@@ -132,3 +132,66 @@ method collect(var this as ref(GC))
 }
 
 global gc = GC() as GC;
+
+########################################################################################################################
+
+type ptr(A) as rec
+(
+  var ptr = null as ref(A),
+  var ref_count as int
+)
+
+method ()(ptr(A)) as ref(ptr(A))
+{
+  var this as ref(ptr(A));
+  this = app.allocator.allocate(sizeof(ptr(A)));
+  this.ptr = null;
+  this.ref_count = 0;
+  return this;
+}
+
+method del(var this as ref(ptr(A)))
+{
+  if (this != null and this.ptr != null)
+  {
+    dec this.ref_count;
+    if (this.ref_count <= 0)
+    {
+      del this.ptr;
+      exec app.allocator.free(this.ptr);
+      exec app.allocator.free(this);
+    }
+  }
+}
+
+type obj(A) extends object with
+rec(
+  var obj = null as ref(ptr(A))
+)
+
+method new ()(obj(A), var a as A) as obj(A)
+{
+  var this as obj(A);
+  this.obj = ptr(A)();
+  this.obj.ptr = app.allocator.allocate(sizeof(A));
+  val this.obj.ptr = a;
+  this.obj.ref_count = 1;
+  return this;
+}
+
+method del (var this as ref(obj(A)))
+{
+  del this.obj;
+}
+
+method finish (var this as ref(obj(A)))
+{
+  del this;
+}
+
+method =(var this as ref(obj(A)), var a as ref(obj(A)))
+{
+  del this.obj;
+  this.obj = a.obj;
+  inc this.obj.ref_count;
+}

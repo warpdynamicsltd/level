@@ -67,7 +67,7 @@ statement_functions = {
 }
 
 statement_operators = {
-    '<-' : ast.Assign,
+    '<-' : ast.AssignNoOverride,
     '=' : ast.Assign,
 }
 

@@ -84,11 +84,20 @@ class Subroutine:
         obj_manager = self.compiler.obj_manager_type(self.compiler)
         self.compiler.compile_driver.set_call_address(self.address)
 
+        objs = []
         for i, name in enumerate(self.var_names):
             if name is not None:
-                obj_manager.reserve_variable_by_name(self.var_types[i], name, copy=True)
+                obj = obj_manager.reserve_variable_by_name(self.var_types[i], name, copy=True)
+                objs.append(obj)
 
         self.compiler.code_block_contexts.open_new(obj_manager)
+
+        for obj in objs:
+            if self.compiler.inherited_from_object(obj):
+                new_obj = obj_manager.reserve_variable(obj.type)
+                self.compiler.compile_first_assigment(obj_manager, new_obj, obj)
+                obj_manager.objs[obj.name] = new_obj
+                #new_obj = obj_manager.reserve_variable(obj_T)
 
         for s in self.statement_list.args:
             self.compiler.compile_statement(s, obj_manager)

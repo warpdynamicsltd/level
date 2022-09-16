@@ -338,6 +338,12 @@ class Assign(Statement):
             raise GrammarTreeError()
         Statement.__init__(self, 'Assign', var_expression, expression)
 
+class AssignNoOverride(Statement):
+    def __init__(self, var_expression, expression):
+        if not(istype(var_expression, Expression) and istype(expression, Expression)):
+            raise GrammarTreeError()
+        Statement.__init__(self, 'Assign', var_expression, expression)
+
 class AssignAt(Statement):
     def __init__(self, var, index_expression, expression):
         if not(istype(var, Var) and istype(index_expression, Expression) and istype(expression, Expression)):
