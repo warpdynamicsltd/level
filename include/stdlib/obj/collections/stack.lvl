@@ -13,18 +13,25 @@ method new ()(DataBlock(T:main), var size as int) as DataBlock(T:main)
   res.data = vector(T:main)(size);
   res.prev_addr = mem_obj();
   res.next_addr = mem_obj();
+  echo "res.data.data.m.ref_count";
+  echo res.data.data.m.ref_count;
   return res;
 }
 
 method =(var this as ref(DataBlock(T:main)), var a as ref(DataBlock(T:main)))
 {
+  # echo "DataBlock assignment";
   this.prev_addr = a.prev_addr;
   this.next_addr = a.next_addr;
+  this.prev_addr.ptr(DataBlock(T:main)) = a.prev_addr.ptr(DataBlock(T:main));
+  this.next_addr.ptr(DataBlock(T:main)) = a.next_addr.ptr(DataBlock(T:main));
+
   this.data = a.data;
 }
 
 method del (var this as ref(DataBlock(T:main)))
 {
+  # echo "deleting DataBlock";
   #del this.prev_addr.ptr(DataBlock(T:main));
   del this.data;
 #  if (this.next_addr.m != null)
@@ -59,6 +66,7 @@ method new ()(Stack(T:main), var buff_length = 256 as int) as Stack(T:main)
   var this as Stack(T:main);
   this.data_block = mem_obj(sizeof(DataBlock(T:main)));
   this.data_block.ptr(DataBlock(T:main)) = DataBlock(T:main)(buff_length);
+  echo this.data_block.ptr(DataBlock(int)).data.data.m.ref_count;
   this.buff_length = buff_length;
   this.data_block.ptr(DataBlock(T:main)).prev_addr = mem_obj();
   this.data_block.ptr(DataBlock(T:main)).next_addr = mem_obj();
@@ -70,9 +78,9 @@ method new ()(Stack(T:main), var buff_length = 256 as int) as Stack(T:main)
 
 method =(var this as ref(Stack(T:main)), var a as ref(Stack(T:main)))
 {
-  this.data_block = a.data_block;
+  this.data_block.ptr(DataBlock(T:main)) = a.data_block.ptr(DataBlock(T:main));
   this.buff_length = a.buff_length;
-  this.start = a.start;
+  this.start.ptr(DataBlock(T:main)) = a.start.ptr(DataBlock(T:main));
   this.index = a.index;
   this.length = a.length;
 }

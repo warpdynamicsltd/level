@@ -302,7 +302,6 @@ class Compiler:
             subroutine = self.subroutines.add(key=fun_name, sub=Subroutine(
                                                                 compiler=self,
                                                                 name=name.val,
-                                                                #direct=d.direct,
                                                                 modes=d.modes,
                                                                 var_types=var_types,
                                                                 first_default=first_default,
@@ -378,12 +377,16 @@ class Compiler:
                 if obj.type != subroutine.return_type:
                     obj = subroutine.return_type(obj)
 
-                #if 'new' in subroutine.modes:
-                obj.returned = True
+                if 'new' in subroutine.modes and self.inherited_from_object(obj):
+                    ret_obj = obj_manager.reserve_variable(subroutine.return_type)
+                    self.compile_assigment(obj_manager, ret_obj, obj)
+                else:
+                    ret_obj = obj
+                #obj.returned = True
 
                 self.code_block_contexts.compile_on_return()
 
-                obj.to_acc()
+                ret_obj.to_acc()
             else:
                 self.code_block_contexts.compile_on_return()
 
@@ -478,11 +481,11 @@ class Compiler:
                     return
 
             var_obj = self.compile_expression(var_exp.val, obj_manager)
-            #self.compile_assigment(obj_manager, var_obj, obj)
-            if var_obj.assigned:
-                self.compile_assigment(obj_manager, var_obj, obj)
-            else:
-                self.compile_first_assigment(obj_manager, var_obj, obj)
+            self.compile_assigment(obj_manager, var_obj, obj)
+            # if var_obj.assigned:
+            #     self.compile_assigment(obj_manager, var_obj, obj)
+            # else:
+            #     self.compile_first_assigment(obj_manager, var_obj, obj)
             return
 
         if ast.istype(s, ast.Echo):
@@ -898,6 +901,9 @@ class Compiler:
 
         self.add_new_object_to_code_block_context(subroutine, method, res)
         return res
+
+    def inherited_from_object(self, obj):
+        return self.inheritance.is_1st_derived_from_2nd(hash(obj.type), hash(self.compile_driver.object_type))
 
     def add_new_object_to_code_block_context(self, subroutine, method, res):
         if self.inheritance.is_1st_derived_from_2nd(hash(res.type), hash(self.compile_driver.object_type)) and 'new' in subroutine.modes:
