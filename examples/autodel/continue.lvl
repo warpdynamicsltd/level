@@ -2,20 +2,20 @@ type Container extends object with rec(
   var x = 0 as int,
 )
 
-method new ()(Container, var x as int) as Container
+method metal new ()(Container, var x as int) as Container
 {
   var this as Container;
   this.x = x;
   return this;
 }
 
-method del (var this as ref(Container))
+method metal del (var this as ref(Container))
 {
   echo "deleting";
   echo this.x;
 }
 
-method finish(var this as ref(Container))
+method metal finish(var this as ref(Container))
 {
   echo "finish";
   echo this.x;

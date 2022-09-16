@@ -1,0 +1,186 @@
+import stdlib:sys:app as *;
+
+type ptr(A) as rec
+(
+  var ptr = null as ref(A),
+  var ref_count as int
+)
+
+method ()(ptr(A)) as ref(ptr(A))
+{
+  var this as ref(ptr(A));
+  this = app.allocator.allocate(sizeof(ptr(A)));
+  this.ptr = null;
+  this.ref_count = 0;
+  return this;
+}
+
+method del(var this as ref(ptr(A)))
+{
+  if (this != null and this.ptr != null)
+  {
+    dec this.ref_count;
+    if (this.ref_count <= 0)
+    {
+      exec app.allocator.free(this.ptr);
+      exec app.allocator.free(this);
+    }
+  }
+}
+
+sub len(var s as ref(byte)) as int
+{
+  i = 0;
+  while(s[i] != 0)
+  {
+    inc i;
+  }
+  return i;
+}
+
+type str extends object with rec
+(
+  var data = null as ref(ptr(byte)),
+  var count = 0 as int
+)
+
+method new ()(str, var a as ref(byte)) as str
+{
+  var this as str;
+  size = len(a) + 1;
+  this.data = ptr(byte)();
+  this.data.ptr = app.allocator.allocate(size);
+  this.data.ref_count = 1;
+  for (i = 0; i < size; inc i)
+  {
+    this.data.ptr[i] = a[i];
+  }
+  this.count = size - 1;
+  return this;
+}
+
+method [](var this as ref(str), var i as int) as val ref(byte)
+{
+  var data as ref(byte);
+  data = this.data.ptr;
+  return data + i;
+}
+
+method new +(var a as ref(str), var b as ref(str)) as str
+{
+  var res as str;
+
+  res.data = ptr(byte)();
+  res.data.ptr = app.allocator.allocate(a.count + b.count + 1);
+  res.data.ref_count = 1;
+  res.count = a.count + b.count;
+  k = 0;
+
+  for (i = 0; i < a.count; inc i)
+  {
+    res[k] = a[i];
+    inc k;
+  }
+  for (i = 0; i < b.count + 1; inc i)
+  {
+    res[k] = b[i];
+    inc k;
+  }
+  return res;
+}
+
+method del(var this as ref(str))
+{
+  del this.data;
+}
+
+method finish(var this as ref(str))
+{
+  del this;
+}
+
+method =(var this as ref(str), var a as ref(str))
+{
+  del this.data;
+  this.data = a.data;
+  this.count = a.count;
+  inc this.data.ref_count;
+}
+
+method echo (var this as ref(str))
+{
+  echo this.data.ptr;
+}
+
+sub main()
+{
+  echo str("main");
+  var s as str;
+  s = str("a");
+  if (false)
+  {
+    s = str("hello");
+  }
+  else
+  {
+    s = str("world");
+  }
+  echo s;
+}
+
+sub loop()
+{
+  var s as str;
+  s = str("aa");
+  for (i = 0; i < 5; inc i)
+  {
+    s = s + str("aa");
+    echo s;
+  }
+
+  echo s;
+}
+
+sub f(var s as str)
+{
+  s = s + str("bbbbb");
+  echo s;
+}
+
+sub pass_test()
+{
+  s = str("aaaa");
+  exec f(s);
+  echo s;
+}
+
+sub g(var s as ref(str))
+{
+  val s = val s + str("bbbbb");
+  echo s;
+}
+
+sub pass_ref_test()
+{
+  s = str("ccc");
+  exec g(ref s);
+}
+
+entry
+{
+  exec main();
+  echo "memory allocated";
+  echo app.allocator.used;
+  exec loop();
+  echo "memory allocated";
+  echo app.allocator.used;
+
+  exec pass_test();
+  echo "memory allocated";
+  echo app.allocator.used;
+
+  exec pass_ref_test();
+  echo "memory allocated";
+  echo app.allocator.used;
+  echo "end";
+}

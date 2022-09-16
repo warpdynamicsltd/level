@@ -2,7 +2,7 @@ type Container extends object with rec(
   var x as int,
 )
 
-method new ()(Container, var x as int) as Container
+method metal new ()(Container, var x as int) as Container
 {
   var this as Container;
   this.x = x;
