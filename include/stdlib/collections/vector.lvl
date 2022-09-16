@@ -35,6 +35,14 @@ method del(var this as ref(Vector(A)))
 {
   if (this.data != null)
   {
+    if (A > object)
+    {
+      for (i = 0; i < this.length; inc i)
+      {
+        del this[i];
+      }
+    }
+
     exec stdlib:sys:app:app.allocator.free((ref(byte))(this.data));
   }
 }
