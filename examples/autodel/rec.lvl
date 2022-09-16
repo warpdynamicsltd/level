@@ -2,25 +2,50 @@ import stdlib:sys:context as *;
 import stdlib:sys:app as *;
 import stdlib:collections:ascii as *;
 
-sub f(var p as pair) as str
+sub f(var p as pair)
 {
   p.a = str("lala1");
   echo p.a;
   echo p.b;
-  return p.a;
+  #return p.a;
 }
 
-type pair as
+type pair extends object with
 rec(
   var a as str,
   var b as str
 )
 
+method new ()(pair) as pair
+{
+  var res as pair;
+  res.a = str("");
+  res.b = str("");
+  return res;
+}
+
+method =(var this as ref(pair), var p as ref(pair))
+{
+  this.a = p.a;
+  this.b = p.b;
+}
+
+method del (var this as ref(pair))
+{
+  del this.a;
+  del this.b;
+}
+
+method finish (var this as ref(pair))
+{
+  del this;
+}
+
 sub main()
 {
   #echo f(str("hallo ")) + str("asas");
 
-  var p as pair;
+  var p = pair() as pair;
   # var a as str;
   p.a = str("lala2");
   if (true)

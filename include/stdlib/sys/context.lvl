@@ -70,6 +70,11 @@ method del(var this as ref(mem_obj))
   }
 }
 
+method finish(var this as ref(mem_obj))
+{
+  del this;
+}
+
 method =(var this as ref(mem_obj), var a as ref(mem_obj))
 {
   if (this.m != null)
