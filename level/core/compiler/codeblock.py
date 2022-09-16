@@ -6,6 +6,10 @@ class CodeBlockContext:
         self.objs_to_del = []
         self.objs_to_finish = []
 
+        self.subroutine = None
+        if self.compiler.subroutines_stack:
+            self.subroutine = self.compiler.subroutines_stack[-1]
+
     def add_obj_to_del(self, obj):
         self.objs_to_del.append(obj)
 
@@ -67,14 +71,23 @@ class CodeBlockContexts:
         self.code_block_contexts.pop()
 
     def add_obj_to_del(self, obj):
+
         if self.code_block_contexts:
-            self.code_block_contexts[-1].add_obj_to_del(obj)
+            code_block_context = self.code_block_contexts[-1]
+            if code_block_context.subroutine is not None:
+                if "metal" in code_block_context.subroutine.modes:
+                    return
+            code_block_context.add_obj_to_del(obj)
 
     def add_obj_to_finish(self, obj):
         if self.code_block_contexts:
             # so far we don't support scope local variables, so all variables are initiated in root scope
             # and there they need to be also finished
-            self.code_block_contexts[0].add_obj_to_finish(obj)
+            code_block_context = self.code_block_contexts[0]
+            if code_block_context.subroutine is not None:
+                if "metal" in code_block_context.subroutine.modes:
+                    return
+            code_block_context.add_obj_to_finish(obj)
 
 
 

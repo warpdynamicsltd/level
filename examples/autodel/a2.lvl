@@ -6,7 +6,7 @@ type pair extends object with rec(
   var y = 0 as int
 )
 
-method new ()(pair, var x as int, var y as int) as pair
+method metal new ()(pair, var x as int, var y as int) as pair
 {
   var res as pair;
   res.x = x;

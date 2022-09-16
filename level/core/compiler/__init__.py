@@ -376,6 +376,7 @@ class Compiler:
                 obj = self.compile_expression(s.args[0], obj_manager)
                 if obj.type != subroutine.return_type:
                     obj = subroutine.return_type(obj)
+                    # self.add_new_object_to_code_block_context(subroutine, obj)
 
                 if 'new' in subroutine.modes and self.inherited_from_object(obj):
                     ret_obj = obj_manager.reserve_variable(subroutine.return_type)
@@ -406,13 +407,15 @@ class Compiler:
         subroutine = self.get_subroutine_for_call(True, self.meta, '=', var_obj, obj)
         # we don't want to overwrite real references assignment
         if subroutine is not None and var_obj.type.main_type.__name__ != 'Ref':
+        #if subroutine is not None:
             return self.compile_call_execution(True, obj_manager, subroutine, var_obj, obj)
         else:
             var_obj.set(obj)
 
     def compile_first_assigment(self, obj_manager, var_obj, obj=None):
         if not var_obj.assigned:
-            if self.inheritance.is_1st_derived_from_2nd(hash(var_obj.type), hash(self.compile_driver.object_type)):
+            # if self.inheritance.is_1st_derived_from_2nd(hash(var_obj.type), hash(self.compile_driver.object_type)):
+            if self.inherited_from_object(var_obj):
                 self.code_block_contexts.add_obj_to_finish(var_obj)
             if obj is not None:
                 self.compile_assigment(obj_manager, var_obj, obj)
@@ -486,6 +489,29 @@ class Compiler:
             #     self.compile_assigment(obj_manager, var_obj, obj)
             # else:
             #     self.compile_first_assigment(obj_manager, var_obj, obj)
+            return
+
+        if ast.istype(s, ast.AssignNoOverride):
+            var_exp = ast.MetaVar()
+            exp = ast.MetaVar()
+
+            ast.Assign(var_exp, exp) << s
+
+            obj = self.compile_expression(exp.val, obj_manager)
+
+            if type(obj) is Type:
+                raise CompilerException(f"can't assign type to variable in {exp.val.meta}")
+
+            if type(var_exp.val) is ast.Var:
+                if not (var_exp.val.name in obj_manager.objs or var_exp.val.calling_name in self.globals.globals_dict):
+                    self.var_name_raise_not_available(var_exp.val, obj_manager=obj_manager)
+                    var_obj = obj_manager.reserve_variable_by_name(obj.type, var_exp.val.name)
+                    self.update_meta(var_exp.val)
+                    var_obj.set(obj)
+                    return
+
+            var_obj = self.compile_expression(var_exp.val, obj_manager)
+            var_obj.set(obj)
             return
 
         if ast.istype(s, ast.Echo):
@@ -899,13 +925,13 @@ class Compiler:
                 raise CompilerNotLocatedException("ref type expected")
             res = obj.get_obj()
 
-        self.add_new_object_to_code_block_context(subroutine, method, res)
+        self.add_new_object_to_code_block_context(subroutine, res)
         return res
 
     def inherited_from_object(self, obj):
         return self.inheritance.is_1st_derived_from_2nd(hash(obj.type), hash(self.compile_driver.object_type))
 
-    def add_new_object_to_code_block_context(self, subroutine, method, res):
+    def add_new_object_to_code_block_context(self, subroutine, res):
         if self.inheritance.is_1st_derived_from_2nd(hash(res.type), hash(self.compile_driver.object_type)) and 'new' in subroutine.modes:
             self.code_block_contexts.add_obj_to_del(res)
 
