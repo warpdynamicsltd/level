@@ -623,9 +623,15 @@ class Compiler:
 
             iteration_obj = self.compile_expression(iteration_expression.val, obj_manager)
             iterator_method = self.get_subroutine_for_call(True, iteration_expression.val.meta, 'iterator', iteration_obj)
+            if iterator_method is None:
+                raise CompilerException(f"implemented iterator method required in {s.meta}")
             iterator_obj = self.compile_call_execution(True, obj_manager, iterator_method, iteration_obj)
+
             ref = self.compile_driver.build_ref(obj_manager, obj)
             next_method = self.get_subroutine_for_call(True, iteration_expression.val.meta, 'next', iterator_obj, ref)
+            if next_method is None:
+                raise CompilerException(f"implemented next method required in {s.meta}")
+
             gen = self.compile_driver.while_acc(obj_manager)
             next(gen)
             bool_obj = self.compile_call_execution(True, obj_manager, next_method, iterator_obj, ref)

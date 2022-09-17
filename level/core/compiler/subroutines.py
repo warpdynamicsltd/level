@@ -60,7 +60,10 @@ class Subroutine:
                         compiler=self.compiler,
                         name=self.name,
                         modes=self.modes,
-                        var_types=var_types,
+                        # this is analogous what we did with templates to provide for default arguments
+                        # verify if they shouldn't be modify due to fact of inharitance
+                        # Issue LVL-100
+                        var_types=var_types + self.var_types[len(var_types):],
                         first_default=self.first_default,
                         var_inits=self.var_inits,
                         var_names=self.var_names,

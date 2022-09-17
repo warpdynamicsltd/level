@@ -167,10 +167,10 @@ class TypeVar:
         return hash(self.name)
 
     def __eq__(self, other):
-        return self.name == other.name
+        return type(other) is TypeVar and self.name == other.name
 
     def __ne__(self, other):
-        return self.name != other.name
+        return type(other) is TypeVar and self.name != other.name
 
     def __repr__(self):
         return f"TypeVar({self.name})"

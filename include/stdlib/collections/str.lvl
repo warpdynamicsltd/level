@@ -1,18 +1,19 @@
-import stdlib:sys:app;
-import stdlib:collections:vector;
-import stdlib:collections:stack;
+import stdlib:sys:app as *;
+import stdlib:collections:vector as *;
+import stdlib:collections:stack as *;
 
 type char as u32;
-type str extends stdlib:collections:vector:Vector(char) with rec();
+type str extends Vector(char) with rec();
 
-method ()(str)
+method ()(str) as ref(str)
 {
-  var this as str;
+  var this as ref(str);
+  this = app.allocator.allocate(sizeof(str));
   exec this.init(0);
   return this;
 }
 
-sub process_char_utf8(var stack as ref(stdlib:collections:stack:Stack(byte)), var c as char) as bool
+sub process_char_utf8(var stack as ref(Stack(byte)), var c as char) as bool
 {
   if (0 <= c and c <= 0x7f)
   {
@@ -44,19 +45,19 @@ sub process_char_utf8(var stack as ref(stdlib:collections:stack:Stack(byte)), va
   return false;
 }
 
-method utf8(var this as ref(str)) as stdlib:collections:vector:Vector(byte)
+method utf8(var this as ref(str)) as ref(Vector(byte))
 {
-  stack = stdlib:collections:stack:Stack(byte)();
+  stack = Stack(byte)();
   foreach (var c as char in this)
   {
     if (not process_char_utf8(stack, c))
     {
-      return stdlib:collections:vector:Vector(byte)(0);
+      return Vector(byte)(0);
     }
   }
   exec stack.push(byte(0));
 
-  res = stdlib:collections:vector:Vector(byte)(stack.length());
+  res = Vector(byte)(stack.length());
   k = 0;
 
   foreach (var b as byte in stack)
@@ -70,10 +71,11 @@ method utf8(var this as ref(str)) as stdlib:collections:vector:Vector(byte)
   return res;
 }
 
-method ()(str, var a as ref(stdlib:collections:vector:Vector(byte))) as str
+method ()(str, var a as ref(Vector(byte))) as ref(str)
 {
-  var res as str;
-  stack = stdlib:collections:stack:Stack(u32)();
+  var res as ref(str);
+  res = app.allocator.allocate(sizeof(str));
+  stack = Stack(u32)();
   var c = 0 as u32;
   var remainder = -1 as int;
   foreach (var b as byte in a)
@@ -142,10 +144,11 @@ method ()(str, var a as ref(stdlib:collections:vector:Vector(byte))) as str
   return res;
 }
 
-sub prepare_vector(var r as ref(byte)) as stdlib:collections:vector:Vector(byte)
+sub prepare_vector(var r as ref(byte)) as ref(Vector(byte))
 {
-  var res as stdlib:collections:vector:Vector(byte);
-  stack = stdlib:collections:stack:Stack(byte)();
+  var res as ref(Vector(byte));
+  res = app.allocator.allocate(sizeof(Vector(byte)));
+  stack = Stack(byte)();
   var i = 0 as int;
   while(r[i] != 0)
   {
@@ -165,17 +168,18 @@ sub prepare_vector(var r as ref(byte)) as stdlib:collections:vector:Vector(byte)
   return res;
 }
 
-method new ()(str, var a as ref(byte)) as str
+method new ()(str, var a as ref(byte)) as ref(str)
 {
   v = prepare_vector(a);
-  res = str(ref v);
+  res = str(v);
   del v;
   return res;
 }
 
-method new +(var a as ref(str), var b as ref(str)) as str
+method new +(var a as ref(str), var b as ref(str)) as ref(str)
 {
-  var res as str;
+  var res as ref(str);
+  res = app.allocator.allocate(sizeof(str));
   exec res.init(a.length() + b.length());
   var c as char;
   k = 0;

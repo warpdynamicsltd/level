@@ -4,7 +4,7 @@ import stdlib:collections:vector as *;
 type vector(A) extends obj(Vector(A)) with rec();
 
 type vector_iterator(A) as rec(
-  var vector as ref(Vector(A)),
+  var vector = null as ref(Vector(A)),
   var index = 0 as int
 )
 
@@ -36,86 +36,3 @@ method next(var this as ref(vector_iterator(A)), var out as ref(A)) as bool
   inc this.index;
   return true;
 }
-
-#method del(var this as ref(vector(A)))
-#{
-#  for (i = 0; i < this.length(); inc i)
-#  {
-#    del this[i];
-#  }
-#  del this.obj;
-#}
-
-#type vector(A) extends object with rec
-#(
-#  var data = mem_obj() as mem_obj,
-#  var length = 0 as int
-#)
-#
-#type vector_iterator(A) as rec(
-#  var vector as ref(vector(A)),
-#  var index = 0 as int
-#)
-#
-#method =(var this as ref(vector(A)), var a as ref(vector(A)))
-#{
-#  this.data = a.data;
-#  this.length = a.length;
-#}
-#
-#method new ()(vector(A), var length as int) as vector(A)
-#{
-#  var this as vector(A);
-#  var a as A;
-#  if (length > 0)
-#  {
-#    this.data = mem_obj(sizeof(A)*length);
-#  }
-#  for (i = 0; i < length; inc i)
-#  {
-#    this[i] = a;
-#  }
-#  this.length = length;
-#  return this;
-#}
-#
-#method del(var this as ref(vector(A)))
-#{
-#  if (object < A)
-#  {
-#    for (i = 0; i < this.length; inc i)
-#    {
-#      del this[i];
-#    }
-#  }
-#  del this.data;
-#}
-#
-#method finish(var this as ref(vector(A)))
-#{
-#  del this;
-#}
-#
-#method [](var this as ref(vector(A)), var i as int) as val ref(A)
-#{
-#  var data as ref(A);
-#  data = this.data.m.addr;
-#  return data + i;
-#}
-#
-#method iterator(var this as ref(vector(A))) as vector_iterator(A)
-#{
-#  var res as vector_iterator(A);
-#  res.index = 0;
-#  res.vector = this;
-#  return res;
-#}
-#
-#method next(var this as ref(vector_iterator(A)), var out as ref(A)) as bool
-#{
-#  if (this.index == this.vector.length) {return false}
-#
-#  val out = this.vector[this.index];
-#  inc this.index;
-#  return true;
-#}
