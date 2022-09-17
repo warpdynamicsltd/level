@@ -40,7 +40,7 @@ method push(var this as ref(Stack(T:main, T:allocator)), var v as T:main)
 {
   if (this.index < this.buff_length)
   {
-    this.data_block.data[this.index] = v;
+    [this.data_block.data + this.index] = v;
     inc this.index;
     inc this.length;
     return;
@@ -57,7 +57,7 @@ method push(var this as ref(Stack(T:main, T:allocator)), var v as T:main)
 
     this.data_block = this.data_block.next_addr;
     this.index = 0;
-    this.data_block.data[this.index] = v;
+    [this.data_block.data + this.index] = v;
     inc this.index;
     inc this.length;
     return;
@@ -70,7 +70,7 @@ method pop(var this as ref(Stack(T:main, T:allocator)), var out as ref(T:main)) 
 
   if (this.index >= 0)
   {
-    val out = this.data_block.data[this.index];
+    val out = [this.data_block.data + this.index];
     dec this.length;
     return true;
   }
@@ -123,7 +123,7 @@ method next(var this as ref(StackIterator(T:main)), var out as ref(T:main)) as b
     {
       return false;
     }
-    val out = this.data_block.data[this.index];
+    val out = [this.data_block.data + this.index];
     inc this.index;
     return true;
   }
@@ -137,7 +137,7 @@ method next(var this as ref(StackIterator(T:main)), var out as ref(T:main)) as b
 
     this.data_block = this.data_block.next_addr;
     this.index = 0;
-    val out = this.data_block.data[this.index];
+    val out = [this.data_block.data + this.index];
     inc this.index;
     return true;
   }
