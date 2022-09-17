@@ -1,5 +1,4 @@
 import stdlib:sys:app as *;
-import stdlib:sys:context as *;
 import stdlib:obj:collections:ascii as *;
 import stdlib:obj:collections:vector as *;
 
@@ -14,14 +13,10 @@ sub main()
     v[i] = a;
   }
 
-  exec gc.collect();
-
   foreach (var s as str in v)
   {
     echo s;
   }
-
-  exec gc.collect();
 
   a = str("test");
   echo a;
@@ -30,10 +25,6 @@ sub main()
 entry
 {
   exec main();
-  exec gc.collect();
-  echo gc.global_stack.length;
-
-  exec gc.clear();
   echo "gc test";
   echo app.allocator.used;
   echo "end";

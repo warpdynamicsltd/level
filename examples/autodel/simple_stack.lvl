@@ -1,4 +1,3 @@
-import stdlib:sys:context as *;
 import stdlib:sys:app as *;
 import stdlib:obj:collections:stack as *;
 
@@ -114,8 +113,6 @@ sub main()
 entry
 {
   exec main();
-  exec gc.collect();
-  exec gc.clear();
   echo "memory allocated";
   echo app.allocator.used;
   echo "end";

@@ -1,13 +1,11 @@
-import stdlib:sys:context as *;
 import stdlib:sys:app as *;
-import stdlib:collections:ascii as *;
+import stdlib:obj:collections:ascii as *;
 
 sub f(var p as pair)
 {
   p.a = str("lala1");
   echo p.a;
   echo p.b;
-  #return p.a;
 }
 
 type pair extends object with
@@ -56,15 +54,11 @@ sub main()
   {
     p.b = str("lalala4");
   }
-  #a = str("lalaa");
   exec f(p);
 }
 
 entry{
     exec main();
-    exec gc.collect();
-    echo gc.global_stack.length;
-    exec gc.clear();
     echo "gc test";
     echo app.allocator.used;
     echo "end";

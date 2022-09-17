@@ -81,6 +81,11 @@ method new +(var a as ref(str), var b as ref(str)) as str
   return obj(_str)(a.obj.ptr + b.obj.ptr);
 }
 
+method [](var this as ref(str), var i as int) as val ref(byte)
+{
+  return this.obj.ptr.data + i;
+}
+
 method echo (var this as ref(str))
 {
   if (this != null and this.obj != null and this.obj.ptr != null and this.obj.ptr.data != null)

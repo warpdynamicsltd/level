@@ -1,0 +1,134 @@
+import stdlib:collections:stack as *;
+import stdlib:sys:app as *;
+
+type mem as rec
+(
+  var addr = null as ref(byte),
+  var ref_count = 0 as int
+)
+
+method ()(mem, var size as int) as ref(mem)
+{
+  var this as ref(mem);
+  this = app.allocator.allocate(sizeof(mem));
+  this.addr = app.allocator.allocate(size);
+  this.ref_count = 0;
+
+  if (gc.global_stack != null)
+  {
+    exec gc.global_stack.push(this);
+  }
+
+  return this;
+}
+
+method del(var this as ref(mem))
+{
+  if (this.addr != null)
+  {
+    exec app.allocator.free(this.addr);
+    this.addr = null;
+  }
+  exec app.allocator.free(this);
+}
+
+type mem_obj extends object with rec
+(
+  var m = null as ref(mem)
+)
+
+type mem_obj_shadow as rec
+(
+  var m = null as ref(mem)
+)
+
+method new ()(mem_obj, var size = 0 as int) as mem_obj
+{
+  var res as mem_obj;
+  if (size == 0)
+  {
+    res.m = null;
+    return res;
+  }
+
+  res.m = mem(size);
+  res.m.ref_count = 1;
+
+  return res;
+}
+
+method ptr(var this as ref(mem_obj), A) as val ref(A)
+{
+  return this.m.addr;
+}
+
+method del(var this as ref(mem_obj))
+{
+  if (this.m != null and this.m.ref_count > 0)
+  {
+    dec this.m.ref_count;
+  }
+}
+
+method finish(var this as ref(mem_obj))
+{
+  del this;
+}
+
+method =(var this as ref(mem_obj), var a as ref(mem_obj))
+{
+  if (this.m != null)
+  {
+    del this;
+  }
+
+  this.m = a.m;
+  if (this.m != null)
+  {
+    inc this.m.ref_count;
+  }
+}
+
+type GC as rec
+(
+  var global_stack = null as ref(Stack(ref(mem))),
+  var block as bool,
+)
+
+method ()(GC) as GC
+{
+  var res as GC;
+  res.global_stack = Stack(ref(mem))();
+  return res;
+}
+
+method clear(var this as ref(GC))
+{
+  del this.global_stack;
+  this.global_stack = null;
+}
+
+method collect(var this as ref(GC))
+{
+  if (gc.global_stack != null and gc.global_stack.length() > 0)
+  {
+
+    stack = Stack(ref(mem))();
+    foreach(var m as ref(mem) in gc.global_stack)
+    {
+      if (m.ref_count <= 0)
+      {
+        del m;
+      }
+      else
+      {
+        exec stack.push(m);
+      }
+
+    }
+    del gc.global_stack;
+    gc.global_stack = stack;
+  }
+}
+
+global gc = GC() as GC;

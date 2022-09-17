@@ -1,6 +1,5 @@
-import stdlib:collections:ascii as *;
+import stdlib:obj:collections:ascii as *;
 import stdlib:sys:app as *;
-import stdlib:sys:context as *;
 
 sub main()
 {
@@ -19,9 +18,6 @@ sub main()
 entry
 {
   exec main();
-
-  exec gc.collect();
-  exec gc.clear();
   echo "gc test";
   echo app.allocator.used;
   echo "end";

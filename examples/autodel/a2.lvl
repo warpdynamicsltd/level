@@ -1,4 +1,3 @@
-import stdlib:sys:context as *;
 import stdlib:sys:app as *;
 
 type pair extends object with rec(
@@ -37,8 +36,6 @@ sub f() as pair
 entry
 {
   exec f();
-  exec gc.collect();
-  exec gc.clear();
   echo "gc test";
   echo app.allocator.used;
   echo "end";
