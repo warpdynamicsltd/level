@@ -1,0 +1,31 @@
+import stdlib:sys:context as *;
+import stdlib:obj:collections:vector as *;
+import stdlib:obj:collections:ascii as *;
+import stdlib:sys:app as *;
+
+sub f() as str
+{
+  v = vector(str)(10);
+  v[0] = str("a");
+  v[1] = str("b");
+
+  return v[1];
+}
+
+
+sub main()
+{
+  echo f();
+
+  echo "end";
+}
+
+entry
+{
+  exec main();
+
+  exec gc.clear();
+  echo "memory allocated";
+  echo app.allocator.used;
+  echo "end";
+}

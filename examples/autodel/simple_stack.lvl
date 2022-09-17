@@ -1,0 +1,122 @@
+import stdlib:sys:context as *;
+import stdlib:sys:app as *;
+import stdlib:obj:collections:stack as *;
+
+sub main()
+{
+  var payload as u64;
+
+  _stack = stack(u64)();
+
+  N = 5138;
+
+  echo "stack length";
+  echo _stack.length() == 0;
+
+  echo "start pushing";
+
+  var k as u64;
+  var res as bool;
+
+
+  for (k = 1; k < N; inc k)
+  {
+    payload = k;
+    exec _stack.push(payload);
+  }
+
+  echo "stack length";
+  echo _stack.length() == N - 1;
+
+  echo "start iterating";
+
+  res = true;
+  k = 1;
+  foreach (payload in _stack)
+  {
+    #echo p;
+    res = res and (payload == k);
+    inc k;
+  }
+  echo res;
+
+  echo "start iterating";
+
+  res = true;
+  k = 1;
+  foreach (var p as u64 in _stack)
+  {
+    #echo p;
+    res = res and (p == k);
+    inc k;
+  }
+  echo res;
+
+  echo "start iterating";
+
+  iter = _stack.iterator();
+
+  res = true;
+  k = 1;
+  while (iter.next(ref payload))
+  {
+    res = res and (payload == k);
+    inc k;
+  }
+  echo res;
+
+  k = N - 1;
+  res = true;
+
+  echo "start popping";
+
+  while (_stack.pop(ref payload))
+  {
+    # echo payload;
+    res = res and (payload == k);
+    dec k;
+  }
+
+  echo "stack length";
+  echo _stack.length() == 0;
+
+  echo res;
+
+  echo "start pushing";
+
+  for (k = 1; k < N; inc k)
+  {
+    payload = k;
+    exec _stack.push(payload);
+  }
+
+  echo "stack length";
+  echo _stack.length() == N - 1;
+
+  k = N - 1;
+  res = true;
+
+  echo "start popping";
+
+  while (_stack.pop(ref payload))
+  {
+    res = res and (payload == k);
+    dec k;
+  }
+
+  echo "stack length";
+  echo _stack.length() == 0;
+
+  echo res;
+  echo "end";
+}
+
+entry
+{
+  exec main();
+  exec gc.collect();
+  exec gc.clear();
+  echo "memory allocated";
+  echo app.allocator.used;
+  echo "end";
+}
