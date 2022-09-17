@@ -7,6 +7,19 @@ Note that **Level** is under very dynamic development and is not ready for use y
 This is an early access repository and you are strongly disencouraged to begin any serious project 
 in **Level** yet.
 
+### Quick overview of current Level features
+- statically typed
+- basic types: <i>int</i>, <i>byte</i>, <i>bool</i>, <i>i64</i>, <i>i32</i>, <i>u64</i>, <i>u32</i>, <i>float</i> 
+- user defined types as combination of <i>ref</i> (pointer/reference type), <i>rec</i> (struct type) and <i>array</i> (array type)
+- templates for subroutines and types with second order type variables
+- functions and operators overloading
+- support for object-oriented programming:
+  - dot notation
+  - special method definition syntax
+  - multiple inheritance
+- reference count garbage collection for manged objects (must derive from <i>object</i>)
+- standard library with basic data structures: stack, vector, ascii and utf-8 strings
+
 ### Important information about Level
 
 - **Level compiler** source code is written in Python 3 using purposely ONLY Python's standard library. Compiler doesn't use any external libraries like 
@@ -14,8 +27,6 @@ in **Level** yet.
 - <i>Python 3.6.0</i> or higher with installed <i>pip</i> is the only requirement to install and run **Level compiler** 
 on Linux OS with x86-64 architecture.
 - There are no other 3rd party dependencies needed for **Level compiler**.
-- At the current phase of development, **Level** is a statically-typed language with templates. It has reasonable support 
-for object-oriented programing with multiple inheritance and operators overloading.
 - At the current phase of development, **Level** supports only x86-64 architecture with Linux based OS.
 - There is no **Level** documentation yet, so the best reference so far is the source code, 
 especially files with Level code in [examples](examples) (for expected results study 
