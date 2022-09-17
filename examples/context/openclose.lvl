@@ -1,4 +1,4 @@
-import stdlib:sys:context as *;
+import stdlib:sys:gc as *;
 import stdlib:sys:app as *;
 
 sub f()

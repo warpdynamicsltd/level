@@ -1,4 +1,3 @@
-import stdlib:sys:context as *;
 import stdlib:sys:app as *;
 import stdlib:obj:collections:vector as *;
 
@@ -15,14 +14,6 @@ sub f()
 
 entry{
     exec f();
-
-    exec gc.collect();
-
-    echo "global stack length";
-    echo gc.global_stack.length;
-
-    exec gc.clear();
-
     echo "gc test";
     echo app.allocator.used;
     echo "end";

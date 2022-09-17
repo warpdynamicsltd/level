@@ -132,8 +132,8 @@ test_source([test_path(r"autodel/a2.lvl")], b"finished\nfinished\nfinished\ndele
 test_source([test_path(r"autodel/a3.lvl")], b"finish\n+00000000:00000003\nfinish\n+00000000:00000003\ndeleting\n+00000000:00000001\ndeleting\n+00000000:00000002\ndeleting\n+00000000:00000003\n")
 test_source([test_path(r"autodel/a4.lvl")], b"hello world!\nhello world!, world!, world!, world!, world!, world!\n>>>hello world!, world!, world!, world!, world!, world!\nerased2>>>hello world!, world!, world!, world!, world!, world!\nworld!\ngc test\n+00000000:00000000\nend\n")
 test_source([test_path(r"autodel/a5.lvl")], b"deleting\n+00000000:00000004\ndeleting\n+00000000:00000005\ndeleting\n+00000000:00000005\ndeleting\n+00000000:00000006\ndeleting\n+00000000:00000009\ndeleting\n+00000000:0000000c\nfinish\n+00000000:00000000\nfinish\n+00000000:00000006\nfinish\n+00000000:0000000c\ndeleting\n+00000000:00000001\n")
-test_source([test_path(r"autodel/a6.lvl")], b"aa\naaa\naaaa\naaaaa\naaaaaa\naaaaaaa\naaaaaaaa\naaaaaaaaa\naaaaaaaaaa\naaaaaaaaaaa\ntest\n+00000000:00000000\ngc test\n+00000000:00000000\nend\n")
-test_source([test_path(r"autodel/a7.lvl")], b"+00000000:00000001\nhello\n+00000000:00000002\n+00000000:00000001\nhello2\n+00000000:00000003\n+00000000:00000002\n+00000000:00000000\ngc test\n+00000000:00000000\nend\n")
+test_source([test_path(r"autodel/a6.lvl")], b"aa\naaa\naaaa\naaaaa\naaaaaa\naaaaaaa\naaaaaaaa\naaaaaaaaa\naaaaaaaaaa\naaaaaaaaaaa\ntest\ngc test\n+00000000:00000000\nend\n")
+test_source([test_path(r"autodel/a7.lvl")], b"+00000000:00000001\nhello\n+00000000:00000002\n+00000000:00000001\nhello2\n+00000000:00000003\n+00000000:00000002\ngc test\n+00000000:00000000\nend\n")
 test_source([test_path(r"autodel/a8.lvl")], b"main\nworld\nmemory allocated\n+00000000:00000000\naaaa\naaaaaa\naaaaaaaa\naaaaaaaaaa\naaaaaaaaaaaa\naaaaaaaaaaaa\nmemory allocated\n+00000000:00000000\naaaabbbbb\naaaa\nmemory allocated\n+00000000:00000000\ncccbbbbb\nmemory allocated\n+00000000:00000000\nend\n")
 test_source([test_path(r"autodel/a9.lvl")], b"main\nworld\nmemory allocated\n+00000000:00000000\naaaa\naaaaaa\naaaaaaaa\naaaaaaaaaa\naaaaaaaaaaaa\naaaaaaaaaaaa\nmemory allocated\n+00000000:00000000\naaaabbbbb\naaaa\nmemory allocated\n+00000000:00000000\ncccbbbbb\nmemory allocated\n+00000000:00000000\nend\n")
 test_source([test_path(r"autodel/a10.lvl")], b"b\nend\nmemory allocated\n+00000000:00000000\nend\n")
@@ -142,13 +142,13 @@ test_source([test_path(r"autodel/a10.lvl")], b"b\nend\nmemory allocated\n+000000
 test_source([test_path(r"autodel/continue.lvl")], b"deleting\n-00000000:00000001\ndeleting\n+00000000:00000001\ndeleting\n-00000000:00000002\ndeleting\n+00000000:00000002\ndeleting\n-00000000:00000003\ndeleting\n+00000000:00000003\ndeleting\n-00000000:00000004\ndeleting\n+00000000:00000004\ndeleting\n-00000000:00000005\ndeleting\n+00000000:00000005\ndeleting\n-00000000:00000064\ndeleting\n-00000000:00000006\ndeleting\n-00000000:00000007\ndeleting\n-00000000:00000008\nfinish\n-00000000:00000008\ndeleting\n+00000000:00000001\n")
 test_source([test_path(r"autodel/break.lvl")], b"deleting\n-00000000:00000001\ndeleting\n+00000000:00000001\ndeleting\n-00000000:00000002\ndeleting\n+00000000:00000002\ndeleting\n-00000000:00000003\ndeleting\n+00000000:00000003\ndeleting\n-00000000:00000004\ndeleting\n+00000000:00000004\ndeleting\n-00000000:00000005\ndeleting\n+00000000:00000005\ndeleting\n-00000000:00000064\ndeleting\n-00000000:00000006\nfinish\n-00000000:00000064\ndeleting\n+00000000:00000001\n")
 test_source([test_path(r"autodel/return.lvl")], b"deleting\n-00000000:00000001\ndeleting\n+00000000:00000001\ndeleting\n-00000000:00000002\ndeleting\n+00000000:00000002\ndeleting\n-00000000:00000003\ndeleting\n+00000000:00000003\ndeleting\n-00000000:00000004\ndeleting\n+00000000:00000004\ndeleting\n-00000000:00000005\ndeleting\n+00000000:00000005\ndeleting\n-00000000:00000064\ndeleting\n-00000000:00000006\nfinish\n-00000000:00000064\ndeleting\n+00000000:00000001\n")
-test_source([test_path(r"autodel/rec.lvl")], b"lala1\nlala3\n+00000000:00000000\ngc test\n+00000000:00000000\nend\n")
+test_source([test_path(r"autodel/rec.lvl")], b"lala1\nlala3\ngc test\n+00000000:00000000\nend\n")
 
 test_source([test_path(r"autodel/simple_stack.lvl")], b"stack length\n00000001\nstart pushing\nstack length\n00000001\nstart iterating\n00000001\nstart iterating\n00000001\nstart iterating\n00000001\nstart popping\nstack length\n00000001\n00000001\nstart pushing\nstack length\n00000001\nstart popping\nstack length\n00000001\n00000001\nend\nmemory allocated\n+00000000:00000000\nend\n")
 test_source([test_path(r"autodel/stack_str.lvl")], b"a\nb\nc\nx\nxx\nxxx\nxxxx\nxxxxx\nxxxxxx\nxxxxxxx\nxxxxxxxx\nxxxxxxxxx\nxxxxxxxxxx\nmemory allocated\n+00000000:00000000\nend\n")
 
 test_source([test_path(r"context/openclose.lvl")], b"referenced 1\n+00000000:00000001\nreferenced 2\n+00000000:00000002\nreferenced 4\n+00000000:00000004\ngc test\n+00000000:00000000\nend\n")
-test_source([test_path(r"context/vector.lvl")], b"global stack length\n+00000000:00000000\ngc test\n+00000000:00000000\nend\n")
+test_source([test_path(r"context/vector.lvl")], b"gc test\n+00000000:00000000\nend\n")
 
 # ERRORS
 # wait for new tests after LVL-78 is done
