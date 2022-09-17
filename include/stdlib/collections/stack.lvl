@@ -30,15 +30,26 @@ method top(var this as ref(Stack(T))) as val ref(T)
 
 method del(var this as ref(Stack(T)))
 {
-  # echo "del stack";
   var data_block as ref(stdlib:collections:sysstack:DataBlock(T));
   data_block = this.start;
-  while(data_block != null)
+  if (this.start != null)
+  {
+    if (object < T)
+    {
+      foreach (var a as T in this)
+      {
+        del a;
+      }
+    }
+  }
+
+  while (data_block != null)
   {
     exec this.allocator.free(data_block.data);
     mem = data_block;
     data_block = data_block.next_addr;
     exec this.allocator.free(mem);
   }
+  this.start = null;
   exec this.allocator.free(this);
 }

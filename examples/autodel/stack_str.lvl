@@ -1,0 +1,38 @@
+import stdlib:sys:context as *;
+import stdlib:sys:app as *;
+import stdlib:obj:collections:stack as *;
+import stdlib:obj:collections:ascii as *;
+
+sub main()
+{
+  _stack = stack(str)();
+
+  exec _stack.push(str("a"));
+  exec _stack.push(str("b"));
+  exec _stack.push(str("c"));
+
+  var k as int;
+
+  a = str("");
+
+  for (i = 0; i < 10; inc i)
+  {
+    a = str("x") + a;
+    exec _stack.push(a);
+  }
+
+  foreach (a in _stack)
+  {
+    echo a;
+  }
+}
+
+entry
+{
+  exec main();
+  exec gc.collect();
+  exec gc.clear();
+  echo "memory allocated";
+  echo app.allocator.used;
+  echo "end";
+}

@@ -1,4 +1,4 @@
-import stdlib:sys:app;
+import stdlib:sys:app as *;
 import stdlib:math:tools as *;
 
 type Vector(A) as rec(
@@ -11,12 +11,20 @@ type VectorIterator(A) as rec(
   var index = 0 as int
 )
 
-method init(var this as ref(Vector(A)), var length as int)
+method init(var this as ref(Vector(A)), var length as int, var default = true as bool)
 {
   this.length = length;
   if (this.length > 0)
   {
-    this.data = stdlib:sys:app:app.allocator.allocate(length*sizeof(A));
+    this.data = app.allocator.allocate(length*sizeof(A));
+    if (default)
+    {
+      var a as A;
+      for (i = 0; i < length; inc i)
+      {
+        this[i] = a;
+      }
+    }
   }
   else
   {
@@ -24,26 +32,31 @@ method init(var this as ref(Vector(A)), var length as int)
   }
 }
 
-method ()(Vector(A), var length as int) as Vector(A)
+method ()(Vector(A), var length as int, var default = true as bool) as ref(Vector(A))
 {
-  var this as Vector(A);
-  exec this.init(length);
+  var this as ref(Vector(A));
+  this = app.allocator.allocate(sizeof(Vector(A)));
+  exec this.init(length, default);
   return this;
 }
 
 method del(var this as ref(Vector(A)))
 {
-  if (this.data != null)
+  if (this != null)
   {
-    if (A > object)
+    if (this.data != null)
     {
-      for (i = 0; i < this.length; inc i)
+      if (A > object)
       {
-        del this[i];
+        for (i = 0; i < this.length; inc i)
+        {
+          del this[i];
+        }
       }
-    }
 
-    exec stdlib:sys:app:app.allocator.free((ref(byte))(this.data));
+      exec app.allocator.free((ref(byte))(this.data));
+    }
+    exec app.allocator.free(this);
   }
 }
 
@@ -74,7 +87,7 @@ method next(var this as ref(VectorIterator(A)), var out as ref(A)) as bool
   return true;
 }
 
-method ()(Vector(int), var from as int, var upto as int, var step = 1 as int) as Vector(int)
+method ()(Vector(int), var from as int, var upto as int, var step = 1 as int) as ref(Vector(int))
 {
   res = Vector(int)((upto - from)/step);
   for (i = 0; i < res.length(); inc i)
@@ -84,7 +97,7 @@ method ()(Vector(int), var from as int, var upto as int, var step = 1 as int) as
   return res;
 }
 
-method sub(var this as ref(Vector(A)), var i as int, var length as int) as Vector(A)
+method sub(var this as ref(Vector(A)), var i as int, var length as int) as ref(Vector(A))
 {
   if (i < 0) {i = 0}
   computed_length = min(this.length - i, length);
