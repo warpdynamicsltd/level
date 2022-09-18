@@ -78,6 +78,7 @@ test_source([test_path(r"templates/compound2.lvl")], b"+00000000:00000004\n+0000
 test_source([test_path(r"types/order.lvl")], b"+00000000:00000007\n+00000000:0000000c\n")
 test_source([test_path(r"types/cast.lvl")], b"+00000000:00000003\n3fff:80000000:00000000\n+00000000:00000003\n00000001\n")
 test_source([test_path(r"types/sizeof.lvl")], b"+00000000:00000003\n00000001\n+00000000:00000050\n+00000000:00000008\n00000001\n00000001\n00000001\n")
+test_source([test_path(r"types/ref.lvl")], b"00000001\n00000001\n00000001\naaaa\naaaa\nend\n")
 
 test_source([test_path(r"collections/stack_test.lvl")],
             b"stack length\n00000001\nstart pushing\nstack length\n00000001\nstart iterating\n00000001\nstart iterating\n00000001\nstart iterating\n00000001\nstart popping\nstack length\n00000001\n00000001\nstart pushing\nstack length\n00000001\nstart popping\nstack length\n00000001\n00000001\nend\n")
@@ -114,6 +115,7 @@ test_source([test_path(r"inheritance/parentcast.lvl")], b"00000001\n00000001\n+0
 
 test_source([test_path(r"str/basic_utf8.lvl")], b"\xc2\xa3\n\xe0\xa4\xb9\n\xe2\x82\xac\n\xed\x95\x9c\n\xf0\x90\x8d\x88\n+00000000:00000029\nHello, world for \xc2\xa3100 and \xe0\xa4\xb9, \xe2\x82\xac, \xed\x95\x9c, \xf0\x90\x8d\x88, hej\nend\n")
 test_source([test_path(r"str/oper.lvl")], b"Hello, world!\nHello, world!\n{Level}\n45\n00000001\n00000000\n00000001\n")
+test_source([test_path(r"str/obj_str.lvl")], b"000000f3\nW\xc3\xb3jcik\nHello, world!\n00000001\n+00000000:00000006\n00000057\n000000f3\n0000006a\n00000063\n00000069\n0000006b\n57\nc3\nb3\n6a\n63\n69\n6b\n00\nW\xc3\xb3jcik\nend\nmemory allocated\n+00000000:00000000\nend\n")
 
 test_source([test_path(r"norm/norm1.lvl")], b"+00000000:00000003\n+00000000:00000003\n+00000000:00000007\n+00000000:00000008\n+00000000:00000006\n+00000000:00000003\ninheritance\n+00000000:00000009\n+00000000:00000007\nend\n")
 test_source([test_path(r"norm/norm2.lvl")], b"+00000000:00000003\n+00000000:00000003\n+00000000:00000007\n+00000000:00000008\n+00000000:00000006\n+00000000:00000003\ninheritance\n+00000000:00000009\n+00000000:00000007\nend\n")
