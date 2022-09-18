@@ -6,6 +6,7 @@ default_modules = [
 
 binary_operators = {
     '+' : ast.Add,
+    'shift' : ast.AddNoOverride,
     '-' : ast.Sub,
     '*' : ast.Mul,
     '/' : ast.Div,
@@ -24,6 +25,8 @@ binary_operators = {
     '>>': ast.RShift,
     '<<': ast.LShift
 }
+
+no_override_binary = set([ast.AddNoOverride])
 
 unary_operators = {
     '+': ast.Plus,
@@ -81,8 +84,11 @@ translate_simple_types = {
     'bool': 'Bool',
     'byte': 'Byte',
     'ref' : 'Ref',
+    '__ref__' : 'Ref',
     'object': 'Object'
 }
+
+default_return_type = 'int'
 
 class BuiltinValue:
     def __init__(self, value):

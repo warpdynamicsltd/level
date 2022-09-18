@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 
 import level.core.ast as ast
+import level.core.parser.builtin
 from level.core.compiler.subroutines import Subroutine, Subroutines, CallAddress, Template, Templates
 from level.core.compiler.type_defs import TypeDefs, TypeDef
 from level.core.compiler.globals import Globals, Global
@@ -51,9 +52,6 @@ class CompileDriver(ABC):
     def get_type_by_var(self, c):
         pass
 
-    @abstractmethod
-    def get_type_by_call_address(self, addr : CallAddress):
-        pass
 
     @abstractmethod
     def echo_obj(self, obj):
@@ -686,9 +684,6 @@ class Compiler:
         return obj(*objs)
 
     def post_process_obj(self, obj):
-        if type(obj) is not Type and self.compile_driver.gc_trigger(obj.type):
-            if self.subroutines_stack:
-                self.subroutines_stack[-1].gc_active = True
         return obj
 
     def compile_expression(self, exp, obj_manager):
@@ -836,9 +831,10 @@ class Compiler:
         jump_address = self.compile_driver.logic_operator_compile_begin(op_T, obj1)
         obj2 = self.compile_expression(exp2, obj_manager)
 
-        subroutine = self.get_subroutine_for_call(True, op_exp.meta, op_exp.raw_str, obj1, obj2)
-        if subroutine is not None:
-            return self.compile_call_execution(True, obj_manager, subroutine, obj1, obj2)
+        if op_T not in level.core.parser.builtin.no_override_binary:
+            subroutine = self.get_subroutine_for_call(True, op_exp.meta, op_exp.raw_str, obj1, obj2)
+            if subroutine is not None:
+                return self.compile_call_execution(True, obj_manager, subroutine, obj1, obj2)
 
         if type(obj1) is Type and type(obj2) is Type:
             return self.compile_types_binary(obj_manager, op_T, obj1, obj2)

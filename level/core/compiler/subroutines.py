@@ -42,7 +42,6 @@ class Subroutine:
         self.compiled = False
         self.meta = meta
         self.ref_return = ref_return
-        self.gc_active = False
 
     def use(self):
         self.used = True

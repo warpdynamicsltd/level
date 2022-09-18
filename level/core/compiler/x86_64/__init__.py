@@ -80,9 +80,6 @@ class CompileDriver_x86_64(CompileDriver):
     def ret(self):
         ret_()
 
-    def gc_trigger(self, T):
-        return T.main_type == Rec and T.user_name == 'stdlib:sys:context:mem_obj'
-
     def get_type_by_const(self, c):
         #print(c, c.name)
         if type(c.name) is int:
@@ -143,9 +140,6 @@ class CompileDriver_x86_64(CompileDriver):
 
     def get_empty_type(self):
         return Type(main_type=Rec, length=0)
-
-    def get_type_by_call_address(self, addr: CallAddress):
-        return Type(U32)
 
     def get_bool(self, b, obj_manager):
         res = obj_manager.reserve_variable(Type(Bool), value=b)
@@ -245,6 +239,9 @@ class CompileDriver_x86_64(CompileDriver):
         res = None
 
         if op_T is ast.Add:
+            res = obj1 + obj2
+
+        if op_T is ast.AddNoOverride:
             res = obj1 + obj2
 
         if op_T is ast.Eq:

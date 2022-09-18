@@ -31,7 +31,6 @@ class Ref(Obj):
 
     def set_from_const(self, value):
         if type(value) is bytes:
-            # self.type.sub_types[0].length = len(value)
             addr = SymBits(bits=64)
             mov_(rax, addr)
             self.MC_put_to_storage(rax)
@@ -99,24 +98,24 @@ class Ref(Obj):
         return obj
 
     def __add__(self, other):
+        step = self.type.sub_types[0].size() if self.type.sub_types else 1;
         other.MC_get_from_storage(rax)
-        mov_(rcx, self.type.sub_types[0].size())
+        mov_(rcx, step)
         mul_(rcx)
-        T = self.type.sub_types[0]
         self.MC_get_from_storage(rcx)
         add_(rcx, rax)
-        ref = Ref(object_manager=self.object_manager, T=Type(Ref, sub_types=[T]))
+        ref = Ref(object_manager=self.object_manager, T=self.type)
         ref.MC_put_to_storage(rcx)
         return ref
 
     def __sub__(self, other):
+        step = self.type.sub_types[0].size() if self.type.sub_types else 1;
         other.MC_get_from_storage(rax)
-        mov_(rcx, self.type.sub_types[0].size())
+        mov_(rcx, step)
         mul_(rcx)
-        T = self.type.sub_types[0]
         self.MC_get_from_storage(rcx)
         sub_(rcx, rax)
-        ref = Ref(object_manager=self.object_manager, T=Type(Ref, sub_types=[T]))
+        ref = Ref(object_manager=self.object_manager, T=self.type)
         ref.MC_put_to_storage(rcx)
         return ref
 
