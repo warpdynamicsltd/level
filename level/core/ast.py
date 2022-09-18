@@ -469,6 +469,10 @@ class Add(BinaryExpression):
     def __init__(self, a, b):
         BinaryExpression.__init__(self, 'Add', a, b)
 
+class AddNoOverride(BinaryExpression):
+    def __init__(self, a, b):
+        BinaryExpression.__init__(self, 'AddNoOverride', a, b)
+
 class Mul(BinaryExpression):
     def __init__(self, a, b):
         BinaryExpression.__init__(self, 'Mul', a, b)

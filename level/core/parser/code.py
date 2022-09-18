@@ -853,7 +853,7 @@ class Parser:
             if res is not None:
                 return res
 
-            res = self.try_binary_parse(stream, ['+', '-'])
+            res = self.try_binary_parse(stream, ['shift', '+', '-'])
             if res is not None:
                 return res
 
@@ -1182,7 +1182,7 @@ class Parser:
         type_index = 2
 
         variables = []
-        return_type = ast.Type('int').add_meta(stream[0].meta)
+        return_type = ast.Type(builtin.default_return_type).add_meta(stream[0].meta)
 
         if stream and type(stream[0]) is TerminalSymb:
             if not method:
