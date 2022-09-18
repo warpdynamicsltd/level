@@ -1,0 +1,75 @@
+import stdlib:collections:str;
+import stdlib:collections:vector as *;
+import stdlib:sys:context as *;
+import stdlib:obj:collections:vector as *;
+
+type char as u32;
+type str extends obj(stdlib:collections:str:str) with rec();
+
+method new ()(str, var a = "" as ref(byte)) as str
+{
+  return obj(stdlib:collections:str:str)(stdlib:collections:str:str(a));
+}
+
+method [](var this as ref(str), var index as int) as val ref(char)
+{
+  return this.obj.ptr.data + index;
+}
+
+method new +(var a as ref(str), var b as ref(str)) as str
+{
+  return obj(stdlib:collections:str:str)(a.obj.ptr + b.obj.ptr);
+}
+
+method new sub(var this as ref(str), var i as int, var length as int) as str
+{
+  return obj(stdlib:collections:str:str)(this.obj.ptr.sub(i, length));
+}
+
+method ==(var a as ref(str), var b as ref(str)) as bool
+{
+  return a.obj.ptr == b.obj.ptr;
+}
+
+method !=(var a as ref(str), var b as ref(str)) as bool
+{
+  return not(a.obj.ptr == b.obj.ptr);
+}
+
+method length(var this as ref(str))
+{
+  return this.obj.ptr.length;
+}
+
+type str_iterator as rec
+(
+  var s as ref(str),
+  var index as int
+)
+
+method next(var this as ref(str_iterator), var out as ref(char)) as bool
+{
+  if (this.index == this.s.obj.ptr.length) {return false}
+
+  val out = this.s[this.index];
+  inc this.index;
+  return true;
+}
+
+method iterator(var this as ref(str)) as str_iterator
+{
+  var res as str_iterator;
+  res.s = this;
+  res.index = 0;
+  return res;
+}
+
+method new utf8(var this as ref(str)) as vector(byte)
+{
+  return obj(Vector(byte))(this.obj.ptr.utf8());
+}
+
+method echo(var s as ref(str))
+{
+  echo s.obj.ptr;
+}

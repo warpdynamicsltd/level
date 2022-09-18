@@ -36,3 +36,14 @@ method next(var this as ref(vector_iterator(A)), var out as ref(A)) as bool
   inc this.index;
   return true;
 }
+
+method echo (var this as ref(vector(byte)))
+{
+  v = vector(byte)(this.length() + 1);
+  for(i = 0; i < this.length(); inc i)
+  {
+    v[i] = this[i];
+  }
+  v[i] = 0;
+  echo v.obj.ptr.data;
+}

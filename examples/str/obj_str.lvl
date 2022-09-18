@@ -1,0 +1,35 @@
+import stdlib:obj:collections:str as *;
+import stdlib:sys:app as *;
+
+sub main()
+{
+  s = str("Wójcik");
+  echo s[1];
+  echo s;
+  echo str("Hello") + str(", world!");
+  echo str("0123456789").sub(2, 3) == str("234");
+
+  echo s.length();
+
+  foreach (var c as char in s)
+  {
+    echo c;
+  }
+
+  data = s.utf8();
+  foreach (var b as byte in data)
+  {
+    echo b;
+  }
+  echo data;
+
+  echo "end";
+}
+
+entry
+{
+  exec main();
+  echo "memory allocated";
+  echo app.allocator.used;
+  echo "end";
+}

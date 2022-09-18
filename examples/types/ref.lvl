@@ -1,0 +1,13 @@
+entry
+{
+  var b as ref(byte);
+  b = "aaaa";
+  k = __ref__(b);
+  z = (ref(int))(k);
+  echo u64(k + 1) == u64(k) + 1;
+  echo u64(b) == u64(k);
+  echo u64(z shift 1) == u64(k) + 8;
+  echo b;
+  echo k;
+  echo "end";
+}
