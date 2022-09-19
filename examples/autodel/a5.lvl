@@ -25,6 +25,7 @@ entry
 {
   var c as Container;
   var a = Container(1) as Container;
+  var b as Container;
   for (i = 0; i < 2; inc i)
   {
     b = Container(4 + i);

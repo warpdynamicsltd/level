@@ -74,6 +74,7 @@ class Globals:
         ref_obj = obj_manager.reserve_variable(ref_T)
         ref_obj.bind(obj)
         res = ref_obj.get_obj()
+        # this needs to be fixed in LVL-93
         if g.init_expression is not None and not g.initiated:
             init_obj = self.compiler.compile_expression(g.init_expression, obj_manager)
             self.compiler.compile_assigment(obj_manager, res, init_obj)

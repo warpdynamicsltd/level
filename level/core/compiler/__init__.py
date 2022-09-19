@@ -174,6 +174,7 @@ class Compiler:
         self.globals.init(object_manager)
 
         self.compile_statements(statements.val, obj_manager=object_manager)
+        object_manager.close()
         self.code_block_contexts.close_current()
         self.compile_driver.end()
 
@@ -183,8 +184,6 @@ class Compiler:
 
         self.compile_driver.add_compiler_data()
         self.globals.set_data_address()
-
-        object_manager.close()
 
     def compile_types(self, types_block):
         for arg in types_block.args:
@@ -411,6 +410,7 @@ class Compiler:
             var_obj.set(obj)
 
     def compile_first_assigment(self, obj_manager, var_obj, obj=None):
+        self.code_block_contexts.add_initiated_var(var_obj)
         if self.inherited_from_object(var_obj):
             self.code_block_contexts.add_obj_to_finish(var_obj)
         if obj is not None:
@@ -420,7 +420,7 @@ class Compiler:
         self.update_meta(s)
 
         if ast.istype(s, ast.InitWithType):
-
+        # variables initiation in Level is local relative to the current code block (scope)
             var = ast.MetaVar()
             type_expression = ast.MetaVar()
             init_expression = ast.MetaVar()
@@ -480,15 +480,7 @@ class Compiler:
 
 
             var_obj = self.compile_expression(var_exp.val, obj_manager)
-
-            if type(var_exp.val) is ast.Var:
-                self.compile_first_assigment(obj_manager, var_obj, obj)
-            else:
-                self.compile_assigment(obj_manager, var_obj, obj)
-            # if var_obj.assigned:
-            #     self.compile_assigment(obj_manager, var_obj, obj)
-            # else:
-            #     self.compile_first_assigment(obj_manager, var_obj, obj)
+            self.compile_assigment(obj_manager, var_obj, obj)
             return
 
         if ast.istype(s, ast.AssignNoOverride):

@@ -216,10 +216,6 @@ class TypeVar:
 
 class Obj:
     def __init__(self):
-        self.returned = False
-        self.constructed = False
-        self.assigned = False
-
         self.name = None
         self.index = None
 
