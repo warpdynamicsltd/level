@@ -411,13 +411,10 @@ class Compiler:
             var_obj.set(obj)
 
     def compile_first_assigment(self, obj_manager, var_obj, obj=None):
-        if not var_obj.assigned:
-            # if self.inheritance.is_1st_derived_from_2nd(hash(var_obj.type), hash(self.compile_driver.object_type)):
-            if self.inherited_from_object(var_obj):
-                self.code_block_contexts.add_obj_to_finish(var_obj)
-            if obj is not None:
-                self.compile_assigment(obj_manager, var_obj, obj)
-            var_obj.assigned = True
+        if self.inherited_from_object(var_obj):
+            self.code_block_contexts.add_obj_to_finish(var_obj)
+        if obj is not None:
+            self.compile_assigment(obj_manager, var_obj, obj)
 
     def compile_statement(self, s, obj_manager):
         self.update_meta(s)
@@ -481,8 +478,13 @@ class Compiler:
                     self.compile_first_assigment(obj_manager, var_obj, obj)
                     return
 
+
             var_obj = self.compile_expression(var_exp.val, obj_manager)
-            self.compile_assigment(obj_manager, var_obj, obj)
+
+            if type(var_exp.val) is ast.Var:
+                self.compile_first_assigment(obj_manager, var_obj, obj)
+            else:
+                self.compile_assigment(obj_manager, var_obj, obj)
             # if var_obj.assigned:
             #     self.compile_assigment(obj_manager, var_obj, obj)
             # else:

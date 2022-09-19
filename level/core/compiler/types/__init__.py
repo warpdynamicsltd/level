@@ -221,6 +221,7 @@ class Obj:
         self.assigned = False
 
         self.name = None
+        self.index = None
 
     @abstractmethod
     def set(self, obj):

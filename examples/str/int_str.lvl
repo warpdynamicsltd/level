@@ -1,0 +1,22 @@
+import stdlib:obj:collections:str as *;
+import stdlib:obj:collections:stack as *;
+import stdlib:sys:app as *;
+
+sub main()
+{
+  echo str(0) == str("0");
+  echo str(1) == str("1");
+  echo str(-1) == str("-1");
+  echo str(10) == str("10");
+  echo str(-10) == str("-10");
+  echo str(1345627) == str("1345627");
+  echo str(-1345627) == str("-1345627");
+}
+
+entry
+{
+  exec main();
+  echo "memory allocated";
+  echo app.allocator.used;
+  echo "end";
+}
