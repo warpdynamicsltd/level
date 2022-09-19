@@ -1,0 +1,31 @@
+import stdlib:obj:collections:str as *;
+import stdlib:collections:str;
+import stdlib:obj:collections:stack as *;
+import stdlib:sys:app as *;
+
+sub main()
+{
+  if (true)
+  {
+    s = str("a");
+    for (i = 0; i < 10; inc i)
+    {
+      s = s + str("a");
+      echo s;
+    }
+    echo s;
+  }
+  else
+  {
+    s = str("b");
+    echo s;
+  }
+}
+
+entry
+{
+  exec main();
+  echo "memory allocated";
+  echo app.allocator.used;
+  echo "end";
+}

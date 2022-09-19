@@ -607,11 +607,22 @@ class CompileDriver_x86_64(CompileDriver):
 class StandardObjManager(ObjManager):
     def __init__(self, compiler, subroutine=None, memory=0x100000):
         self.size = SymBits()
-        self.cursor = 0
+        self._cursor = 0
+        self.max_cursor = 0
         self.on_top_cursor = 0
         self.parent = None
         self.memory = memory
         ObjManager.__init__(self, compiler, subroutine=subroutine)
+
+    @property
+    def cursor(self):
+        return self._cursor
+
+    @cursor.setter
+    def cursor(self, value):
+        self._cursor = value
+        if self.cursor > self.max_cursor:
+            self.max_cursor = self.cursor
 
     def set_main_frame(self):
         self.compiler.compile_driver.set_frame(self.memory)
@@ -628,7 +639,7 @@ class StandardObjManager(ObjManager):
 
     def close(self):
         if self.parent is None:
-            set_symbol(self.size, self.cursor)
+            set_symbol(self.size, self.max_cursor)
         else:
             self.parent.on_top_cursor = 0
             self.compiler.compile_driver.frame_down(self.parent.size)

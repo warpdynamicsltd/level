@@ -96,17 +96,18 @@ class Subroutine:
 
         for obj in objs:
             if self.compiler.inherited_from_object(obj):
+                # we replace all object vars with new ones to run assignment and add them to finish list in codeblock
                 new_obj = obj_manager.reserve_variable(obj.type)
+                new_obj.name = obj.name
                 self.compiler.compile_first_assigment(obj_manager, new_obj, obj)
                 obj_manager.objs[obj.name] = new_obj
-                #new_obj = obj_manager.reserve_variable(obj_T)
 
         for s in self.statement_list.args:
             self.compiler.compile_statement(s, obj_manager)
 
+        obj_manager.close()
         self.compiler.code_block_contexts.close_current()
         self.compiler.subroutines_stack.pop()
-        obj_manager.close()
         Subroutine.n_compiled += 1
         self.compiled = True
         self.compiler.subroutine_compiled_addresses[self.name, h] = self.address
