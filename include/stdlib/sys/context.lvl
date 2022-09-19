@@ -55,7 +55,7 @@ method finish (var this as ref(obj(A)))
 method =(var this as ref(obj(A)), var a as ref(obj(A)))
 {
    del this.obj;
-   this.obj = a.obj;
+   this.obj <- a.obj;
    if (this.obj != null)
    {
     inc this.obj.ref_count;

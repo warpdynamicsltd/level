@@ -501,11 +501,12 @@ class CompileDriver_x86_64(CompileDriver):
         self.compiler.code_block_contexts.close_current()
 
         if else_:
-            self.compiler.code_block_contexts.open_new(obj_manager, scope_name="ifelse")
             jmp_(end_else_block)
+
         set_symbol(end_if_block)
 
         if else_:
+            self.compiler.code_block_contexts.open_new(obj_manager, scope_name="ifelse")
             yield None
             self.compiler.code_block_contexts.compile_current_closure()
             self.compiler.code_block_contexts.close_current()
@@ -644,7 +645,9 @@ class StandardObjManager(ObjManager):
         return res
 
     def reserve_variable(self, T, value=None, for_child_manager=False, copy=False, source_obj=None):
+        index = self.cursor
         res = T.main_type(self, T=T, value=value, for_child_manager=for_child_manager, copy=copy)
+        res.index = index
 
         if source_obj is not None:
             res.set(source_obj)

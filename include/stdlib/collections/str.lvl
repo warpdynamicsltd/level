@@ -13,6 +13,14 @@ method ()(str) as ref(str)
   return this;
 }
 
+sub create_str(var length as int) as ref(str)
+{
+  var this as ref(str);
+  this = app.allocator.allocate(sizeof(str));
+  exec this.init(length);
+  return this;
+}
+
 sub process_char_utf8(var stack as ref(Stack(byte)), var c as char) as bool
 {
   if (0 <= c and c <= 0x7f)

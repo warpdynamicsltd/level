@@ -4,17 +4,23 @@ class CodeBlockContext:
         self.obj_manager = obj_manager
         self.scope_name = scope_name
         self.objs_to_del = []
+        self.objs_to_del_indices = set()
         self.objs_to_finish = []
+        self.objs_to_finish_indices = set()
 
         self.subroutine = None
         if self.compiler.subroutines_stack:
             self.subroutine = self.compiler.subroutines_stack[-1]
 
     def add_obj_to_del(self, obj):
-        self.objs_to_del.append(obj)
+        if obj.index not in self.objs_to_del_indices:
+            self.objs_to_del.append(obj)
+            self.objs_to_del_indices.add(obj.index)
 
     def add_obj_to_finish(self, obj):
-        self.objs_to_finish.append(obj)
+        if obj.index not in self.objs_to_finish_indices:
+            self.objs_to_finish.append(obj)
+            self.objs_to_finish_indices.add(obj.index)
 
     def compile_mass_del(self):
         for obj in self.objs_to_del:
