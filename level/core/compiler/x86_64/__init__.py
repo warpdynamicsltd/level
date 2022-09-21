@@ -616,6 +616,15 @@ class CompileDriver_x86_64(CompileDriver):
         res.MC_put_to_storage(rax)
         return res
 
+    def compile_api_mul(self, obj_manager, a, b, d):
+        res = obj_manager.reserve_variable(Type(U64))
+        a.MC_get_from_storage(rax)
+        b.MC_get_from_storage(rbx)
+        mul_(rbx)
+        d.MC_put_to_storage(rdx)
+        res.MC_put_to_storage(rax)
+        return res
+
 
 
 class StandardObjManager(ObjManager):
