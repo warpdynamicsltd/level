@@ -1,0 +1,108 @@
+import stdlib:obj:collections:vector as *;
+import stdlib:obj:collections:stack as *;
+import stdlib:obj:collections:str as *;
+
+type bigint extends object with rec
+(
+  var data as vector(u64),
+  var sign = 1 as byte
+);
+
+method new ()(bigint, var n = 0 as u64) as bigint
+{
+  var this as bigint;
+  this.data = vector(u64)(1);
+  this.data[0] = n;
+  this.sign = 1;
+  return this;
+}
+
+method new +(var this as ref(bigint), var other as ref(bigint)) as bigint
+{
+  var r as u64;
+  var c as u64;
+  var a as u64;
+  var b as u64;
+
+  var res as bigint;
+
+  st = stack(u64)();
+
+
+
+  this_len = this.data.length();
+  other_len = other.data.length();
+  end_a = false;
+  end_b = false;
+
+  i = 0;
+  c = 0;
+  e = false;
+  while (not e)
+  {
+    if (i < this_len)
+    {
+      a = this.data[i];
+    }
+    else
+    {
+      a = 0;
+      end_a = true;
+    }
+
+    if (i < other_len)
+    {
+      b = other.data[i];
+    }
+    else
+    {
+      b = 0;
+      end_b = true;
+    }
+
+    r = __api__(add, a, b, c);
+    e = end_a and end_b;
+    if (not e or r != 0)
+    {
+      exec st.push(r);
+    }
+
+    inc i;
+  }
+
+  res.data = vector(u64)(st.length());
+  i = 0;
+  foreach (var u as u64 in st)
+  {
+    res.data[i] = u;
+    inc i;
+  }
+
+  return res;
+}
+
+method =(var this as ref(bigint), var a as ref(bigint))
+{
+  this.data = a.data;
+  this.sign = a.sign;
+}
+
+method del (var this as ref(bigint))
+{
+  del this.data;
+}
+
+method finish(var this as ref(bigint))
+{
+  del this;
+}
+
+method echo (var this as ref(bigint))
+{
+  res = str();
+  for (i = this.data.length() - 1; i >= 0; dec i)
+  {
+    res = res + hex64(this.data[i]);
+  }
+  echo res;
+}

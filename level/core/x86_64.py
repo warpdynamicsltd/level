@@ -724,6 +724,27 @@ def add_(a, b):
              a=a,
              b=b)
 
+def adc_(a, b):
+    if type(a) is Register and is_u32(b):
+        if a.bits == 64:
+            logic_gate(a, b, op_eax_imm=[0x05], op_imm_=[0x81], d=2, u=u32, prefixes=[0x48])
+            return
+        if a.bits == 32:
+            logic_gate(a, b, op_eax_imm=[0x05], op_imm_=[0x81], d=2, u=u32)
+            return
+        if a.bits == 8:
+            logic_gate(a, b, op_eax_imm=[0x04], op_imm_=[0x80], d=2, u=u8)
+            return
+
+    op_combo(op_rm_r8=[0x10],
+             op_rm_r32=[0x11],
+             op_r_rm8=[0x12],
+             op_r_rm32=[0x13],
+             op_r_imm8=[],
+             op_r_imm32=[],
+             a=a,
+             b=b)
+
 
 def addl_(a, b):
     target_bits = 32
@@ -737,9 +758,24 @@ def addl_(a, b):
     if target_bits == 64:
         op_mr_immr(op=[0x81], d_reg=0, target=a, imm=u32(b), prefixes=[0x48])
 
+def adcl_(a, b):
+    target_bits = 32
+    if type(a) is list and type(a[0]) is Register:
+        target_bits = a[0].bits
+    if type(a) is Register:
+        target_bits = a.bits
+
+    if target_bits == 32:
+        op_mr_immr(op=[0x81], d_reg=2, target=a, imm=u32(b))
+    if target_bits == 64:
+        op_mr_immr(op=[0x81], d_reg=2, target=a, imm=u32(b), prefixes=[0x48])
+
 
 def addb_(a, b):
-    op_mr_immr(op=[0x80], d_reg=0, target=a, imm=u8(b))
+    op_mr_immr(op=[0x80], d_reg=2, target=a, imm=u8(b))
+
+def adcb_(a, b):
+    op_mr_immr(op=[0x80], d_reg=2, target=a, imm=u8(b))
 
 
 def sub_(a, b):

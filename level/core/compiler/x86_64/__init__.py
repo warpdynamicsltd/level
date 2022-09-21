@@ -603,6 +603,20 @@ class CompileDriver_x86_64(CompileDriver):
         res.MC_put_to_storage(rsi)
         return res
 
+    def compile_api_add(self, obj_manager, a, b, c):
+        res = obj_manager.reserve_variable(Type(U64))
+        a.MC_get_from_storage(rax)
+        b.MC_get_from_storage(rbx)
+        c.MC_get_from_storage(rcx)
+        xor_(dl, dl)
+        sub_(dl, cl)
+        adc_(rax, rbx)
+        setc_(cl)
+        c.MC_put_to_storage(rcx)
+        res.MC_put_to_storage(rax)
+        return res
+
+
 
 class StandardObjManager(ObjManager):
     def __init__(self, compiler, subroutine=None, memory=0x100000):

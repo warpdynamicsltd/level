@@ -110,3 +110,55 @@ method new ()(str, var n as int) as str
 
   return prefix + str(st);
 }
+
+sub new hex64(var n as int) as str
+{
+  var prefix as str;
+  st = stack(char)();
+  if (n < 0)
+  {
+    prefix = str("-");
+  }
+  else
+  {
+    prefix = str();
+  }
+
+  n = abs(n);
+
+  for (i = 0; i < 16; inc i)
+  {
+    d = n & 0xf;
+    if (d < 10)
+    {
+      exec st.push(char(0x30 + d));
+    }
+    else
+    {
+      exec st.push(char(0x61 + d));
+    }
+    n = n >> 4;
+  }
+
+  return prefix + str(st);
+}
+
+sub new hex64(var n as u64) as str
+{
+  st = stack(char)();
+  for (i = 0; i < 16; inc i)
+  {
+    d = n & 0xf;
+    if (d < 10)
+    {
+      exec st.push(char(0x30 + d));
+    }
+    else
+    {
+      exec st.push(char(0x57 + d));
+    }
+    n = n >> 4;
+  }
+
+  return str(st);
+}
