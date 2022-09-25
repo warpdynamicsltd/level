@@ -1,0 +1,9 @@
+sub time_us() as u64
+{
+  return __api__(time_micro);
+}
+
+sub time_ms() as u64
+{
+  return __api__(time_micro)/1000;
+}

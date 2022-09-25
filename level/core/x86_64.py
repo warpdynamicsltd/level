@@ -611,15 +611,19 @@ def mull_(a):
 def mulq_(a):
     op_mr_immr(op=[0xf7], d_reg=4, target=a, operand_bits=64)
 
-def imul_(a):
-    if a.bits == 64:
-        op_mr_immr(op=[0xf7], d_reg=5, target=a, prefixes=[0x48])
-        return
-    if a.bits == 32:
-        op_mr_immr(op=[0xf7], d_reg=5, target=a)
-        return
-    if a.bits == 8:
-        op_mr_immr(op=[0xf6], d_reg=5, target=a)
+def imul_(a, b=None):
+    if b is None:
+        if a.bits == 64:
+            op_mr_immr(op=[0xf7], d_reg=5, target=a, prefixes=[0x48])
+            return
+        if a.bits == 32:
+            op_mr_immr(op=[0xf7], d_reg=5, target=a)
+            return
+        if a.bits == 8:
+            op_mr_immr(op=[0xf6], d_reg=5, target=a)
+            return
+    else:
+        op_mr_immr(op=[0x0f, 0xaf], d_reg=a.reg, target=b, operand_bits=a.bits)
         return
 
 def imulb_(a):
