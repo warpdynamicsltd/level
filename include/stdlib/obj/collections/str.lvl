@@ -111,6 +111,20 @@ method new ()(str, var n as int) as str
   return prefix + str(st);
 }
 
+method new ()(str, var n as u64) as str
+{
+  st = stack(char)();
+
+  while (n >= 0)
+  {
+    exec st.push(char(0x30 + n % 10));
+    n = n/10;
+    if (n == 0) {break}
+  }
+
+  return str(st);
+}
+
 sub new hex64(var n as int) as str
 {
   var prefix as str;

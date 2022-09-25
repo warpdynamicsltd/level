@@ -641,6 +641,23 @@ class CompileDriver_x86_64(CompileDriver):
         res.MC_put_to_storage(rax)
         return res
 
+    def compile_api_time_micro(self, obj_manager):
+        res = obj_manager.reserve_variable(Type(U64))
+        mov_(rax, 96)
+        lea_(rdi, [rbp + obj_manager.cursor])
+        xor_(esi, esi)
+        syscall_()
+        mov_(rcx, 1000000)
+        mov_(rax, [rdi + 8])
+        xor_(edx, edx)
+        #div_(rcx)
+        mov_(rdx, [rdi])
+        imul_(rdx, rcx)
+        add_(rax, rdx)
+        res.MC_put_to_storage(rax)
+        return res
+
+
 
 
 class StandardObjManager(ObjManager):
