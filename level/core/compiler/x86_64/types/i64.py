@@ -121,6 +121,12 @@ class I64(Obj):
         add_(rax, rcx)
         self.MC_put_to_storage(rax)
 
+    def sub(self, other):
+        I64.int2reg(other, rcx)
+        self.MC_get_from_storage(rax)
+        sub_(rax, rcx)
+        self.MC_put_to_storage(rax)
+
     def inc(self):
         self.MC_get_from_storage(rax)
         inc_(rax)

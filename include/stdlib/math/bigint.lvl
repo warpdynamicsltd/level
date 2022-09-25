@@ -72,12 +72,12 @@ method add_abs_in_place(var this as ref(bigint), var other as ref(bigint), var i
 # user needs to guarantee enough space for add in this
 {
   c = 0;
-  k = other.data.length();
+  k = other.data.obj.ptr.length;
   for(i = 0; i < k; inc i)
   {
-    this.data[index + i] = __api__(add, other.data[i], this.data[index + i], c);
+    this.data.obj.ptr.data[index + i] = __api__(add, other.data.obj.ptr.data[i], this.data.obj.ptr.data[index + i], c);
   }
-  this.data[index + k] = this.data[index + k] + c;
+  inc this.data.obj.ptr.data[index + k], c;
 }
 
 method new add_abs(var this as ref(bigint), var other as ref(bigint)) as bigint
@@ -88,31 +88,30 @@ method new add_abs(var this as ref(bigint), var other as ref(bigint)) as bigint
   var b as u64;
 
   var res as bigint;
-  this_len = this.data.length();
-  other_len = other.data.length();
+  this_len = this.data.obj.ptr.length;
+  other_len = other.data.obj.ptr.length;
   n = max(this_len, other_len);
   res.data = vector(u64)(n + 1);
   c = 0;
   for (i = 0; i < n + 1; inc i)
   {
+    a = 0;
     if (i < this_len)
     {
-      a = this.data[i];
-    }
-    else
-    {
-      a = 0;
+      a = this.data.obj.ptr.data[i];
     }
 
+    b = 0;
     if (i < other_len)
     {
-      b = other.data[i];
-    }
-    else
-    {
-      b = 0;
+      b = other.data.obj.ptr.data[i];
     }
     res.data[i] = __api__(add, a, b, c);
+  }
+
+  if (res.data.obj.ptr.data[n] != 0)
+  {
+    return res;
   }
 
   return res.normalise();
@@ -126,34 +125,34 @@ method new _sub_abs(var this as ref(bigint), var other as ref(bigint)) as bigint
   var b as u64;
 
   var res as bigint;
-  this_len = this.data.length();
-  other_len = other.data.length();
+  this_len = this.data.obj.ptr.length;
+  other_len = other.data.obj.ptr.length;
   n = max(this_len, other_len);
   res.data = vector(u64)(n + 1);
   c = 0;
   for (i = 0; i < n + 1; inc i)
   {
+    a = 0;
     if (i < this_len)
     {
-      a = this.data[i];
-    }
-    else
-    {
-      a = 0;
+      a = this.data.obj.ptr.data[i];
     }
 
+    b = 0;
     if (i < other_len)
     {
-      b = other.data[i];
-    }
-    else
-    {
-      b = 0;
+      b = other.data.obj.ptr.data[i];
     }
     res.data[i] = __api__(sub, a, b, c);
   }
 
+  if (res.data.obj.ptr.data[n] != 0)
+  {
+    return res;
+  }
+
   return res.normalise();
+
 }
 
 method new sub_abs(var this as ref(bigint), var a as ref(bigint)) as bigint
@@ -228,13 +227,13 @@ sub new mul(var a as u64, var b as u64) as bigint
   if (d == 0)
   {
     res.data = vector(u64)(1);
-    res.data[0] = r;
+    res.data.obj.ptr.data[0] = r;
   }
   else
   {
     res.data = vector(u64)(2);
-    res.data[0] = r;
-    res.data[1] = d;
+    res.data.obj.ptr.data[0] = r;
+    res.data.obj.ptr.data[1] = d;
   }
 
   return res;
@@ -242,8 +241,8 @@ sub new mul(var a as u64, var b as u64) as bigint
 
 method new normalise(var this as ref(bigint)) as bigint
 {
-  i = this.data.length();
-  while(i > 1 and this.data[i - 1] == 0)
+  i = this.data.obj.ptr.length;
+  while(i > 1 and this.data.obj.ptr.data[i - 1] == 0)
   {
     dec i;
   }
@@ -251,7 +250,7 @@ method new normalise(var this as ref(bigint)) as bigint
   res.data = vector(u64)(i);
   for(j = 0; j < i; inc j)
   {
-    res.data[j] = this.data[j];
+    res.data.obj.ptr.data[j] = this.data.obj.ptr.data[j];
   }
 
   return res;
@@ -276,20 +275,20 @@ method new lshift(var this as ref(bigint), var n as int) as bigint
 sub new slow_mul_abs(var a as ref(bigint), var b as ref(bigint)) as bigint
 {
   var res as bigint;
-  n = a.data.length();
-  m = b.data.length();
+  n = a.data.obj.ptr.length;
+  m = b.data.obj.ptr.length;
   k = n + m + 1;
-  res.data = vector(u64)(n + m + 1);
+  res.data = vector(u64)(k);
   for (i = 0; i < k; inc i)
   {
-    res.data[i] = 0;
+    res.data.obj.ptr.data[i] = 0;
   }
 
   for (i = 0; i < n; inc i)
   {
     for (j = 0; j < m; inc j)
     {
-      exec res.add_abs_in_place(mul(a.data[i], b.data[j]), i + j);
+      exec res.add_abs_in_place(mul(a.data.obj.ptr.data[i], b.data.obj.ptr.data[j]), i + j);
     }
   }
 
@@ -320,12 +319,12 @@ method new *(var this as ref(bigint), var a as ref(bigint)) as bigint
 
 method lt_abs(var this as ref(bigint), var a as ref(bigint)) as bool
 {
-  if (a.data.length() > this.data.length()) {return true}
-  if (a.data.length() < this.data.length()) {return false}
-  for (i = this.data.length() - 1; i >= 0; dec i)
+  if (a.data.obj.ptr.length > this.data.obj.ptr.length) {return true}
+  if (a.data.obj.ptr.length < this.data.obj.ptr.length) {return false}
+  for (i = this.data.obj.ptr.length - 1; i >= 0; dec i)
   {
-    if (this.data[i] < a.data[i]) {return true}
-    if (this.data[i] > a.data[i]) {return false}
+    if (this.data.obj.ptr.data[i] < a.data.obj.ptr.data[i]) {return true}
+    if (this.data.obj.ptr.data[i] > a.data.obj.ptr.data[i]) {return false}
   }
 
   return false;
@@ -333,11 +332,11 @@ method lt_abs(var this as ref(bigint), var a as ref(bigint)) as bool
 
 method eq_abs(var this as ref(bigint), var a as ref(bigint)) as bool
 {
-  if (a.data.length() > this.data.length()) {return false}
-  if (a.data.length() < this.data.length()) {return false}
-  for (i = this.data.length() - 1; i >= 0; dec i)
+  if (a.data.obj.ptr.length > this.data.obj.ptr.length) {return false}
+  if (a.data.obj.ptr.length < this.data.obj.ptr.length) {return false}
+  for (i = this.data.obj.ptr.length - 1; i >= 0; dec i)
   {
-    if (this.data[i] != a.data[i]) {return false}
+    if (this.data.obj.ptr.data[i] != a.data.obj.ptr.data[i]) {return false}
   }
 
   return true;
