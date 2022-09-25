@@ -180,6 +180,34 @@ sub main()
       echo a * a;
       break;
     }
+
+    test = (0 == 0 * a);
+    if (not test)
+    {
+      echo a;
+      break;
+    }
+
+    test = (0 * a == 0);
+    if (not test)
+    {
+      echo a;
+      break;
+    }
+
+    test = (1 != 1 + a);
+    if (not test)
+    {
+      echo a;
+      break;
+    }
+
+    test = (1 + a != 1);
+    if (not test)
+    {
+      echo a;
+      break;
+    }
   }
 
   echo test;
