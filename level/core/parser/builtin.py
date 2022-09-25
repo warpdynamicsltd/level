@@ -85,7 +85,8 @@ translate_simple_types = {
     'byte': 'Byte',
     'ref' : 'Ref',
     '__ref__' : 'Ref',
-    'object': 'Object'
+    'object': 'Object',
+    'swap': 'Swap'
 }
 
 default_return_type = 'int'

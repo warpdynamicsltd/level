@@ -1,0 +1,195 @@
+import stdlib:obj:collections:str as *;
+import stdlib:math:bigint as *;
+import stdlib:sys:app as *;
+import stdlib:math:rnd as *;
+
+sub main()
+{
+  echo "start";
+  r = rnd(113);
+  var test = true as bool;
+  var R as bigint;
+  var L as bigint;
+  for (i = 0; i < 100; inc i)
+  {
+    a = r.rnd_bigint(10);
+    b = r.rnd_bigint(10);
+    c = r.rnd_bigint(10);
+
+    R = (a + b)*(a + b);
+    L = a*a + 2*a*b + b*b;
+    test = (L == R);
+    if (not test)
+    {
+      break;
+    }
+
+    R = (a + b) * (a - b);
+    L = a*a - b*b;
+    test = (L == R);
+    if (not test)
+    {
+      break;
+    }
+
+    R = (a - b) * (a - b);
+    L = a*a - 2*a*b + b*b;
+    test = (L == R);
+    if (not test)
+    {
+      break;
+    }
+
+    R = 0;
+    L = a * 0;
+    test = (L == R);
+    if (not test)
+    {
+      break;
+    }
+
+    R = a;
+    L = a + 0;
+    test = (L == R);
+    if (not test)
+    {
+      break;
+    }
+
+    R = a;
+    L = a * 1;
+    test = (L == R);
+    if (not test)
+    {
+      break;
+    }
+
+    R = a * b;
+    L = b * a;
+    test = (L == R);
+    if (not test)
+    {
+      break;
+    }
+
+    R = a + b;
+    L = b + a;
+    test = (L == R);
+    if (not test)
+    {
+      break;
+    }
+
+    R = (a + b) * c;
+    L = a * c + b * c;
+    test = (L == R);
+    if (not test)
+    {
+      break;
+    }
+
+    R = a*a + b*b;
+    L = 2 * a * b;
+    test = (L <= R);
+    if (not test)
+    {
+      break;
+    }
+
+    test = (L < R + 1);
+    if (not test)
+    {
+      break;
+    }
+
+    test = (R >= L);
+    if (not test)
+    {
+      break;
+    }
+
+    test = (R + 1 > L);
+    if (not test)
+    {
+      break;
+    }
+  }
+
+  if (not test)
+  {
+    echo i;
+    echo R;
+    echo L;
+  }
+
+  for (i = 0; i < 100; inc i)
+  {
+    a = r.rnd_bigint(10);
+    test = (a * a > 0);
+    if (not test)
+    {
+      echo a * a;
+      break;
+    }
+
+    test = (a * a >= 0);
+    if (not test)
+    {
+      echo a * a;
+      break;
+    }
+
+    test = (0 < a * a);
+    if (not test)
+    {
+      echo a * a;
+      break;
+    }
+
+    test = (0 <= a * a);
+    if (not test)
+    {
+      echo a * a;
+      break;
+    }
+
+    test = (-a * a < 0);
+    if (not test)
+    {
+      echo a * a;
+      break;
+    }
+
+    test = (-a * a <= 0);
+    if (not test)
+    {
+      echo a * a;
+      break;
+    }
+
+    test = (0 > -a * a);
+    if (not test)
+    {
+      echo a * a;
+      break;
+    }
+
+    test = (0 >= -a * a);
+    if (not test)
+    {
+      echo a * a;
+      break;
+    }
+  }
+
+  echo test;
+}
+
+entry
+{
+
+  exec main();
+  echo "memory allocated";
+  echo app.allocator.used;
+  echo "end";
+}

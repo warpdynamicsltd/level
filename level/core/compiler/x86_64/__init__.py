@@ -47,6 +47,7 @@ class CompileDriver_x86_64(CompileDriver):
         self.float_table = []
 
         self.object_type = Type(main_type=Rec, user_name="object")
+        self.swap_type = Type(main_type=Rec, user_name="swap")
 
 
     def set_args_addr(self):
@@ -124,6 +125,8 @@ class CompileDriver_x86_64(CompileDriver):
         if t.name in translate_simple_types:
             if t.name == 'object':
                 return self.object_type
+            elif t.name == 'swap':
+                return self.swap_type
             else:
                 return Type(eval(translate_simple_types[t.name]))
 
