@@ -21,7 +21,8 @@ method ()(rnd, var seed as int) as rnd
 
 method rnd_u64(var this as ref(rnd)) as u64
 {
-  this.seed = 6364136223846793005 * this.seed + 1442695040888963407;
+  this.seed = 6364136223846793005 * this.seed;
+  inc this.seed, 1442695040888963407;
   return this.seed;
 }
 
@@ -48,7 +49,7 @@ method new rnd_bigint(var this as ref(rnd), var segments as int) as bigint
   res.data = vector(u64)(segments);
   for (i = 0; i < segments; inc i)
   {
-    res.data[i] = this.rnd_u64();
+    res.data.obj.ptr.data[i] = this.rnd_u64();
   }
   if (for_sign > 0)
   {
