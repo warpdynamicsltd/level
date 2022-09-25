@@ -65,8 +65,8 @@ statement_functions = {
     'break': (ast.Break, 0),
     'continue': (ast.Continue, 0),
     'exec': (ast.Exec, 1),
-    'inc' : (ast.Inc, 1),
-    'dec' : (ast.Dec, 1)
+    'inc' : (ast.Inc, None),
+    'dec' : (ast.Dec, None)
 }
 
 statement_operators = {

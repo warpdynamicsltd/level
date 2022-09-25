@@ -399,16 +399,16 @@ class Continue(Statement):
         Statement.__init__(self, 'Continue')
 
 class Inc(Statement):
-    def __init__(self, a):
-        if not(istype(a, Expression)):
+    def __init__(self, a, delta=Const(1)):
+        if not(istype(a, Expression) and istype(delta, Expression)):
             raise GrammarTreeError()
-        Statement.__init__(self, 'Inc', a)
+        Statement.__init__(self, 'Inc', a, delta)
 
 class Dec(Statement):
-    def __init__(self, a):
-        if not(istype(a, Expression)):
+    def __init__(self, a, delta=Const(1)):
+        if not(istype(a, Expression) and istype(delta, Expression)):
             raise GrammarTreeError()
-        Statement.__init__(self, 'Dec', a)
+        Statement.__init__(self, 'Dec', a, delta)
 
 class UserStatementFunction(Statement):
     def __init__(self, name, *exps):

@@ -529,16 +529,26 @@ class Compiler:
 
         if ast.istype(s, ast.Inc):
             expression = ast.MetaVar()
-            ast.Inc(expression) << s
+            delta = ast.MetaVar()
+            ast.Inc(expression, delta) << s
             obj = self.compile_expression(expression.val, obj_manager)
-            obj.inc()
+            if type(delta.val) is ast.Const and delta.val.name == 1:
+                obj.inc()
+            else:
+                delta_exp = self.compile_expression(delta.val, obj_manager)
+                obj.add(delta_exp)
             return
 
         if ast.istype(s, ast.Dec):
             expression = ast.MetaVar()
-            ast.Inc(expression) << s
+            delta = ast.MetaVar()
+            ast.Dec(expression, delta) << s
             obj = self.compile_expression(expression.val, obj_manager)
-            obj.dec()
+            if type(delta.val) is ast.Const and delta.val.name == 1:
+                obj.dec()
+            else:
+                delta_exp = self.compile_expression(delta.val, obj_manager)
+                obj.sub(delta_exp)
             return
 
         if ast.istype(s, ast.IfElse):
