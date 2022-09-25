@@ -31,6 +31,9 @@ class Byte(Obj):
         else:
             self.ptr = ptr
 
+        if value is not None:
+            self.set_from_const(value)
+
     def MC_get_from_storage(self, reg):
         if reg.bits > 8:
             _reg = Register(reg=reg.reg, bits=8)
@@ -131,6 +134,10 @@ class Byte(Obj):
         shl_(al, cl)
         res.MC_put_to_storage(al)
         return res
+
+    def set_from_const(self, value):
+        mov_(rax, int(value))
+        self.MC_put_to_storage(rax)
 
     def cast(self, T):
         res = self.object_manager.reserve_variable(T)
