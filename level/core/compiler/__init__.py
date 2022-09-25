@@ -827,7 +827,11 @@ class Compiler:
 
         if op_T not in level.core.parser.builtin.no_override_binary:
             subroutine = self.get_subroutine_for_call(True, op_exp.meta, op_exp.raw_str, obj1, obj2)
-            if subroutine is not None:
+            if subroutine is None:
+                subroutine = self.get_subroutine_for_call(True, op_exp.meta, op_exp.raw_str, obj2, obj1, self.compile_driver.swap_type)
+                if subroutine is not None:
+                    return self.compile_call_execution(True, obj_manager, subroutine, obj2, obj1, self.compile_driver.swap_type)
+            else:
                 return self.compile_call_execution(True, obj_manager, subroutine, obj1, obj2)
 
         if type(obj1) is Type and type(obj2) is Type:

@@ -14,7 +14,7 @@ sub neg(var a as byte)
   if (a == 0xff) {return 1}
 }
 
-method new ()(bigint, var n = 0 as u64) as bigint
+method new ()(bigint, var n as u64) as bigint
 {
   var this as bigint;
   this.data = vector(u64)(1);
@@ -170,7 +170,7 @@ method new _sub_abs(var this as ref(bigint), var other as ref(bigint)) as bigint
     inc i;
   }
 
-  return bigint(ref st);
+  return bigint(ref st).normalise();
 }
 
 method new sub_abs(var this as ref(bigint), var a as ref(bigint)) as bigint
@@ -182,7 +182,15 @@ method new sub_abs(var this as ref(bigint), var a as ref(bigint)) as bigint
   else
   {
     res = a._sub_abs(this);
-    res.sign = 0xff;
+
+    if (res == bigint(0))
+    {
+      res.sign = 1;
+    }
+    else
+    {
+      res.sign = 0xff;
+    }
     return res;
   }
 }
@@ -204,7 +212,14 @@ method new +(var this as ref(bigint), var a as ref(bigint)) as bigint
   if (this.sign == 0xff and a.sign == 0xff)
   {
     res = this.add_abs(a);
-    res.sign = 0xff;
+    if (res == bigint(0))
+    {
+      res.sign = 1;
+    }
+    else
+    {
+      res.sign = 0xff;
+    }
     return res;
   }
 }
@@ -245,7 +260,8 @@ sub new mul(var a as u64, var b as u64) as bigint
 method new normalise(var this as ref(bigint)) as bigint
 {
   i = this.data.length();
-  while(i > 0 and this.data[i - 1] == 0)
+  #if (i == 1 )
+  while(i > 1 and this.data[i - 1] == 0)
   {
     dec i;
   }
@@ -357,6 +373,11 @@ method ==(var this as ref(bigint), var a as ref(bigint)) as bool
   return this.eq_abs(a) and this.sign == a.sign;
 }
 
+method !=(var this as ref(bigint), var a as ref(bigint)) as bool
+{
+  return not(this == a);
+}
+
 method <=(var this as ref(bigint), var a as ref(bigint)) as bool
 {
   return this < a or this == a;
@@ -385,22 +406,99 @@ method =(var this as ref(bigint), var a as ref(bigint))
   this.sign = a.sign;
 }
 
-method =(var this as ref(bigint), var a as int)
+method =(var this as ref(bigint), var a as A)
 {
-  del this.data;
-  this.data = vector(u64)(1);
-  this.data[0] = abs(a);
-  if (a < 0)
-  {
-    this.sign = -1;
-  }
+  [this] = bigint(a);
 }
 
-method =(var this as ref(bigint), var a as u64)
+method new +(var this as ref(bigint), var a as A) as bigint
 {
-  del this.data;
-  this.data = vector(u64)(1);
-  this.data[0] = a;
+  return [this] + bigint(a);
+}
+
+method new +(var this as ref(bigint), var a as A, swap) as bigint
+{
+  return bigint(a) + [this];
+}
+
+method new -(var this as ref(bigint), var a as A) as bigint
+{
+  return [this] - bigint(a);
+}
+
+method new -(var this as ref(bigint), var a as A, swap) as bigint
+{
+  return bigint(a) - [this];
+}
+
+method new *(var this as ref(bigint), var a as A) as bigint
+{
+  return [this] * bigint(a);
+}
+
+method new *(var this as ref(bigint), var a as A, swap) as bigint
+{
+  return bigint(a) * [this];
+}
+
+method ==(var this as ref(bigint), var a as A) as bool
+{
+  return [this] == bigint(a);
+}
+
+method ==(var this as ref(bigint), var a as A, swap) as bool
+{
+  return [this] == bigint(a);
+}
+
+method !=(var this as ref(bigint), var a as A) as bool
+{
+  return [this] != bigint(a);
+}
+
+method !=(var this as ref(bigint), var a as A, swap) as bool
+{
+  return bigint(a) != [this];
+}
+
+method <(var this as ref(bigint), var a as A) as bool
+{
+  return [this] < bigint(a);
+}
+
+method <(var this as ref(bigint), var a as A, swap) as bool
+{
+  return bigint(a) < [this];
+}
+
+method <=(var this as ref(bigint), var a as A) as bool
+{
+  return [this] <= bigint(a);
+}
+
+method <=(var this as ref(bigint), var a as A, swap) as bool
+{
+  return bigint(a) <= [this];
+}
+
+method >(var this as ref(bigint), var a as A) as bool
+{
+  return [this] > bigint(a);
+}
+
+method >(var this as ref(bigint), var a as A, swap) as bool
+{
+  return bigint(a) > [this];
+}
+
+method >=(var this as ref(bigint), var a as A) as bool
+{
+  return [this] >= bigint(a);
+}
+
+method >=(var this as ref(bigint), var a as A, swap) as bool
+{
+  return bigint(a) >= [this];
 }
 
 method del (var this as ref(bigint))
