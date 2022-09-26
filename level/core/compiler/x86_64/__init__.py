@@ -549,6 +549,18 @@ class CompileDriver_x86_64(CompileDriver):
             self.compiler.code_block_contexts.compile_on_continue()
             jmp_(self.while_stack[-1][0])
 
+    def compile_global_init_begin(self, addr):
+        jmp_addr = SymBits()
+        mov_(rdi, addr)
+        mov_(al, [rdi])
+        or_(al, al)
+        jnz_(jmp_addr)
+        movb_([rdi], 1)
+        return jmp_addr
+
+    def compile_global_init_end(self, jmp_addr):
+        set_symbol(jmp_addr)
+
     def exit(self):
         jmp_(self.exit_addr)
 
