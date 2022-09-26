@@ -6,7 +6,6 @@ class Global:
                  definition,
                  compiler,
                  ):
-        self.initiated = False
         self.definition = definition
         self.compiler = compiler
         var = ast.MetaVar()
@@ -29,6 +28,7 @@ class Global:
             self.init_expression = init_expression.val
 
     def compile(self, obj_manager):
+        obj_manager.reserve_variable_ptr(size=1)
         obj_manager.reserve_variable_by_name(self.T, self.calling_name, self.const)
 
 
@@ -43,7 +43,7 @@ class Globals:
 
     def set_data_address(self):
         set_symbol(self.address)
-        add_block(self.obj_manager.cursor)
+        add_bytes(bytes(self.obj_manager.cursor))
 
     def add(self, g):
         self.globals_dict[g.calling_name] = g
@@ -74,10 +74,11 @@ class Globals:
         ref_obj = obj_manager.reserve_variable(ref_T)
         ref_obj.bind(obj)
         res = ref_obj.get_obj()
-        # this needs to be fixed in LVL-93
-        if g.init_expression is not None and not g.initiated:
+
+        if g.init_expression is not None:
+            jmp_addr = self.compiler.compile_driver.compile_global_init_begin(self.address + (obj.index - 1))
             init_obj = self.compiler.compile_expression(g.init_expression, obj_manager)
             self.compiler.compile_assigment(obj_manager, res, init_obj)
-            g.initiated = True
+            self.compiler.compile_driver.compile_global_init_end(jmp_addr)
 
         return res
