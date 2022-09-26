@@ -215,7 +215,7 @@ sub main()
 
 entry
 {
-
+  exec app;
   exec main();
   echo "memory allocated";
   echo app.allocator.used;
