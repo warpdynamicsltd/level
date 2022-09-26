@@ -5,7 +5,15 @@ type App as rec(
   var allocator as ref(stdlib:sys:bin_allocator:Allocator)
 );
 
-global app = App() as App;
+global app as App;
+
+global init = start() as bool;
+
+sub start() as bool
+{
+  app = App();
+  return true;
+}
 
 method ()(App) as App
 {
