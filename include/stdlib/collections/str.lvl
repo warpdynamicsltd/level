@@ -63,7 +63,6 @@ method utf8(var this as ref(str)) as ref(Vector(byte))
       return Vector(byte)(0);
     }
   }
-  exec stack.push(byte(0));
 
   res = Vector(byte)(stack.length());
   k = 0;
@@ -208,6 +207,14 @@ method new +(var a as ref(str), var b as ref(str)) as ref(str)
 method echo(var s as ref(str))
 {
   u = s.utf8();
-  echo u.data;
+  len = u.length();
+  v = Vector(byte)(u.length() + 1);
+  for (i=0; i < u.length(); inc i)
+  {
+    v[i] = u[i];
+  }
+  v[len] = 0;
+  echo v.data;
   del u;
+  del v;
 }

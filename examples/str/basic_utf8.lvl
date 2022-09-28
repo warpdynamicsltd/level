@@ -27,6 +27,6 @@ entry
   s = str("Hello, world for £100 and ह, €, 한, \u010348, hej");
 
   echo s.length();
-  echo s.utf8().data;
+  echo s;
   echo "end";
 }

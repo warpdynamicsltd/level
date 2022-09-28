@@ -785,6 +785,9 @@ class Parser:
         if re.match(r"^0x[\da-fA-F]+$", candidate, re.MULTILINE) is not None:
             return ast.Const(ast.U64ConstType(eval(candidate)))
 
+        if re.match(r"^0o[0-7]+$", candidate, re.MULTILINE) is not None:
+            return ast.Const(ast.U64ConstType(eval(candidate)))
+
         m = re.match(r"^(?P<significand>[+-]?\d+(\.\d+)?)(e(?P<exponent>[+-]\d+))?$", candidate, re.MULTILINE)
         if m is not None:
             exponent = m.group('exponent')

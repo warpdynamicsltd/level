@@ -12,6 +12,11 @@ method new ()(str, var a = "" as ref(byte)) as str
   return obj(stdlib:collections:str:str)(stdlib:collections:str:str(a));
 }
 
+method new ()(str, var v as vector(byte)) as str
+{
+  return obj(stdlib:collections:str:str)(stdlib:collections:str:str(v.sz_vector().obj.ptr.data));
+}
+
 method [](var this as ref(str), var index as int) as val ref(char)
 {
   return this.obj.ptr.data + index;
@@ -68,6 +73,19 @@ method iterator(var this as ref(str)) as str_iterator
 method new utf8(var this as ref(str)) as vector(byte)
 {
   return obj(Vector(byte))(this.obj.ptr.utf8());
+}
+
+method new sz_utf8(var this as ref(str)) as vector(byte)
+{
+  u = this.utf8();
+  len = u.length();
+  res = vector(byte)(len + 1);
+  for (i = 0; i < len; inc i)
+  {
+    res[i] = u[i];
+  }
+  res[len] = 0;
+  return res;
 }
 
 method echo(var s as ref(str))
