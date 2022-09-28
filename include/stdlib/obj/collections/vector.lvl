@@ -37,7 +37,7 @@ method next(var this as ref(vector_iterator(A)), var out as ref(A)) as bool
   return true;
 }
 
-method echo (var this as ref(vector(byte)))
+method new sz_vector(var this as ref(vector(byte))) as vector(byte)
 {
   v = vector(byte)(this.length() + 1);
   for(i = 0; i < this.length(); inc i)
@@ -45,5 +45,10 @@ method echo (var this as ref(vector(byte)))
     v[i] = this[i];
   }
   v[i] = 0;
-  echo v.obj.ptr.data;
+  return v;
+}
+
+method echo (var this as ref(vector(byte)))
+{
+  echo this.sz_vector().obj.ptr.data;
 }

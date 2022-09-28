@@ -1,0 +1,110 @@
+import stdlib:obj:collections:vector as *;
+import stdlib:obj:collections:str as *;
+
+type file as int;
+
+global stdout = file(1) as file;
+global stderr = file(2) as file;
+
+type descriptor as rec
+(
+  var dev as u64,
+  var ino as u64,
+  var nlink as u64,
+  var mode as u32,
+  var uid as u32,
+  var gid as u32,
+  var pad as u32,
+  var rdev as u64,
+  var size as int,
+  var blocksize as int,
+  var blocks as int,
+  var atime as ref,
+  var mtime as ref,
+  var ctime as ref
+)
+
+global READ_ONLY = 0 as int;
+global WRITE_ONLY = 1 as int;
+global READ_WRITE = 2 as int;
+global CREATE = 64 as int;
+global TRUNC = 512 as int;
+global _APPEND = 1024 as int;
+
+global WRITE = WRITE_ONLY | CREATE | TRUNC as int;
+global READ = 0 as int;
+global APPEND = WRITE_ONLY | _APPEND as int;
+
+method ()(file, var filename as ref(byte), var flags as int, var mode = 0o644 as u64) as file
+{
+  res = __api__(syscall, 2, filename, flags, mode);
+  if (res == -1)
+  {
+    return null;
+  }
+
+  return res;
+}
+
+method ()(file, var filename as str, var flags as int, var mode = 0o644 as u64) as file
+{
+  return file(filename.sz_utf8().obj.ptr.data, flags, mode);
+}
+
+method close(var this as ref(file)) as bool
+{
+  res = __api__(syscall, 3, [this]);
+  if (res == 0)
+  {
+    return true;
+  }
+
+  return false;
+}
+
+method describe(var this as ref(file)) as descriptor
+{
+  var res as descriptor;
+  exec __api__(syscall, 5, [this], ref res);
+  return res;
+}
+
+method new read(var this as ref(file), var size as int) as vector(byte)
+{
+  res = vector(byte)(size);
+  read_count = __api__(syscall, 0, [this], res.obj.ptr.data, size);
+
+  if (read_count == -1)
+  {
+    return vector(byte)(0);
+  }
+
+  if (read_count < size)
+  {
+    _res = vector(byte)(read_count);
+    for (i = 0; i < read_count; inc i)
+    {
+      _res[i] = res[i];
+    }
+    return _res;
+  }
+
+  return res;
+}
+
+method new read(var this as ref(file)) as vector(byte)
+{
+  size = this.describe().size;
+  return this.read(size);
+}
+
+method write(var this as ref(file), var data as vector(byte)) as int
+# On success, the number of bytes written is returned (zero indicates nothing was written). On error, -1 is returned, and errno is set appropriately.
+{
+  return __api__(syscall, 1, [this], data.obj.ptr.data, data.obj.ptr.length);
+}
+
+method write(var this as ref(file), var s as str) as int
+{
+  return this.write(s.utf8());
+}

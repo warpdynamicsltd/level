@@ -29,3 +29,13 @@ sub sbrk(var increment as int)
       return -1;
     }
 }
+
+sub unlink(var filename as ref(byte)) as bool
+{
+  res = __api__(syscall, 87, filename);
+  if (res == -1)
+  {
+    return false;
+  }
+  return true;
+}

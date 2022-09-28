@@ -19,7 +19,10 @@ in **Level** yet.
   - special method definition syntax
   - multiple inheritance
 - reference count garbage collection for manged objects (must derive from <i>object</i>)
-- standard library with basic data structures: stack, vector, ascii and utf-8 strings
+- standard library supports:
+  - basic data structures: stack, vector, ascii and utf-8 strings
+  - basic files operations (e.g. <i>open</i>, <i>close</i>, <i>write</i>, <i>read</i>)
+  - arbitrary-precision integer arithmetic (FEATURE IN PROGRESS)
 
 ### Important information about Level
 

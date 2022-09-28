@@ -1,0 +1,30 @@
+import stdlib:sys:io as *;
+import stdlib:obj:collections:str as *;
+import stdlib:sys:app as *;
+import stdlib:sys:calls as *;
+
+sub main()
+{
+  g = file(str("level_tmp"), WRITE);
+  exec g.write(str("Michał Wójcik\nMichał Wójcik\n"));
+  close g;
+
+  g = file("level_tmp", APPEND);
+  write g, str("aaaaaaa");
+  close g;
+
+  g = file("level_tmp", READ);
+  echo str(g.read()) == str("Michał Wójcik\nMichał Wójcik\naaaaaaa");
+  close g;
+
+  unlink("level_tmp");
+  write stdout, str("success\n");
+}
+
+entry
+{
+  exec main();
+  echo "allocated";
+  echo app.allocator.used;
+  echo "end";
+}
