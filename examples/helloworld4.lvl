@@ -1,4 +1,7 @@
+# import stdlib:sys:io as *;
+# this is string module
 import stdlib:collections:str as *;
+# this is comment after import
 
 entry
 {
