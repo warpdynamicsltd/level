@@ -55,9 +55,10 @@ class Linker:
             return
         line_n = 1
         char_n = 1
-        modules = []
+        dict_module_alias = {}
         if module_name == "main":
-            modules += default_modules
+            for imported_module_name, alias in default_modules:
+                dict_module_alias[imported_module_name] = alias
 
         while True:
             m = re.match(r"^\s*import\s+(?P<lead>[_a-zA-Z0-9:]+)(\s+as\s+(?P<as>([_a-zA-Z0-9:]+|\*)))?\s*;", text, re.MULTILINE)
@@ -70,15 +71,24 @@ class Linker:
                 if alias == '*':
                     alias = None
 
-                modules.append((imported_module_name, alias))
-                line_n_, char_n_ = self.count_nc(text[i:j])
-                line_n += line_n_
-                char_n += char_n_
-                text = text[j:]
-            else:
-                break
+                if imported_module_name in dict_module_alias:
+                    raise LinkerException(f"module {imported_module_name} already imported in {module_name}")
 
-        for imported_module_name, alias in modules:
+                dict_module_alias[imported_module_name] = alias
+            else:
+                m = re.match(r"^\s*#.*\n", text)
+                if m:
+                    i, j = m.span()
+                else:
+                    break
+
+            line_n_, char_n_ = self.count_nc(text[i:j])
+            line_n += line_n_
+            char_n += char_n_
+            text = text[j:]
+
+        for imported_module_name in dict_module_alias:
+            alias = dict_module_alias[imported_module_name]
             self.imports.add_import_item(
                 source_module=module_name,
                 import_item=ImportItem(
