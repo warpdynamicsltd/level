@@ -15,7 +15,7 @@ method ()(ptr(A)) as ref(ptr(A))
   return this;
 }
 
-method del(var this as ref(ptr(A)))
+method inline del(var this as ref(ptr(A)))
 {
   if (this != null and this.ptr != null)
   {

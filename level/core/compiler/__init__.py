@@ -363,6 +363,45 @@ class Compiler:
 
         return init_obj, const
 
+    def compile_inline_return_statement(self, subroutine, s, obj_manager):
+        if s.args:
+            obj = self.compile_expression(s.args[0], obj_manager)
+            if obj.type != subroutine.return_type:
+                obj = subroutine.return_type(obj)
+
+            if 'new' in subroutine.modes and self.inherited_from_object(obj):
+                ret_obj = obj_manager.reserve_variable(subroutine.return_type)
+                self.compile_assigment(obj_manager, ret_obj, obj)
+                subroutine.inline_ret_obj.set(ret_obj)
+            else:
+                subroutine.inline_ret_obj.set(obj)
+
+        self.code_block_contexts.compile_on_return()
+        self.compile_driver.compile_inline_exit(subroutine)
+
+    def compile_in_call_return_statement(self, subroutine, s, obj_manager):
+        if s.args:
+            obj = self.compile_expression(s.args[0], obj_manager)
+            if obj.type != subroutine.return_type:
+                obj = subroutine.return_type(obj)
+                # self.add_new_object_to_code_block_context(subroutine, obj)
+
+            if 'new' in subroutine.modes and self.inherited_from_object(obj):
+                ret_obj = obj_manager.reserve_variable(subroutine.return_type)
+                self.compile_assigment(obj_manager, ret_obj, obj)
+            else:
+                ret_obj = obj
+
+            self.code_block_contexts.compile_on_return()
+
+            ret_obj.to_acc()
+        else:
+            self.code_block_contexts.compile_on_return()
+
+
+        self.compile_driver.ret()
+
+
     def compile_return_statement(self, s, obj_manager):
         # each subroutine has guaranteed to be terminated with return (it is always added as a last statement on the level of parser)
         subroutine = None
@@ -370,32 +409,10 @@ class Compiler:
             subroutine = self.subroutines_stack[-1]
 
         if subroutine is not None:
-            if s.args:
-                obj = self.compile_expression(s.args[0], obj_manager)
-                if obj.type != subroutine.return_type:
-                    obj = subroutine.return_type(obj)
-                    # self.add_new_object_to_code_block_context(subroutine, obj)
-
-                if 'new' in subroutine.modes and self.inherited_from_object(obj):
-                    ret_obj = obj_manager.reserve_variable(subroutine.return_type)
-                    self.compile_assigment(obj_manager, ret_obj, obj)
-                else:
-                    ret_obj = obj
-                #obj.returned = True
-
-                self.code_block_contexts.compile_on_return()
-
-                if not subroutine.inline:
-                    ret_obj.to_acc()
-                else:
-                    subroutine.inline_ret_obj.set(ret_obj)
+            if subroutine.inline:
+                self.compile_inline_return_statement(subroutine, s, obj_manager)
             else:
-                self.code_block_contexts.compile_on_return()
-
-            if not subroutine.inline:
-                self.compile_driver.ret()
-            else:
-                self.compile_driver.compile_inline_exit(subroutine)
+                self.compile_in_call_return_statement(subroutine, s, obj_manager)
         else:
             if s.args:
                 obj = self.compile_expression(s.args[0], obj_manager)
@@ -910,8 +927,6 @@ class Compiler:
                         init_obj = self.compile_expression(init_expression, obj_manager)
                 inits.append((T, init_obj, value))
 
-
-
         objs_to_pass = []
         for i, obj in enumerate(objs):
             if type(obj) is Type:
@@ -946,11 +961,9 @@ class Compiler:
             objs_store = obj_manager.objs
             obj_manager.objs = {}
             self.compile_driver.compile_inline_begin(subroutine)
-            subroutine.compile(cursor=cursor, obj_manager=obj_manager)
+            subroutine.compile_inline(cursor=cursor, obj_manager=obj_manager)
             self.compile_driver.compile_inline_end(subroutine)
             obj_manager.objs = objs_store
-
-            obj_manager.cursor = cursor
 
         if not subroutine.inline:
             ret_obj.set_by_acc()
