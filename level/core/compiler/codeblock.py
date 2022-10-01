@@ -16,11 +16,13 @@ class CodeBlockContext:
 
     def add_obj_to_del(self, obj):
         if obj.index not in self.objs_to_del_indices:
+            # pass
             self.objs_to_del.append(obj)
             self.objs_to_del_indices.add(obj.index)
 
     def add_obj_to_finish(self, obj):
         if obj.index not in self.objs_to_finish_indices:
+            # pass
             self.objs_to_finish.append(obj)
             self.objs_to_finish_indices.add(obj.index)
 
@@ -81,6 +83,8 @@ class CodeBlockContexts:
         i = len(self.code_block_contexts) - 1
         while i >= 0:
             self.compile_current_closure(i)
+            if self.code_block_contexts[i].scope_name == 'main':
+                break
             i -= 1
 
     def close_current(self):
@@ -99,9 +103,6 @@ class CodeBlockContexts:
 
     def add_obj_to_finish(self, obj):
         if self.code_block_contexts:
-            # so far we don't support scope local variables, so all variables are initiated in root scope
-            # and there they need to be also finished
-            # code_block_context = self.code_block_contexts[0]
             code_block_context = self.code_block_contexts[-1]
             if code_block_context.subroutine is not None:
                 if "metal" in code_block_context.subroutine.modes:

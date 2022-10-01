@@ -49,6 +49,8 @@ class CompileDriver_x86_64(CompileDriver):
         self.object_type = Type(main_type=Rec, user_name="object")
         self.swap_type = Type(main_type=Rec, user_name="swap")
 
+        self.inline_exit_stack = []
+
 
     def set_args_addr(self):
         mov_(rdi, self.args_addr)
@@ -561,6 +563,16 @@ class CompileDriver_x86_64(CompileDriver):
     def compile_global_init_end(self, jmp_addr):
         set_symbol(jmp_addr)
 
+    def compile_inline_begin(self, subroutine):
+        self.inline_exit_stack.append(SymBits())
+
+    def compile_inline_end(self, subroutine):
+        exit_addr = self.inline_exit_stack.pop()
+        set_symbol(exit_addr)
+
+    def compile_inline_exit(self, subroutine):
+        jmp_(self.inline_exit_stack[-1])
+
     def exit(self):
         jmp_(self.exit_addr)
 
@@ -735,4 +747,11 @@ class StandardObjManager(ObjManager):
 
     def reserve_variable_for_child_obj_manager(self, T, obj=None, value=None):
         res = self.reserve_variable(T, value=value, for_child_manager=True, source_obj=obj)
+        return res
+
+    def reserve_variable_for_subroutine(self, subroutine, T, obj=None, value=None):
+        if not subroutine.inline:
+            res = self.reserve_variable_for_child_obj_manager(T, obj, value)
+        else:
+            res = self.reserve_variable(T, value=value, source_obj=obj)
         return res
