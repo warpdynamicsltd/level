@@ -16,13 +16,11 @@ class CodeBlockContext:
 
     def add_obj_to_del(self, obj):
         if obj.index not in self.objs_to_del_indices:
-            # pass
             self.objs_to_del.append(obj)
             self.objs_to_del_indices.add(obj.index)
 
     def add_obj_to_finish(self, obj):
         if obj.index not in self.objs_to_finish_indices:
-            # pass
             self.objs_to_finish.append(obj)
             self.objs_to_finish_indices.add(obj.index)
 
@@ -40,7 +38,8 @@ class CodeBlockContext:
     def close(self):
         for index in self.var_initiated_indices:
             name = self.var_initiated_indices[index]
-            del self.obj_manager.objs[name]
+            if name in self.obj_manager.objs:
+                del self.obj_manager.objs[name]
 
         self.obj_manager.cursor = self.opening_cursor
 

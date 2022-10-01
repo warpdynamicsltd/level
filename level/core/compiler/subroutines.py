@@ -78,27 +78,37 @@ class Subroutine:
                         statement_list=self.statement_list,
                         meta=self.meta)
 
-
-    def compile(self, cursor = 0, obj_manager=None):
-        if not self.inline:
-            if self.compiled:
-                return
-
-            h = hash(tuple(self.var_types))
-            if (self.name, h) in self.compiler.subroutine_compiled_addresses:
-                self.address.value.set(self.compiler.subroutine_compiled_addresses[self.name, h].value)
-                return
-
+    def compile_inline(self, cursor, obj_manager):
         self.compiler.subroutines_stack.append(self)
 
-        if not self.inline:
-            obj_manager = self.compiler.obj_manager_type(self.compiler)
+        obj_manager.cursor = cursor
 
-        if self.inline:
-            obj_manager.cursor = cursor
+        objs = []
+        for i, name in enumerate(self.var_names):
+            if name is not None:
+                obj = obj_manager.reserve_variable_by_name(self.var_types[i], name, copy=True)
+                objs.append(obj)
 
-        if not self.inline:
-            self.compiler.compile_driver.set_call_address(self.address)
+        self.compiler.code_block_contexts.open_new(obj_manager)
+
+        for s in self.statement_list.args:
+            self.compiler.compile_statement(s, obj_manager)
+
+        self.compiler.code_block_contexts.close_current()
+        self.compiler.subroutines_stack.pop()
+
+    def compile(self, cursor = 0, obj_manager=None):
+        if self.compiled:
+            return
+
+        h = hash(tuple(self.var_types))
+        if (self.name, h) in self.compiler.subroutine_compiled_addresses:
+            self.address.value.set(self.compiler.subroutine_compiled_addresses[self.name, h].value)
+            return
+
+        self.compiler.subroutines_stack.append(self)
+        obj_manager = self.compiler.obj_manager_type(self.compiler)
+        self.compiler.compile_driver.set_call_address(self.address)
 
         objs = []
         for i, name in enumerate(self.var_names):
@@ -119,16 +129,12 @@ class Subroutine:
         for s in self.statement_list.args:
             self.compiler.compile_statement(s, obj_manager)
 
-        if not self.inline:
-            obj_manager.close()
-
+        obj_manager.close()
         self.compiler.code_block_contexts.close_current()
         self.compiler.subroutines_stack.pop()
-
-        if not self.inline:
-            Subroutine.n_compiled += 1
-            self.compiled = True
-            self.compiler.subroutine_compiled_addresses[self.name, h] = self.address
+        Subroutine.n_compiled += 1
+        self.compiled = True
+        self.compiler.subroutine_compiled_addresses[self.name, h] = self.address
 
     def match(self, var_types):
         if len(var_types) < len(self.var_types[:self.first_default]):

@@ -41,7 +41,7 @@ method inline rnd_float(var this as ref(rnd)) as float
   return float(nom)/int(0x7fffffffffffffff);
 }
 
-method new inline rnd_bigint(var this as ref(rnd), var segments as int) as bigint
+method new rnd_bigint(var this as ref(rnd), var segments as int) as bigint
 {
   segments = 1 + segments * this.rnd_float();
   for_sign = this.rnd_int();
