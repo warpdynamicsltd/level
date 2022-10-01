@@ -1,10 +1,10 @@
-sub max(var a as T, var b as T) as T
+sub inline max(var a as T, var b as T) as T
 {
   if (a > b) {return a}
   return b;
 }
 
-sub min(var a as T, var b as T) as T
+sub inline min(var a as T, var b as T) as T
 {
   if (a < b) {return a}
   return b;

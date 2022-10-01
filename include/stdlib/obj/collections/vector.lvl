@@ -13,7 +13,7 @@ method new ()(vector(A), var length as int) as vector(A)
   return obj(Vector(A))(Vector(A)(length));
 }
 
-method [](var this as ref(vector(A)), var i as int) as val ref(A)
+method inline [](var this as ref(vector(A)), var i as int) as val ref(A)
 {
   return this.obj.ptr.data + i;
 }
@@ -23,12 +23,12 @@ method length(var this as ref(vector(A))) as int
   return this.obj.ptr.length;
 }
 
-method iterator(var this as ref(vector(A))) as vector_iterator(A)
+method inline iterator(var this as ref(vector(A))) as vector_iterator(A)
 {
   return this.obj.ptr.iterator();
 }
 
-method next(var this as ref(vector_iterator(A)), var out as ref(A)) as bool
+method inline next(var this as ref(vector_iterator(A)), var out as ref(A)) as bool
 {
   if (this.index == this.vector.length) {return false}
 

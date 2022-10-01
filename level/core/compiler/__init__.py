@@ -364,6 +364,7 @@ class Compiler:
         return init_obj, const
 
     def compile_return_statement(self, s, obj_manager):
+        # each subroutine has guaranteed to be terminated with return (it is always added as a last statement on the level of parser)
         subroutine = None
         if self.subroutines_stack:
             subroutine = self.subroutines_stack[-1]
@@ -384,11 +385,17 @@ class Compiler:
 
                 self.code_block_contexts.compile_on_return()
 
-                ret_obj.to_acc()
+                if not subroutine.inline:
+                    ret_obj.to_acc()
+                else:
+                    subroutine.inline_ret_obj.set(ret_obj)
             else:
                 self.code_block_contexts.compile_on_return()
 
-            self.compile_driver.ret()
+            if not subroutine.inline:
+                self.compile_driver.ret()
+            else:
+                self.compile_driver.compile_inline_exit(subroutine)
         else:
             if s.args:
                 obj = self.compile_expression(s.args[0], obj_manager)
@@ -903,37 +910,60 @@ class Compiler:
                         init_obj = self.compile_expression(init_expression, obj_manager)
                 inits.append((T, init_obj, value))
 
+
+
+        objs_to_pass = []
         for i, obj in enumerate(objs):
             if type(obj) is Type:
                 continue
             if (method and i == 0 and obj.type.main_type.__name__ != 'Ref') or (obj.type == first_T):
                 first_T = obj.type
                 ref = self.compile_driver.build_ref(obj_manager, obj)
-                obj_manager.reserve_variable_for_child_obj_manager(ref.type, ref)
+                objs_to_pass.append(ref)
             else:
-                obj_manager.reserve_variable_for_child_obj_manager(obj.type, obj)
+                objs_to_pass.append(obj)
 
+
+        T = subroutine.return_type
+        ret_obj = obj_manager.reserve_variable(T, copy=True)
+
+        if subroutine.inline:
+            cursor = obj_manager.cursor
+            subroutine.inline_ret_obj = ret_obj
+
+        for obj in objs_to_pass:
+            obj_manager.reserve_variable_for_subroutine(subroutine, obj.type, obj)
 
         for T, init_obj, value in inits:
-            obj_manager.reserve_variable_for_child_obj_manager(T, init_obj, value)
+            obj_manager.reserve_variable_for_subroutine(subroutine, T, init_obj, value)
 
 
-        child_obj_manager = obj_manager.create_child_obj_manager(subroutine)
-        self.compile_driver.call(subroutine.address)
-        child_obj_manager.close()
-        T = subroutine.return_type
+        if not subroutine.inline:
+            child_obj_manager = obj_manager.create_child_obj_manager(subroutine)
+            self.compile_driver.call(subroutine.address)
+            child_obj_manager.close()
+        else:
+            objs_store = obj_manager.objs
+            obj_manager.objs = {}
+            self.compile_driver.compile_inline_begin(subroutine)
+            subroutine.compile(cursor=cursor, obj_manager=obj_manager)
+            self.compile_driver.compile_inline_end(subroutine)
+            obj_manager.objs = objs_store
 
-        obj = obj_manager.reserve_variable(T, copy=True)
-        obj.set_by_acc()
+            obj_manager.cursor = cursor
 
-        self.subroutines.subroutines_stack.append(subroutine)
+        if not subroutine.inline:
+            ret_obj.set_by_acc()
+
+        if not subroutine.inline:
+            self.subroutines.subroutines_stack.append(subroutine)
 
         if not subroutine.ref_return:
-            res = obj
+            res = ret_obj
         else:
-            if obj.type.main_type.__name__ != 'Ref':
+            if ret_obj.type.main_type.__name__ != 'Ref':
                 raise CompilerNotLocatedException("ref type expected")
-            res = obj.get_obj()
+            res = ret_obj.get_obj()
 
         self.add_new_object_to_code_block_context(subroutine, res)
         return res
