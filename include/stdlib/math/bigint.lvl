@@ -266,7 +266,6 @@ method !=(var this as ref(bigint), var a as ref(bigint)) as bool
 
 method sub_abs(var this as ref(_bigint), var a as ref(_bigint)) as ref(_bigint)
 {
-
   var res as ref(_bigint);
 
   if (a.lt_abs(this) or this.eq(a))

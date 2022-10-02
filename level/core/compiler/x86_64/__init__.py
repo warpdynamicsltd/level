@@ -640,11 +640,6 @@ class CompileDriver_x86_64(CompileDriver):
         adc_(rdx, 0)
         add_(rax, rbx)
         adc_(rdx, 0)
-        # xor_(dl, dl)
-        # sub_(dl, cl)
-        # adc_(rax, rbx)
-        # setc_(cl)
-        #adc_(rcx, 0)
         c.MC_put_to_storage(rdx)
         res.MC_put_to_storage(rax)
         return res
