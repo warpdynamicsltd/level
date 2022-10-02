@@ -97,7 +97,21 @@ class Subroutine:
         self.compiler.code_block_contexts.close_current()
         self.compiler.subroutines_stack.pop()
 
-    def compile(self, cursor = 0, obj_manager=None):
+    def compile_inline_mutable(self, obj_manager, *objs):
+        self.compiler.subroutines_stack.append(self)
+
+        for i, name in enumerate(self.var_names):
+            obj_manager.objs[name] = objs[i]
+
+        self.compiler.code_block_contexts.open_new(obj_manager)
+
+        for s in self.statement_list.args:
+            self.compiler.compile_statement(s, obj_manager)
+
+        self.compiler.code_block_contexts.close_current()
+        self.compiler.subroutines_stack.pop()
+
+    def compile(self):
         if self.compiled:
             return
 
