@@ -22,7 +22,7 @@ method ()(_bigint, var sign as byte, var count as int) as ref(_bigint)
   return res;
 }
 
-method inline del(var this as ref(_bigint))
+method inline mutable del(var this as ref(_bigint))
 {
   if (this != null)
   {
@@ -81,7 +81,7 @@ method new()(bigint, var a as bigint) as bigint
   return this;
 }
 
-method add_abs_in_place(var this as ref(_bigint), var other as ref(_bigint), var index as int)
+method inline mutable add_abs_in_place(var this as ref(_bigint), var other as ref(_bigint), var index as int)
 # user needs to guarantee enough space for add in this
 {
   var c = 0 as u64;
@@ -94,7 +94,7 @@ method add_abs_in_place(var this as ref(_bigint), var other as ref(_bigint), var
   exec this.add_abs_in_place(c, index + k);
 }
 
-method sub_abs_in_place(var this as ref(_bigint), var other as ref(_bigint), var index as int)
+method inline mutable sub_abs_in_place(var this as ref(_bigint), var other as ref(_bigint), var index as int)
 # user needs to guarantee enough space for add in this
 {
   var c = 0 as u64;
@@ -106,7 +106,7 @@ method sub_abs_in_place(var this as ref(_bigint), var other as ref(_bigint), var
   exec this.sub_abs_in_place(c, index + k);
 }
 
-method add_abs_in_place(var this as ref(_bigint), var other as ref(_bigint))
+method inline mutable add_abs_in_place(var this as ref(_bigint), var other as ref(_bigint))
 # user needs to guarantee enough space for add in this
 {
   var c = 0 as u64;
@@ -118,7 +118,7 @@ method add_abs_in_place(var this as ref(_bigint), var other as ref(_bigint))
   exec this.add_abs_in_place(c, k);
 }
 
-method sub_abs_in_place(var this as ref(_bigint), var other as ref(_bigint))
+method inline mutable sub_abs_in_place(var this as ref(_bigint), var other as ref(_bigint))
 # user needs to guarantee enough space for add in this
 {
   var c = 0 as u64;
@@ -154,7 +154,7 @@ method sub_abs_in_place(var this as ref(_bigint), var a as u64, var index as int
   }
 }
 
-method normalise(var this as ref(_bigint))
+method inline mutable normalise(var this as ref(_bigint))
 {
   while(this.count > 1 and this.data[this.count - 1] == 0)
   {
@@ -162,12 +162,12 @@ method normalise(var this as ref(_bigint))
   }
 }
 
-method is_zero(var this as ref(_bigint)) as bool
+method inline mutable is_zero(var this as ref(_bigint)) as bool
 {
   return this.count == 1 and this.data[0] == 0;
 }
 
-method add_abs(var this as ref(_bigint), var other as ref(_bigint)) as ref(_bigint)
+method inline mutable add_abs(var this as ref(_bigint), var other as ref(_bigint)) as ref(_bigint)
 {
   var r as u64;
   var c as u64;
@@ -193,7 +193,7 @@ method add_abs(var this as ref(_bigint), var other as ref(_bigint)) as ref(_bigi
   return res;
 }
 
-method _sub_abs(var this as ref(_bigint), var other as ref(_bigint)) as ref(_bigint)
+method inline mutable _sub_abs(var this as ref(_bigint), var other as ref(_bigint)) as ref(_bigint)
 {
   var r as u64;
   var c as u64;
@@ -244,12 +244,12 @@ method eq_abs(var this as ref(_bigint), var a as ref(_bigint)) as bool
   return true;
 }
 
-method eq(var this as ref(_bigint), var a as ref(_bigint)) as bool
+method inline mutable eq(var this as ref(_bigint), var a as ref(_bigint)) as bool
 {
-  return this.eq_abs(a) and this.sign == a.sign;
+  return this.sign == a.sign and this.eq_abs(a);
 }
 
-method neq(var this as ref(_bigint), var a as ref(_bigint)) as bool
+method inline mutable neq(var this as ref(_bigint), var a as ref(_bigint)) as bool
 {
   return not(this.eq(a));
 }
@@ -264,7 +264,7 @@ method !=(var this as ref(bigint), var a as ref(bigint)) as bool
   return this.obj.ptr.neq(a.obj.ptr);
 }
 
-method sub_abs(var this as ref(_bigint), var a as ref(_bigint)) as ref(_bigint)
+method inline mutable sub_abs(var this as ref(_bigint), var a as ref(_bigint)) as ref(_bigint)
 {
   var res as ref(_bigint);
 
@@ -288,7 +288,7 @@ method sub_abs(var this as ref(_bigint), var a as ref(_bigint)) as ref(_bigint)
   }
 }
 
-method add(var this as ref(_bigint), var a as ref(_bigint)) as ref(_bigint)
+method inline mutable add(var this as ref(_bigint), var a as ref(_bigint)) as ref(_bigint)
 {
 
   if (this.sign == 1 and a.sign == 1)

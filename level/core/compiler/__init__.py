@@ -946,12 +946,15 @@ class Compiler:
             cursor = obj_manager.cursor
             subroutine.inline_ret_obj = ret_obj
 
-        for obj in objs_to_pass:
-            obj_manager.reserve_variable_for_subroutine(subroutine, obj.type, obj)
+        if 'mutable' in subroutine.modes and subroutine.inline:
+            for T, init_obj, value in inits:
+                objs_to_pass.append(obj_manager.reserve_variable_for_subroutine(subroutine, T, init_obj, value))
+        else:
+            for obj in objs_to_pass:
+                obj_manager.reserve_variable_for_subroutine(subroutine, obj.type, obj)
 
-        for T, init_obj, value in inits:
-            obj_manager.reserve_variable_for_subroutine(subroutine, T, init_obj, value)
-
+            for T, init_obj, value in inits:
+                obj_manager.reserve_variable_for_subroutine(subroutine, T, init_obj, value)
 
         if not subroutine.inline:
             child_obj_manager = obj_manager.create_child_obj_manager(subroutine)
@@ -961,7 +964,10 @@ class Compiler:
             objs_store = obj_manager.objs
             obj_manager.objs = {}
             self.compile_driver.compile_inline_begin(subroutine)
-            subroutine.compile_inline(cursor=cursor, obj_manager=obj_manager)
+            if 'mutable' in subroutine.modes:
+                subroutine.compile_inline_mutable(obj_manager, *objs_to_pass)
+            else:
+                subroutine.compile_inline(cursor=cursor, obj_manager=obj_manager)
             self.compile_driver.compile_inline_end(subroutine)
             obj_manager.objs = objs_store
 
