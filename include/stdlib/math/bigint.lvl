@@ -367,9 +367,41 @@ method new -(var this as ref(bigint), var a as ref(bigint)) as bigint
   return [this] + (-[a]);
 }
 
+sub inline slow_mul_abs2(var a as ref(_bigint), var b as ref(_bigint)) as ref(_bigint)
+{
+  k = a.count + b.count + 1;
+  res = _bigint(byte(1), k);
+
+  for (i = 0; i < k; inc i)
+  {
+    res.data[i] = 0;
+  }
+
+  var c = 0 as u64;
+  var d as u64;
+  for (i = 0; i < a.count; inc i)
+  {
+    c = 0;
+    d = 0;
+    for (j = 0; j < b.count; inc j)
+    {
+      s = __api__(add, res.data[i + j], d, c);
+      k = 0;
+      res.data[i + j] = __api__(add, s, __api__(mul, a.data[i], b.data[j], d), k);
+      inc c, k;
+    }
+    res.data[i + b.count] = __api__(add, 0, d, c);
+  }
+
+  exec res.normalise();
+
+  return res;
+}
+
 sub slow_mul_abs(var a as ref(_bigint), var b as ref(_bigint)) as ref(_bigint)
 {
-  k = a.count * b.count + 1;
+  k = a.count + b.count + 1;
+
   res = _bigint(byte(1), k);
 
   for (i = 0; i < k; inc i)
@@ -390,9 +422,10 @@ sub slow_mul_abs(var a as ref(_bigint), var b as ref(_bigint)) as ref(_bigint)
   return res;
 }
 
-method mul(var this as ref(_bigint), var a as ref(_bigint)) as ref(_bigint)
+
+method inline mul(var this as ref(_bigint), var a as ref(_bigint)) as ref(_bigint)
 {
-  res = slow_mul_abs(this, a);
+  res = slow_mul_abs2(this, a);
 
   if (this.sign == a.sign)
   {
