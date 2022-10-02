@@ -266,6 +266,7 @@ method !=(var this as ref(bigint), var a as ref(bigint)) as bool
 
 method sub_abs(var this as ref(_bigint), var a as ref(_bigint)) as ref(_bigint)
 {
+
   var res as ref(_bigint);
 
   if (a.lt_abs(this) or this.eq(a))
@@ -401,6 +402,7 @@ sub inline slow_mul_abs2(var a as ref(_bigint), var b as ref(_bigint)) as ref(_b
 sub slow_mul_abs(var a as ref(_bigint), var b as ref(_bigint)) as ref(_bigint)
 {
   k = a.count + b.count + 1;
+
   res = _bigint(byte(1), k);
 
   for (i = 0; i < k; inc i)
@@ -420,6 +422,7 @@ sub slow_mul_abs(var a as ref(_bigint), var b as ref(_bigint)) as ref(_bigint)
 
   return res;
 }
+
 
 method inline mul(var this as ref(_bigint), var a as ref(_bigint)) as ref(_bigint)
 {
