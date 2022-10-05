@@ -10,6 +10,7 @@ from level.core.compiler.globals import Globals, Global
 from level.core.compiler.inheritance import Inheritance
 from level.core.compiler.types import Obj, Type, TypeVar
 from level.core.compiler.codeblock import CodeBlockContexts
+from level.core.compiler.optimiser import Optimiser
 from level.core.parser.builtin import translate_simple_types
 
 
@@ -138,6 +139,8 @@ class Compiler:
         self.meta = None
         self.subroutines_stack = []
 
+        self.optimiser = Optimiser()
+
         # for internal cache use
         self.subroutine_compiled_addresses = {}
         self.type_defs_compiled = {}
@@ -184,6 +187,8 @@ class Compiler:
 
         self.compile_driver.add_compiler_data()
         self.globals.set_data_address()
+
+        self.optimiser.compile_machine_code()
 
     def compile_types(self, types_block):
         for arg in types_block.args:

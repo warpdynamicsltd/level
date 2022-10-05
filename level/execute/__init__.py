@@ -4,7 +4,7 @@ import tempfile
 import subprocess
 import time
 
-from level.core.x86_64 import *
+from level.core.machine_x86_64 import *
 from level.utils.binparse import *
 from level.utils.elf64 import ELF64
 

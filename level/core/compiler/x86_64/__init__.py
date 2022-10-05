@@ -18,6 +18,7 @@ from level.core.compiler.x86_64.types.byte import Byte
 
 from level.core.parser.builtin import translate_simple_types, BuiltinValue, BuiltinFloat, BuiltinRef
 
+from level.core.machine_x86_64 import SymBits
 from level.core.x86_64 import *
 
 class StringInfo:
@@ -484,7 +485,8 @@ class CompileDriver_x86_64(CompileDriver):
     def echo_sz(self, obj):
         obj.to_acc()
         xor_(edx, edx)
-        loop = address()
+        loop = SymBits()
+        set_symbol(loop)
         mov_(bl, [rax + edx])
         inc_(edx)
         or_(bl, bl)
@@ -523,7 +525,8 @@ class CompileDriver_x86_64(CompileDriver):
     def while_acc(self, obj_manager):
         end_while_block = SymBits()
         continue_addr = SymBits()
-        begin_while_block = address()
+        begin_while_block = SymBits()
+        set_symbol(begin_while_block)
         yield None
         or_(rax, rax)
         jz_(end_while_block)

@@ -29,7 +29,8 @@ class Global:
 
     def compile(self, obj_manager):
         obj_manager.reserve_variable_ptr(size=1)
-        obj_manager.reserve_variable_by_name(self.T, self.calling_name, self.const)
+        # obj_manager.reserve_variable_by_name(self.T, self.calling_name, self.const)
+        obj_manager.reserve_variable_by_name(self.T, self.calling_name)
 
 
 class Globals:
@@ -52,8 +53,10 @@ class Globals:
         for key in self.globals_dict:
             # print(key)
             g = self.globals_dict[key]
-            if g.init_expression is not None:
-                self.get_obj(key, obj_manager)
+            #if g.init_expression is not None:
+            obj = self.get_obj(key, obj_manager)
+            if g.const is not None and g.init_expression is None:
+                obj.set_from_const(g.const)
 
     def compile(self):
         if len(self.globals_dict) == 0:
@@ -63,7 +66,7 @@ class Globals:
             g = self.globals_dict[key]
             g.compile(self.obj_manager)
 
-    def get_obj(self, key, obj_manager):
+    def get_obj(self, key, obj_manager, init=True):
         if key not in self.obj_manager.objs:
             return None
         obj = self.obj_manager.objs[key]
