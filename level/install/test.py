@@ -91,7 +91,7 @@ test_source([test_path(r"collections/simple_stack.lvl")],
             b"stack length\n00000001\nstart pushing\nstack length\n00000001\nstart iterating\n00000001\nstart iterating\n00000001\nstart iterating\n00000001\nstart popping\nstack length\n00000001\n00000001\nstart pushing\nstack length\n00000001\nstart popping\nstack length\n00000001\n00000001\nend\n")
 test_source([test_path(r"collections/vector.lvl")], b"+00000000:00000000\n+00000000:00000001\n+00000000:00000002\n+00000000:00000003\n+00000000:00000004\n+00000000:00000005\n+00000000:00000006\n")
 
-# test_source([test_path(r"globals/simple.lvl")], b"00000001\n+00000000:00000002\n-00000000:00000002\n+00000000:00000006\n-00000000:00000002\n+00000000:00000006\nhello\n")
+test_source([test_path(r"globals/simple.lvl")], b"00000001\n+00000000:00000002\n-00000000:00000002\n+00000000:00000006\n-00000000:00000002\n+00000000:00000006\nhello\n")
 test_source([test_path(r"globals/expressions.lvl")], b"+00000000:00000008\n+00000000:00000004\n")
 test_source([test_path(r"globals/expressions2.lvl")], b"+00000000:00000009\n+00000000:00000009\n+00000000:00000009\n+00000000:00000006\n")
 test_source([test_path(r"globals/inits.lvl")], b"1\n2\n+00000000:00000000\nhow this is possible?\n+00000000:00000006\n+00000000:00000006\n")
@@ -152,7 +152,7 @@ test_source([test_path(r"autodel/rec.lvl")], b"lala1\nlala3\ngc test\n+00000000:
 test_source([test_path(r"autodel/simple_stack.lvl")], b"stack length\n00000001\nstart pushing\nstack length\n00000001\nstart iterating\n00000001\nstart iterating\n00000001\nstart iterating\n00000001\nstart popping\nstack length\n00000001\n00000001\nstart pushing\nstack length\n00000001\nstart popping\nstack length\n00000001\n00000001\nend\nmemory allocated\n+00000000:00000000\nend\n")
 test_source([test_path(r"autodel/stack_str.lvl")], b"a\nb\nc\nx\nxx\nxxx\nxxxx\nxxxxx\nxxxxxx\nxxxxxxx\nxxxxxxxx\nxxxxxxxxx\nxxxxxxxxxx\nmemory allocated\n+00000000:00000000\nend\n")
 
-# test_source([test_path(r"context/openclose.lvl")], b"referenced 1\n+00000000:00000001\nreferenced 2\n+00000000:00000002\nreferenced 4\n+00000000:00000004\ngc test\n+00000000:00000000\nend\n")
+test_source([test_path(r"context/openclose.lvl")], b"referenced 1\n+00000000:00000001\nreferenced 2\n+00000000:00000002\nreferenced 4\n+00000000:00000004\ngc test\n+00000000:00000000\nend\n")
 test_source([test_path(r"context/vector.lvl")], b"gc test\n+00000000:00000000\nend\n")
 
 test_source([test_path(r"files/simple.lvl")], b"00000001\nsuccess\nallocated\n+00000000:00000000\nend\n")

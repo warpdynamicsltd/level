@@ -6,8 +6,9 @@ class Optimiser():
         level.core.x86_64.code = []
 
     def compile_machine_code(self):
-        #self.simple_optimise()
+        self.simple_optimise()
         for i, line in enumerate(level.core.x86_64.code):
+            #print(line)
             eval(line[0])(*line[1:])
 
 

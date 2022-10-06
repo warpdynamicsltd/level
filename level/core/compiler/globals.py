@@ -29,8 +29,9 @@ class Global:
 
     def compile(self, obj_manager):
         obj_manager.reserve_variable_ptr(size=1)
-        # obj_manager.reserve_variable_by_name(self.T, self.calling_name, self.const)
-        obj_manager.reserve_variable_by_name(self.T, self.calling_name)
+        obj_manager.reserve_variable_by_name(self.T, self.calling_name, self.const)
+        #obj_manager.reserve_variable_by_name(self.T, self.calling_name, copy=True)
+        #obj_manager.reserve_variable_ptr(size=self.T.size())
 
 
 class Globals:
@@ -55,8 +56,10 @@ class Globals:
             g = self.globals_dict[key]
             #if g.init_expression is not None:
             obj = self.get_obj(key, obj_manager)
-            if g.const is not None and g.init_expression is None:
-                obj.set_from_const(g.const)
+            # if obj.type.main_type == 'Rec':
+            #     obj.init()
+            # if g.const is not None and g.init_expression is None:
+            #     obj.set_from_const(g.const)
 
     def compile(self):
         if len(self.globals_dict) == 0:
