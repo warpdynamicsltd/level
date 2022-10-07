@@ -1,4 +1,4 @@
-from level.core.x86_64 import *
+from level.core.machine_x86_64 import *
 from level.tests import test
 
 begin()

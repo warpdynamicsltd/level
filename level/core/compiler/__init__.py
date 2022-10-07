@@ -10,6 +10,7 @@ from level.core.compiler.globals import Globals, Global
 from level.core.compiler.inheritance import Inheritance
 from level.core.compiler.types import Obj, Type, TypeVar
 from level.core.compiler.codeblock import CodeBlockContexts
+from level.core.compiler.optimiser import Optimiser
 from level.core.parser.builtin import translate_simple_types
 
 
@@ -121,7 +122,11 @@ class ObjManager(ABC):
         return res
 
 class Compiler:
-    def __init__(self, program : ast.Program, obj_manager_type: type, compile_driver_type: type, memory: int=0x100000):
+    def __init__(self, program : ast.Program,
+                 obj_manager_type: type,
+                 compile_driver_type: type,
+                 memory: int=0x100000,
+                 optimise=False):
         self.program = program
         self.compile_driver = compile_driver_type(self)
         self.obj_manager_type = obj_manager_type
@@ -137,6 +142,8 @@ class Compiler:
 
         self.meta = None
         self.subroutines_stack = []
+
+        self.optimiser = Optimiser(self, optimise=optimise)
 
         # for internal cache use
         self.subroutine_compiled_addresses = {}
@@ -184,6 +191,8 @@ class Compiler:
 
         self.compile_driver.add_compiler_data()
         self.globals.set_data_address()
+
+        self.optimiser.compile_machine_code()
 
     def compile_types(self, types_block):
         for arg in types_block.args:

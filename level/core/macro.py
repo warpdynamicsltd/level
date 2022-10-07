@@ -22,7 +22,8 @@ def m_echo(ptr, size):
 
 def m_copy_rdi_rsi(size):
     mov_(rcx, size)
-    loop = address()
+    loop = SymBits()
+    set_symbol(loop)
     mov_(al, [rsi + rcx - 1])
     mov_([rdi + rcx - 1], al)
     dec_(rcx)

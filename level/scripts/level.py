@@ -34,6 +34,7 @@ def get_args():
     comp.add_argument("-r", "--run", action='store_true', help="compile and run redirecting stdout and stderr")
     comp.add_argument("-d", "--dev", action='store_true', help="Level developer mode")
     comp.add_argument("-s", "--stats", action='store_true', help="printing out stats about compilation")
+    comp.add_argument("-u", "--optimise", action='store_true', help="compiler optimisation")
     comp.set_defaults(func=do_cmp)
 
     install = subparsers.add_parser("install", help="install Level module")
@@ -161,7 +162,7 @@ def compile(args, stderr=sys.stderr):
 
         if not args.dev:
             try:
-                comp = Compiler(program, StandardObjManager, CompileDriver_x86_64)
+                comp = Compiler(program, StandardObjManager, CompileDriver_x86_64, optimise=args.optimise)
                 comp.compile()
             except CompilerException as e:
                 stderr.write(str(e))
@@ -184,7 +185,7 @@ def compile(args, stderr=sys.stderr):
                 return 1
         else:
             try:
-                comp = Compiler(program, StandardObjManager, CompileDriver_x86_64)
+                comp = Compiler(program, StandardObjManager, CompileDriver_x86_64, optimise=args.optimise)
                 comp.compile()
             except Exception as e:
                 stderr.write(f"compiler error in {comp.meta}\n")

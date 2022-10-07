@@ -33,7 +33,7 @@ def test_source(cmd, expected_stdout, expected_stderr=b'', script=False):
                                    stderr=subprocess.PIPE)
         stdout, stderr = process.communicate()
     else:
-        args = SimpleNamespace(source=cmd, run=True, dev=(expected_stderr== b''), out=False, stats=False)
+        args = SimpleNamespace(source=cmd, run=True, dev=(expected_stderr== b''), out=False, stats=False, optimise=True)
         if expected_stderr == b'':
             res = compile(args)
             if res != 0:

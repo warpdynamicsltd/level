@@ -1,5 +1,6 @@
 from level.core.x86_64 import *
 import level.core.ast as ast
+from copy import copy
 
 class Global:
     def __init__(self,
@@ -50,7 +51,6 @@ class Globals:
 
     def init(self, obj_manager):
         for key in self.globals_dict:
-            # print(key)
             g = self.globals_dict[key]
             if g.init_expression is not None:
                 self.get_obj(key, obj_manager)
@@ -68,6 +68,7 @@ class Globals:
             return None
         obj = self.obj_manager.objs[key]
         g = self.globals_dict[key]
+        obj.ptr = copy(obj.ptr)
         obj.ptr.reg = ESI
         mov_(rsi, self.address)
         ref_T = self.compiler.compile_driver.get_ref_type_for_obj(obj)
