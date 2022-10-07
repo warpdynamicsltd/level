@@ -1498,7 +1498,3 @@ def add_block(size):
 
 def set_cursor(cursor):
     begin.buffer.set_cursor(cursor)
-
-
-# def address():
-#     return begin.buffer.cursor

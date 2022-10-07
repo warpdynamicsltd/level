@@ -2,13 +2,15 @@ import level.core.x86_64
 from level.core.machine_x86_64 import *
 
 class Optimiser():
-    def __init__(self):
+    def __init__(self, compiler, optimise=False):
+        self.compiler = compiler
+        self.optimise = optimise
         level.core.x86_64.code = []
 
     def compile_machine_code(self):
-        self.simple_optimise()
+        if self.optimise:
+            self.simple_optimise()
         for i, line in enumerate(level.core.x86_64.code):
-            #print(line)
             eval(line[0])(*line[1:])
 
 

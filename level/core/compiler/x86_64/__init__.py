@@ -18,7 +18,6 @@ from level.core.compiler.x86_64.types.byte import Byte
 
 from level.core.parser.builtin import translate_simple_types, BuiltinValue, BuiltinFloat, BuiltinRef
 
-from level.core.machine_x86_64 import SymBits
 from level.core.x86_64 import *
 
 class StringInfo:

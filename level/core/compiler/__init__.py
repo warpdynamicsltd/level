@@ -122,7 +122,11 @@ class ObjManager(ABC):
         return res
 
 class Compiler:
-    def __init__(self, program : ast.Program, obj_manager_type: type, compile_driver_type: type, memory: int=0x100000):
+    def __init__(self, program : ast.Program,
+                 obj_manager_type: type,
+                 compile_driver_type: type,
+                 memory: int=0x100000,
+                 optimise=False):
         self.program = program
         self.compile_driver = compile_driver_type(self)
         self.obj_manager_type = obj_manager_type
@@ -139,7 +143,7 @@ class Compiler:
         self.meta = None
         self.subroutines_stack = []
 
-        self.optimiser = Optimiser()
+        self.optimiser = Optimiser(self, optimise=optimise)
 
         # for internal cache use
         self.subroutine_compiled_addresses = {}

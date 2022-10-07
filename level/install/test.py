@@ -97,7 +97,7 @@ test_source([test_path(r"globals/expressions2.lvl")], b"+00000000:00000009\n+000
 test_source([test_path(r"globals/inits.lvl")], b"1\n2\n+00000000:00000000\nhow this is possible?\n+00000000:00000006\n+00000000:00000006\n")
 
 test_source([test_path(r"rec/defaults.lvl")], b"+00000000:00000003\n+00000000:00000004\nend\n")
-# test_source([test_path(r"rec/nested.lvl")], b"+00000000:00000003\n+00000000:00000007\n+00000000:00000003\n+00000000:00000008\n+00000000:00000006\n+00000000:0000000a\nend\n")
+test_source([test_path(r"rec/nested.lvl")], b"+00000000:00000003\n+00000000:00000007\n+00000000:00000003\n+00000000:00000008\n+00000000:00000006\n+00000000:0000000a\nend\n")
 test_source([test_path(r"ref/arithmetic.lvl")],  b"00000002\n00000003\n00000004\n00000002\n00000003\n00000004\n00000001\n00000001\n00000001\n00000001\n00000001\n00000001\n")
 
 test_source([test_path(r"allocator/describe.lvl")], b"00000001\n")

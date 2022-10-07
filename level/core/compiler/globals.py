@@ -1,5 +1,6 @@
 from level.core.x86_64 import *
 import level.core.ast as ast
+from copy import copy
 
 class Global:
     def __init__(self,
@@ -30,8 +31,6 @@ class Global:
     def compile(self, obj_manager):
         obj_manager.reserve_variable_ptr(size=1)
         obj_manager.reserve_variable_by_name(self.T, self.calling_name, self.const)
-        #obj_manager.reserve_variable_by_name(self.T, self.calling_name, copy=True)
-        #obj_manager.reserve_variable_ptr(size=self.T.size())
 
 
 class Globals:
@@ -52,14 +51,9 @@ class Globals:
 
     def init(self, obj_manager):
         for key in self.globals_dict:
-            # print(key)
             g = self.globals_dict[key]
-            #if g.init_expression is not None:
-            obj = self.get_obj(key, obj_manager)
-            # if obj.type.main_type == 'Rec':
-            #     obj.init()
-            # if g.const is not None and g.init_expression is None:
-            #     obj.set_from_const(g.const)
+            if g.init_expression is not None:
+                self.get_obj(key, obj_manager)
 
     def compile(self):
         if len(self.globals_dict) == 0:
@@ -69,11 +63,12 @@ class Globals:
             g = self.globals_dict[key]
             g.compile(self.obj_manager)
 
-    def get_obj(self, key, obj_manager, init=True):
+    def get_obj(self, key, obj_manager):
         if key not in self.obj_manager.objs:
             return None
         obj = self.obj_manager.objs[key]
         g = self.globals_dict[key]
+        obj.ptr = copy(obj.ptr)
         obj.ptr.reg = ESI
         mov_(rsi, self.address)
         ref_T = self.compiler.compile_driver.get_ref_type_for_obj(obj)
