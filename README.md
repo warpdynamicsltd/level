@@ -8,7 +8,12 @@ This is an early access repository and you are strongly disencouraged to begin a
 in **Level** yet.
 
 ### Quick overview of current Level features
-- compiles to ELF64 executable under Linux based OS on x86-64 architecture 
+
+#### Level Compiler
+- compiles to ELF64 executable under Linux based OS on x86-64 architecture
+- supports simple machine code optimisation
+
+#### Level Programing Language
 - statically typed
 - basic types: <i>int</i>, <i>byte</i>, <i>bool</i>, <i>i64</i>, <i>i32</i>, <i>u64</i>, <i>u32</i>, <i>float</i> 
 - user defined types as combination of <i>ref</i> (pointer/reference type), <i>rec</i> (struct type) and <i>array</i> (array type)
@@ -24,7 +29,7 @@ in **Level** yet.
   - basic files operations (e.g. <i>open</i>, <i>close</i>, <i>write</i>, <i>read</i>)
   - arbitrary-precision integer arithmetic (FEATURE IN PROGRESS)
 
-### Important information about Level
+### Other useful information about Level
 
 - **Level compiler** source code is written in Python 3 using purposely ONLY Python's standard library. Compiler doesn't use any external libraries like 
 <i>binutils</i> or <i>glibc</i>. All assembly is coded purely in Python's standard library.
