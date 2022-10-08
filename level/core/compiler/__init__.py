@@ -375,11 +375,14 @@ class Compiler:
     def compile_inline_return_statement(self, subroutine, s, obj_manager):
         if s.args:
             obj = self.compile_expression(s.args[0], obj_manager)
+            # obj.ptr.optimise(False)
             if obj.type != subroutine.return_type:
                 obj = subroutine.return_type(obj)
+                # obj.ptr.optimise(False)
 
             if 'new' in subroutine.modes and self.inherited_from_object(obj):
                 ret_obj = obj_manager.reserve_variable(subroutine.return_type)
+                # ret_obj.ptr.optimise(False)
                 self.compile_assigment(obj_manager, ret_obj, obj)
                 subroutine.inline_ret_obj.set(ret_obj)
             else:
@@ -391,12 +394,15 @@ class Compiler:
     def compile_in_call_return_statement(self, subroutine, s, obj_manager):
         if s.args:
             obj = self.compile_expression(s.args[0], obj_manager)
+            # obj.ptr.optimise(False)
             if obj.type != subroutine.return_type:
                 obj = subroutine.return_type(obj)
+                # obj.ptr.optimise(False)
                 # self.add_new_object_to_code_block_context(subroutine, obj)
 
             if 'new' in subroutine.modes and self.inherited_from_object(obj):
                 ret_obj = obj_manager.reserve_variable(subroutine.return_type)
+                # ret_obj.ptr.optimise(False)
                 self.compile_assigment(obj_manager, ret_obj, obj)
             else:
                 ret_obj = obj
@@ -425,6 +431,7 @@ class Compiler:
         else:
             if s.args:
                 obj = self.compile_expression(s.args[0], obj_manager)
+                # obj.ptr.optimise(False)
                 self.code_block_contexts.compile_on_return()
                 obj.to_acc()
             else:
@@ -469,6 +476,7 @@ class Compiler:
                 T = self.compile_type_expression(type_expression.val)
 
             var_obj = obj_manager.reserve_variable_by_name(T, var.val.name, const)
+            var_obj.ptr.optimise(False)
 
             if var_obj is None:
                 raise CompilerException(f"variable name '{var.val.name}' already used in this scope, can't initiate in {var.val.meta}")
@@ -507,12 +515,14 @@ class Compiler:
                 if not (var_exp.val.name in obj_manager.objs or var_exp.val.calling_name in self.globals.globals_dict):
                     self.var_name_raise_not_available(var_exp.val, obj_manager=obj_manager)
                     var_obj = obj_manager.reserve_variable_by_name(obj.type, var_exp.val.name)
+                    var_obj.ptr.optimise(False)
                     self.update_meta(var_exp.val)
                     self.compile_first_assigment(obj_manager, var_obj, obj)
                     return
 
 
             var_obj = self.compile_expression(var_exp.val, obj_manager)
+            var_obj.ptr.optimise(False)
             self.compile_assigment(obj_manager, var_obj, obj)
             return
 
@@ -533,10 +543,12 @@ class Compiler:
                     var_obj = obj_manager.reserve_variable_by_name(obj.type, var_exp.val.name)
                     self.update_meta(var_exp.val)
                     var_obj.set(obj)
+                    var_obj.ptr.optimise(False)
                     return
 
             var_obj = self.compile_expression(var_exp.val, obj_manager)
             var_obj.set(obj)
+            var_obj.ptr.optimise(False)
             return
 
         if ast.istype(s, ast.Echo):
@@ -934,6 +946,7 @@ class Compiler:
                         value = init_expression.name
                     else:
                         init_obj = self.compile_expression(init_expression, obj_manager)
+                        init_obj.ptr.optimise(False)
                 inits.append((T, init_obj, value))
 
         objs_to_pass = []
@@ -943,13 +956,16 @@ class Compiler:
             if (method and i == 0 and obj.type.main_type.__name__ != 'Ref') or (obj.type == first_T):
                 first_T = obj.type
                 ref = self.compile_driver.build_ref(obj_manager, obj)
+                ref.ptr.optimise(False)
                 objs_to_pass.append(ref)
             else:
+                obj.ptr.optimise(False)
                 objs_to_pass.append(obj)
 
 
         T = subroutine.return_type
         ret_obj = obj_manager.reserve_variable(T, copy=True)
+        ret_obj.ptr.optimise(False)
 
         if subroutine.inline:
             cursor = obj_manager.cursor
@@ -957,6 +973,7 @@ class Compiler:
 
         if 'mutable' in subroutine.modes and subroutine.inline:
             for T, init_obj, value in inits:
+
                 objs_to_pass.append(obj_manager.reserve_variable_for_subroutine(subroutine, T, init_obj, value))
         else:
             for obj in objs_to_pass:

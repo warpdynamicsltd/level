@@ -12,11 +12,16 @@ type _bigint as rec
   var sign as byte
 )
 
+sub allocate_threshold(var n as int) as int
+{
+  return (n/10 + 1) * 10;
+}
+
 method ()(_bigint, var sign as byte, var count as int) as ref(_bigint)
 {
   var res as ref(_bigint);
   res = app.allocator.allocate(sizeof(_bigint));
-  res.data = app.allocator.allocate(sizeof(u64) * count);
+  res.data = app.allocator.allocate(sizeof(u64) * allocate_threshold(count));
   res.count = count;
   res.sign = sign;
   return res;

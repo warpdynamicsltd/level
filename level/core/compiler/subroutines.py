@@ -87,6 +87,7 @@ class Subroutine:
         for i, name in enumerate(self.var_names):
             if name is not None:
                 obj = obj_manager.reserve_variable_by_name(self.var_types[i], name, copy=True)
+                obj.ptr.optimise(False)
                 objs.append(obj)
 
         self.compiler.code_block_contexts.open_new(obj_manager)
@@ -128,6 +129,7 @@ class Subroutine:
         for i, name in enumerate(self.var_names):
             if name is not None:
                 obj = obj_manager.reserve_variable_by_name(self.var_types[i], name, copy=True)
+                obj.ptr.optimise(False)
                 objs.append(obj)
 
         self.compiler.code_block_contexts.open_new(obj_manager)
@@ -136,6 +138,7 @@ class Subroutine:
             if self.compiler.inherited_from_object(obj):
                 # we replace all object vars with new ones to run assignment and add them to finish list in codeblock
                 new_obj = obj_manager.reserve_variable(obj.type)
+                new_obj.ptr.optimise(False)
                 new_obj.name = obj.name
                 self.compiler.compile_first_assigment(obj_manager, new_obj, obj)
                 obj_manager.objs[obj.name] = new_obj
