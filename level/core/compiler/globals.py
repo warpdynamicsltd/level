@@ -70,11 +70,13 @@ class Globals:
         g = self.globals_dict[key]
         obj.ptr = copy(obj.ptr)
         obj.ptr.reg = ESI
+        obj.ptr.optimise(False)
         mov_(rsi, self.address)
         ref_T = self.compiler.compile_driver.get_ref_type_for_obj(obj)
         ref_obj = obj_manager.reserve_variable(ref_T)
         ref_obj.bind(obj)
         res = ref_obj.get_obj()
+        res.ptr.optimise(False)
 
         if g.init_expression is not None:
             jmp_addr = self.compiler.compile_driver.compile_global_init_begin(self.address + (obj.index - 1))

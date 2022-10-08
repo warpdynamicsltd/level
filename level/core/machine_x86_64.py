@@ -134,6 +134,12 @@ class Register:
         self.dis = dis
         self.bits = bits
 
+        self.can_optimise = True
+        self.ref_count = 0
+
+    def optimise(self, value):
+        self.can_optimise = value
+
     def __eq__(self, other):
         return type(self) is type(other) and self.reg == other.reg and self.scale == other.scale and self.dis_reg == other.dis_reg and self.dis == other.dis and self.bits == other.bits
 
