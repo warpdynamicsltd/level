@@ -570,6 +570,14 @@ class Log2(UnaryExpression):
     def __init__(self, a):
         UnaryExpression.__init__(self, 'Log2', a)
 
+class Log10(UnaryExpression):
+    def __init__(self, a):
+        UnaryExpression.__init__(self, 'Log10', a)
+
+class Log(UnaryExpression):
+    def __init__(self, a):
+        UnaryExpression.__init__(self, 'Log', a)
+
 """
 Type Expressions
 """

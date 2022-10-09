@@ -109,6 +109,30 @@ class Float(Obj):
         fstpt_([res.get_ptr()])
         return res
 
+    def log2(self):
+        res = Float(self.object_manager)
+        fld1_()
+        fldt_([self.get_ptr()])
+        fyl2x_()
+        fstpt_([res.get_ptr()])
+        return res
+
+    def log10(self):
+        res = Float(self.object_manager)
+        fldlg2_()
+        fldt_([self.get_ptr()])
+        fyl2x_()
+        fstpt_([res.get_ptr()])
+        return res
+
+    def log(self):
+        res = Float(self.object_manager)
+        fldln2_()
+        fldt_([self.get_ptr()])
+        fyl2x_()
+        fstpt_([res.get_ptr()])
+        return res
+
     def sqrt(self):
         res = Float(self.object_manager)
         fldt_([self.get_ptr()])

@@ -1388,8 +1388,29 @@ def fildq_(a):
 def fldt_(a):
     op_mr_immr(op=[0xdb], d_reg=5, target=a)
 
+def fld1_():
+    op_imm(op=[0xd9, 0xe8])
+
+def fld2t_():
+    op_imm(op=[0xd9, 0xe9])
+
+def fld2e_():
+    op_imm(op=[0xd9, 0xea])
+
 def fldpi_():
     op_imm(op=[0xd9, 0xeb])
+
+def fldlg2_():
+    op_imm(op=[0xd9, 0xec])
+
+def fldln2_():
+    op_imm(op=[0xd9, 0xed])
+
+def fldz_():
+    op_imm(op=[0xd9, 0xee])
+
+def fyl2x_():
+    op_imm(op=[0xd9, 0xf1])
 
 def fldcw_(a):
     op_mr_immr(op=[0xd9], d_reg=5, target=a)

@@ -54,6 +54,8 @@ functions = {
     'floor': ast.Floor,
     'ceil' : ast.Ceil,
     'log2' : ast.Log2,
+    'log10' : ast.Log10,
+    'log' : ast.Log,
     'typeid' : ast.TypeId,
     'sizeof' : ast.SizeOf
 }

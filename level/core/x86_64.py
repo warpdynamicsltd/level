@@ -522,7 +522,42 @@ def fldt_():
 
 
 @abstract_code
+def fld1_():
+  pass
+
+
+@abstract_code
+def fld2t_():
+  pass
+
+
+@abstract_code
+def fld2e_():
+  pass
+
+
+@abstract_code
 def fldpi_():
+  pass
+
+
+@abstract_code
+def fldlg2_():
+  pass
+
+
+@abstract_code
+def fldln2_():
+  pass
+
+
+@abstract_code
+def fldz_():
+  pass
+
+
+@abstract_code
+def fyl2x_():
   pass
 
 
