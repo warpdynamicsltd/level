@@ -522,17 +522,22 @@ def fldt_():
 
 
 @abstract_code
+def fld_():
+  pass
+
+
+@abstract_code
 def fld1_():
   pass
 
 
 @abstract_code
-def fld2t_():
+def fldl2t_():
   pass
 
 
 @abstract_code
-def fld2e_():
+def fldl2e_():
   pass
 
 
@@ -558,6 +563,11 @@ def fldz_():
 
 @abstract_code
 def fyl2x_():
+  pass
+
+
+@abstract_code
+def fpatan_():
   pass
 
 
@@ -645,6 +655,20 @@ def fsincos_():
 def fsqrt_():
   pass
 
+
+@abstract_code
+def f2xm1_():
+  pass
+
+
+@abstract_code
+def fscale_():
+  pass
+
+
+@abstract_code
+def fprem_():
+  pass
 
 @abstract_code
 def fcomi_():

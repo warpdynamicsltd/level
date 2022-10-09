@@ -9,6 +9,7 @@ binary_operators = {
     'shift' : ast.AddNoOverride,
     '-' : ast.Sub,
     '*' : ast.Mul,
+    '**' : ast.Pow,
     '/' : ast.Div,
     '%' : ast.Mod,
     '==': ast.Eq,
@@ -53,9 +54,13 @@ functions = {
     'sqrt': ast.Sqrt,
     'floor': ast.Floor,
     'ceil' : ast.Ceil,
+    'round' : ast.Round,
     'log2' : ast.Log2,
     'log10' : ast.Log10,
     'log' : ast.Log,
+    'exp' : ast.Exp,
+    'pow10' : ast.Pow10,
+    'pow2' : ast.Pow2,
     'typeid' : ast.TypeId,
     'sizeof' : ast.SizeOf
 }

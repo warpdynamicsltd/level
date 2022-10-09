@@ -1,0 +1,27 @@
+import stdlib:math:float as *;
+
+entry
+{
+  echo int(log(123.0) * 100) == 481;
+  echo int(log(1.0)) == 0;
+  echo int(log10(123.0) * 100) == 208;
+  echo int(log10(1.0)) == 0;
+  echo int(exp(0.0)) == 1;
+  echo int(exp(1.0) * 100) == 271;
+  echo int(exp(-1.0) * 100) == 36;
+  echo int(exp(10.0)) == 22026;
+  echo round(log(exp(-10.0))) == -10;
+  echo round(exp(log(2.0))) == 2;
+  echo round(pow2(log2(11.0))) == 11;
+  echo round(pow10(log10(11.0))) == 11;
+  echo round(3.0 ** 3.0 ** 3.0) == 7625597484987;
+
+  echo atan(1.0, 1.0) == float:pi/4;
+  echo atan(-1.0, 1.0) == 3 * float:pi/4;
+  echo atan(-1.0, -1.0) == -3 * float:pi/4;
+  echo atan(1.0, -1.0) == - float:pi/4;
+  echo atan(1.0) == float:pi/4;
+  echo atan(-1.0) == -float:pi/4;
+  echo round(atan(100000.0) * 100) == 157;
+  echo round(atan(-100000.0) * 100) == -157;
+}

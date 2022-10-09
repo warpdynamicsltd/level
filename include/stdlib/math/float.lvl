@@ -1,0 +1,10 @@
+sub mutable inline atan(var x as float, var y as float) as float
+{
+  return __api__(atan, x, y);
+}
+
+
+sub mutable inline atan(var y as float) as float
+{
+  return __api__(atan, 1.0, y);
+}

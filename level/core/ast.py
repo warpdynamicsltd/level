@@ -477,6 +477,10 @@ class Mul(BinaryExpression):
     def __init__(self, a, b):
         BinaryExpression.__init__(self, 'Mul', a, b)
 
+class Pow(BinaryExpression):
+    def __init__(self, a, b):
+        BinaryExpression.__init__(self, 'Pow', a, b)
+
 class Sub(BinaryExpression):
     def __init__(self, a, b):
         BinaryExpression.__init__(self, 'Sub', a, b)
@@ -566,6 +570,10 @@ class Ceil(UnaryExpression):
     def __init__(self, a):
         UnaryExpression.__init__(self, 'Ceil', a)
 
+class Round(UnaryExpression):
+    def __init__(self, a):
+        UnaryExpression.__init__(self, 'Round', a)
+
 class Log2(UnaryExpression):
     def __init__(self, a):
         UnaryExpression.__init__(self, 'Log2', a)
@@ -577,6 +585,18 @@ class Log10(UnaryExpression):
 class Log(UnaryExpression):
     def __init__(self, a):
         UnaryExpression.__init__(self, 'Log', a)
+
+class Exp(UnaryExpression):
+    def __init__(self, a):
+        UnaryExpression.__init__(self, 'Exp', a)
+
+class Pow10(UnaryExpression):
+    def __init__(self, a):
+        UnaryExpression.__init__(self, 'Pow10', a)
+
+class Pow2(UnaryExpression):
+    def __init__(self, a):
+        UnaryExpression.__init__(self, 'Pow2', a)
 
 """
 Type Expressions
