@@ -133,11 +133,11 @@ method new ()(str, var n as u64) as str
 {
   st = stack(char)();
 
-  while (n >= 0)
+  while (n >= 0x0)
   {
-    exec st.push(char(0x30 + n % 10));
-    n = n/10;
-    if (n == 0) {break}
+    exec st.push(char(0x30 + n % 0xa));
+    n = n/0xa;
+    if (n == 0x0) {break}
   }
 
   return str(st);

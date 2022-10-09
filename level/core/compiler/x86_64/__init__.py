@@ -216,8 +216,26 @@ class CompileDriver_x86_64(CompileDriver):
         if op_T is ast.Ceil:
             return obj.ceil()
 
+        if op_T is ast.Round:
+            return obj.round()
+
         if op_T is ast.Log2:
             return obj.log2()
+
+        if op_T is ast.Log10:
+            return obj.log10()
+
+        if op_T is ast.Log:
+            return obj.log()
+
+        if op_T is ast.Exp:
+            return obj.exp()
+
+        if op_T is ast.Pow10:
+            return obj.pow10()
+
+        if op_T is ast.Pow2:
+            return obj.pow2()
 
         if op_T is ast.TypeId:
             return self.get_typeid(obj_manager, obj)
@@ -272,6 +290,9 @@ class CompileDriver_x86_64(CompileDriver):
 
         if op_T is ast.Mul:
             res = obj1 * obj2
+
+        if op_T is ast.Pow:
+            res = obj1.pow(obj2)
 
         if op_T is ast.Mod:
             res = obj1 % obj2
@@ -685,7 +706,13 @@ class CompileDriver_x86_64(CompileDriver):
         res.MC_put_to_storage(rax)
         return res
 
-
+    def compile_api_atan(self, obj_manager, x, y):
+        res = Float(obj_manager)
+        fldt_([y.get_ptr()])
+        fldt_([x.get_ptr()])
+        fpatan_()
+        fstpt_([res.get_ptr()])
+        return res
 
 
 class StandardObjManager(ObjManager):

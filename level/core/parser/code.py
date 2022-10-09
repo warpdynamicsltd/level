@@ -195,7 +195,7 @@ class Parser:
 
         self.binary_operators = builtin.binary_operators
 
-        self.composed_operators = {'<-', '==', '!=', '<=', '>=', '$=', '<<', '>>'}
+        self.composed_operators = {'<-', '==', '!=', '<=', '>=', '$=', '<<', '>>', '**'}
 
         self.unary_operators = builtin.unary_operators
 
@@ -554,6 +554,28 @@ class Parser:
 
         return op, stream[:k], stream[k + 1:]
 
+    def pre_parse_binary_reversed(self, stream, ops):
+        if not(type(stream) is list and stream):
+            raise ParseException()
+
+        k = None
+        op = None
+        for i, c in enumerate(stream):
+            if c in ops:
+                op_mode = True
+                k = i
+                op = c
+            else:
+                op_mode = False
+
+            if k is not None and not op_mode:
+                break
+
+        if k is None:
+            raise ParseException(f"expected binary expression in {stream[0].meta}")
+
+        return op, stream[:k], stream[k + 1:]
+
     def parse_record_name(self, stream):
         if not(type(stream) is list and stream):
             raise ParseException()
@@ -583,9 +605,23 @@ class Parser:
 
         return self.binary_operators[op](self.parse_expression(stream1), self.parse_expression(stream2)).add_meta(stream[0].meta).add_raw_str(op.visual())
 
+    def parse_binary_reversed(self, stream, ops):
+        if not (type(stream) is list and stream):
+            raise ParseException()
+
+        op, stream1, stream2 = self.pre_parse_binary_reversed(stream, ops)
+
+        return self.binary_operators[op](self.parse_expression(stream1), self.parse_expression(stream2)).add_meta(stream[0].meta).add_raw_str(op.visual())
+
     def try_binary_parse(self, exp, ops):
         try:
             return self.parse_binary(exp, ops)
+        except ParseException as e:
+            return None
+
+    def try_binary_parse_reversed(self, exp, ops):
+        try:
+            return self.parse_binary_reversed(exp, ops)
         except ParseException as e:
             return None
 
@@ -861,6 +897,10 @@ class Parser:
                 return res
 
             res = self.try_binary_parse(stream, ['*', '/', '%'])
+            if res is not None:
+                return res
+
+            res = self.try_binary_parse_reversed(stream, ['**'])
             if res is not None:
                 return res
 

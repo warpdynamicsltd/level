@@ -109,6 +109,88 @@ class Float(Obj):
         fstpt_([res.get_ptr()])
         return res
 
+    def log2(self):
+        res = Float(self.object_manager)
+        fld1_()
+        fldt_([self.get_ptr()])
+        fyl2x_()
+        fstpt_([res.get_ptr()])
+        return res
+
+    def log10(self):
+        res = Float(self.object_manager)
+        fldlg2_()
+        fldt_([self.get_ptr()])
+        fyl2x_()
+        fstpt_([res.get_ptr()])
+        return res
+
+    def log(self):
+        res = Float(self.object_manager)
+        fldln2_()
+        fldt_([self.get_ptr()])
+        fyl2x_()
+        fstpt_([res.get_ptr()])
+        return res
+
+    def exp(self):
+        res = Float(self.object_manager)
+        fldt_([self.get_ptr()])
+        fldl2e_()
+        fmulp_()
+        fld1_()
+        fld_(st(1))
+        fprem_()
+        f2xm1_()
+        faddp_()
+        fscale_()
+        fstp_(st(1))
+        fstpt_([res.get_ptr()])
+        return res
+
+    def pow10(self):
+        res = Float(self.object_manager)
+        fldt_([self.get_ptr()])
+        fldl2t_()
+        fmulp_()
+        fld1_()
+        fld_(st(1))
+        fprem_()
+        f2xm1_()
+        faddp_()
+        fscale_()
+        fstp_(st(1))
+        fstpt_([res.get_ptr()])
+        return res
+
+    def pow2(self):
+        res = Float(self.object_manager)
+        fldt_([self.get_ptr()])
+        fld1_()
+        fld_(st(1))
+        fprem_()
+        f2xm1_()
+        faddp_()
+        fscale_()
+        fstp_(st(1))
+        fstpt_([res.get_ptr()])
+        return res
+
+    def pow(self, other):
+        res = Float(self.object_manager)
+        fldt_([other.get_ptr()])
+        fldt_([self.get_ptr()])
+        fyl2x_()
+        fld1_()
+        fld_(st(1))
+        fprem_()
+        f2xm1_()
+        faddp_()
+        fscale_()
+        fstp_(st(1))
+        fstpt_([res.get_ptr()])
+        return res
+
     def sqrt(self):
         res = Float(self.object_manager)
         fldt_([self.get_ptr()])
@@ -148,6 +230,12 @@ class Float(Obj):
         movl_([tmp_ptr], 0x37f)
         fldcw_([tmp_ptr])
 
+        return res
+
+    def round(self):
+        res = level.core.compiler.x86_64.types.i64.I64(self.object_manager)
+        fldt_([self.get_ptr()])
+        fistpq_([res.get_ptr()])
         return res
 
     def __add__(self, other):

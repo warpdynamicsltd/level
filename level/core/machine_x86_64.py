@@ -1388,8 +1388,35 @@ def fildq_(a):
 def fldt_(a):
     op_mr_immr(op=[0xdb], d_reg=5, target=a)
 
+def fld_(i):
+    op_plus_r_imm(op=[0xd9, 0xc0], reg=i)
+
+def fld1_():
+    op_imm(op=[0xd9, 0xe8])
+
+def fldl2t_():
+    op_imm(op=[0xd9, 0xe9])
+
+def fldl2e_():
+    op_imm(op=[0xd9, 0xea])
+
 def fldpi_():
     op_imm(op=[0xd9, 0xeb])
+
+def fldlg2_():
+    op_imm(op=[0xd9, 0xec])
+
+def fldln2_():
+    op_imm(op=[0xd9, 0xed])
+
+def fldz_():
+    op_imm(op=[0xd9, 0xee])
+
+def fyl2x_():
+    op_imm(op=[0xd9, 0xf1])
+
+def fpatan_():
+    op_imm(op=[0xd9, 0xf3])
 
 def fldcw_(a):
     op_mr_immr(op=[0xd9], d_reg=5, target=a)
@@ -1441,6 +1468,15 @@ def fsincos_():
 
 def fsqrt_():
     op_imm(op=[0xd9, 0xfa])
+
+def f2xm1_():
+    op_imm(op=[0xd9, 0xf0])
+
+def fscale_():
+    op_imm(op=[0xd9, 0xfd])
+
+def fprem_():
+    op_imm(op=[0xd9, 0xf8])
 
 def fcomi_(i):
     op_plus_r_imm(op=[0xdb, 0xf0], reg=i)
