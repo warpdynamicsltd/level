@@ -568,7 +568,7 @@ class Compiler:
 
         if ast.istype(s, ast.Exec):
             exp = ast.MetaVar()
-            ast.Return(exp) << s
+            ast.Exec(exp) << s
             self.compile_expression(exp.val, obj_manager)
             return
 
