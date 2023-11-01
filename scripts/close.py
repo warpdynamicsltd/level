@@ -11,7 +11,7 @@ def main():
     res = system("git branch --show-current")
     branch = f"LVL-{issue}"
     if res == branch:
-        cmd = "python scripts/incv.py"
+        cmd = "python3 scripts/incv.py"
         print(cmd)
         os.system(cmd)
         cmd = f'git commit -am"close #{issue}"'
