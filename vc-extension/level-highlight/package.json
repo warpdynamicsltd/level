@@ -1,0 +1,25 @@
+{
+  "name": "level-highlight",
+  "displayName": "Level Highlight",
+  "description": "",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.96.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [{
+      "id": "level",
+      "aliases": ["Level", "level"],
+      "extensions": [".lvl"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "level",
+      "scopeName": "source.level",
+      "path": "./syntaxes/level.tmLanguage.json"
+    }]
+  }
+}

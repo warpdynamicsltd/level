@@ -1,0 +1,53 @@
+{
+    "workbench.colorCustomizations": {
+        "editor.foreground": "#8ac7ff"
+    },
+
+    "editor.tokenColorCustomizations": {
+    "textMateRules": [
+        {
+            "scope": "comment.line.level",
+            "settings": {
+                "foreground": "#6A9955"
+            }
+        },
+        {
+            "scope": "keyword.control.level",
+            "settings": {
+                "foreground": "#ffffff",
+                "fontStyle": "bold"
+            }
+        },
+        {
+            "scope": "storage.type.level",
+            "settings": {
+                "foreground": "#4EC9B0"
+            }
+        },
+        {
+            "scope": "entity.name.function.level",
+            "settings": {
+                "foreground": "#e8f09f"
+            }
+        },
+        {
+            "scope": "constant.numeric.level",
+            "settings": {
+                "foreground": "#dfdfdf"
+            }
+        },
+        {
+            "scope": "punctuation.section.lvl",
+            "settings": {
+                "foreground": "#D4D4D4"
+            }
+        },
+        {
+            "scope": "keyword.operator.level",
+            "settings": {
+                "foreground": "#f8f1b4",
+                "fontStyle": "bold"
+            }
+        }
+    ]
+}}

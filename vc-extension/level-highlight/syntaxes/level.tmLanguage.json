@@ -1,0 +1,43 @@
+{
+  "name": "Level",
+  "scopeName": "source.level",
+  "patterns": [
+    {
+      "match": "(sub|method)\\s+([a-zA-Z_][a-zA-Z0-9_]*)",
+      "captures": {
+        "1": 
+        {
+          "name": "keyword.control.level"
+        },
+        "2": {
+            "name": "entity.name.function.level"
+        }
+      }
+    },
+    {
+      "name": "comment.line.number-sign.level",
+      "match": "#.*$"
+    },
+    {
+      "name": "string.quoted.level",
+      "match": "\"([^\"\\\\]|\\\\.)*\"|'([^'\\\\]|\\\\.)*'"
+    },
+    {
+      "name": "constant.numeric.level",
+      "match": "\\b(?:0x[0-9A-Fa-f]+|\\d+\\.?\\d*)\\b"
+    },
+    {
+      "name": "keyword.control.level",
+      "match": "\\b(?:as|break|continue|dec|def|del|direct|echo|else|entry|exec|extends|finish|for|foreach|global|if|import|in|inc|inline|metal|method|mutable|new|return|sizeof|sub|type|typeid|var|while|with)\\b"
+    },
+    {
+      "name": "storage.type.level",
+      "match": "\\b(?:array|bool|byte|false|float|i32|i64|int|uint|null|object|rec|ref|swap|true|u32|u64|val)\\b"
+    },
+    {
+      "name": "keyword.operator.level",
+      "match": "\\b(?:abs|and|ceil|cos|cot|exp|floor|log|log10|log2|not|or|pow|pow10|pow2|round|sgn|shift|sin|sqrt|tan)\\b|\\!|\\$=|%|&|\\*|\\+|-|/|<|<-|<<|=|>|>>|\\^|\\||~"
+    }
+  ],
+  "repository": {}
+}
