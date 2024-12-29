@@ -1,8 +1,0 @@
-[
-  {
-      "id": "lvl",
-      "extensions": [".lvl"],
-      "aliases": ["Level Compiler Syntax", "lvl"],
-      "configuration": "./lvl-language-configuration.json"
-  }
-]

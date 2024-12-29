@@ -1,39 +1,39 @@
 {
-  "files.associations": {
-    "*.lvl": "lvl"
-  },
+    "workbench.colorCustomizations": {
+        "editor.foreground": "#8ac7ff"
+    },
 
-  "editor.tokenColorCustomizations": {
+    "editor.tokenColorCustomizations": {
     "textMateRules": [
         {
-            "scope": "comment.line.lvl",
+            "scope": "comment.line.level",
             "settings": {
                 "foreground": "#6A9955"
             }
         },
         {
-            "scope": "keyword.control.lvl",
+            "scope": "keyword.control.level",
             "settings": {
-                "foreground": "#569CD6",
+                "foreground": "#ffffff",
                 "fontStyle": "bold"
             }
         },
         {
-            "scope": "storage.type.lvl",
+            "scope": "storage.type.level",
             "settings": {
                 "foreground": "#4EC9B0"
             }
         },
         {
-            "scope": "support.function.lvl",
+            "scope": "entity.name.function.level",
             "settings": {
-                "foreground": "#C586C0"
+                "foreground": "#e8f09f"
             }
         },
         {
-            "scope": "constant.numeric.lvl",
+            "scope": "constant.numeric.level",
             "settings": {
-                "foreground": "#B5CEA8"
+                "foreground": "#dfdfdf"
             }
         },
         {
@@ -43,11 +43,11 @@
             }
         },
         {
-            "scope": "keyword.operator.lvl",
+            "scope": "keyword.operator.level",
             "settings": {
-                "foreground": "#D7BA7D"
+                "foreground": "#f8f1b4",
+                "fontStyle": "bold"
             }
         }
     ]
-},
-}
+}}
