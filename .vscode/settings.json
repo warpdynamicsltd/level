@@ -1,0 +1,53 @@
+{
+  "files.associations": {
+    "*.lvl": "lvl"
+  },
+
+  "editor.tokenColorCustomizations": {
+    "textMateRules": [
+        {
+            "scope": "comment.line.lvl",
+            "settings": {
+                "foreground": "#6A9955"
+            }
+        },
+        {
+            "scope": "keyword.control.lvl",
+            "settings": {
+                "foreground": "#569CD6",
+                "fontStyle": "bold"
+            }
+        },
+        {
+            "scope": "storage.type.lvl",
+            "settings": {
+                "foreground": "#4EC9B0"
+            }
+        },
+        {
+            "scope": "support.function.lvl",
+            "settings": {
+                "foreground": "#C586C0"
+            }
+        },
+        {
+            "scope": "constant.numeric.lvl",
+            "settings": {
+                "foreground": "#B5CEA8"
+            }
+        },
+        {
+            "scope": "punctuation.section.lvl",
+            "settings": {
+                "foreground": "#D4D4D4"
+            }
+        },
+        {
+            "scope": "keyword.operator.lvl",
+            "settings": {
+                "foreground": "#D7BA7D"
+            }
+        }
+    ]
+},
+}
